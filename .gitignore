@@ -1,2 +1,3 @@
 .env
+*.tle
 /node_modules
