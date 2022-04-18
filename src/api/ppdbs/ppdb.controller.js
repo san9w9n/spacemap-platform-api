@@ -5,7 +5,7 @@ const { Router } = require('express');
 const wrapper = require('../../lib/request-handler');
 const PpdbService = require('./ppdb.service');
 
-class TemplateController {
+class PpdbController {
   constructor() {
     this.templateService = new PpdbService();
     this.path = '/template';
@@ -28,4 +28,4 @@ class TemplateController {
   }
 }
 
-module.exports = TemplateController;
+module.exports = PpdbController;

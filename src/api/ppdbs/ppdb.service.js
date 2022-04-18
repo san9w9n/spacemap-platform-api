@@ -1,2 +1,2 @@
-class TemplateService {}
-module.exports = TemplateService;
+class PpdbService {}
+module.exports = PpdbService;
