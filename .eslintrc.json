@@ -4,7 +4,10 @@
     "commonjs": true,
     "es2021": true
   },
-  "extends": ["airbnb", "plugin:prettier/recommended"],
+  "extends": [
+    "airbnb",
+    "plugin:prettier/recommended"
+  ],
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
@@ -12,9 +15,14 @@
     "ecmaVersion": "latest"
   },
   "rules": {
-    "prettier/prettier": ["error",
-      { 
-        "singleQuote": true
+    "prettier/prettier": [
+      "error",
+      {
+        "singleQuote": true,
+        "indent": [
+          "error",
+          4
+        ]
       }
     ]
   }
