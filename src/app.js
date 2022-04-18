@@ -8,14 +8,31 @@ class App {
   constructor(controllers) {
     this.app = express();
 
+    this.initializeCors();
     this.initializeMiddlewares();
     this.initialzeControllers(controllers);
     this.initializeNotFoundMiddleware();
     this.initializeErrorHandling();
   }
 
+  initializeCors() {
+    const domains = ['http://localhost:4000', 'http://localhost:4007'];
+    this.app.use(
+      cors({
+        origin(origin, callback) {
+          const isTrue = domains.indexOf(origin) !== -1;
+          callback(null, isTrue);
+        },
+        allowHeaders: 'Content-Type',
+        methods: 'GET, HEAD, PUT, PATCH, POST, DELETE',
+        preflightContinue: false,
+        credentials: true,
+        optionsSuccessStatus: 200,
+      })
+    );
+  }
+
   initializeMiddlewares() {
-    this.app.use(cors());
     this.app.use(morgan('common'));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));

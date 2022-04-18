@@ -1,11 +1,11 @@
-const TemplateController = require('./api/templates/template.contollers');
+const TleController = require('./api/tles/tle.controller');
 const App = require('./app');
 const Database = require('./lib/database');
-const tleTask = require('../modules/tle/tle.scheduler');
+const tleTask = require('./api/tles/tle.task');
 
 const main = async () => {
   await Database.initializeDatabase();
-  const app = new App([new TemplateController()]);
+  const app = new App([new TleController()]);
   app.listen();
   tleTask.start();
 };

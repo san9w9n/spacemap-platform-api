@@ -1,3 +1,4 @@
+.vscode
 .env
 *.tle
 /node_modules
