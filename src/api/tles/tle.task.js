@@ -20,7 +20,7 @@ const QUERY_URL =
 class TleTask {
   constructor() {
     this.name = 'TLE TASK';
-    this.period = '*/10 * * * * *';
+    this.period = '0 0 0 * * *';
     this.handler = this.#tleScheduleHandler.bind(this);
   }
 
