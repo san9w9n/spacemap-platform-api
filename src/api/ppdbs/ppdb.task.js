@@ -1,12 +1,10 @@
-/* eslint-disable no-multi-str */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
 
-// const cron = require('node-cron');
 const Client = require('ssh2-sftp-client');
 const fs = require('fs');
 const { promisify } = require('util');
-const { getStringFormatData } = require('../../lib/date-formatter');
+const getStringFormatData = require('../../lib/date-formatter');
 
 const FROM_PPDB_PATH = '/data/COOP/workingFolder/PPDB2.txt';
 
@@ -21,19 +19,18 @@ class PpdbTask {
     this.handler = this.#ppdbScheduleHandler.bind(this);
   }
 
-  async #ppdbScheduleHandler() {
-    const dateObj = new Date();
+  async #ppdbScheduleHandler(dateObj) {
     const year = dateObj.getUTCFullYear();
     const month = dateObj.getUTCMonth() + 1;
     const day = dateObj.getUTCDate();
     const hours = dateObj.getUTCHours();
     const date = getStringFormatData(year, month, day, hours);
     const ppdbPath = `./public/ppdb/${date}.txt`;
-    const ppdbStream = fs.createWriteStream(ppdbPath);
-
     try {
+      console.log('connect start');
       await this.#connect();
-      await this.#savePPDBFileBySFTP(ppdbStream);
+      console.log('connect success');
+      await this.#savePPDBFileBySFTP(ppdbPath);
       const ppdbFile = await this.#readPPDBFileFromLocal(ppdbPath);
       console.log(ppdbFile);
     } catch (err) {
@@ -52,8 +49,8 @@ class PpdbTask {
     });
   }
 
-  async #savePPDBFileBySFTP(destStream) {
-    return this.#sftp.get(FROM_PPDB_PATH, destStream);
+  async #savePPDBFileBySFTP(path) {
+    return this.#sftp.fastGet(FROM_PPDB_PATH, path);
   }
 
   async #readPPDBFileFromLocal(path) {

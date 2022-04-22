@@ -18,6 +18,4 @@ const initializeDatabase = async () => {
   }
 };
 
-module.exports = {
-  initializeDatabase,
-};
+module.exports = initializeDatabase;

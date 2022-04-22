@@ -5,7 +5,7 @@ const request = require('request');
 const fs = require('fs');
 const { Cookie } = require('request-cookies');
 const { promisify } = require('util');
-const { getStringFormatData } = require('../../lib/date-formatter');
+const getStringFormatData = require('../../lib/date-formatter');
 const TleService = require('./tle.service');
 
 const requestPromise = promisify(request);
@@ -24,8 +24,7 @@ class TleTask {
     this.handler = this.#tleScheduleHandler.bind(this);
   }
 
-  async #tleScheduleHandler() {
-    const dateObj = new Date();
+  async #tleScheduleHandler(dateObj) {
     const year = dateObj.getUTCFullYear();
     const month = dateObj.getUTCMonth() + 1;
     const day = dateObj.getUTCDate();

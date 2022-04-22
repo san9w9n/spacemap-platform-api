@@ -12,4 +12,4 @@ const sh = async (cmd) => {
   });
 };
 
-module.exports = { sh };
+module.exports = sh;

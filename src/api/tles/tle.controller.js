@@ -5,7 +5,7 @@ const { Router } = require('express');
 const TleService = require('./tle.service');
 const wrapper = require('../../lib/request-handler');
 const { BadRequestException } = require('../../common/exceptions');
-const { getStringFormatData } = require('../../lib/date-formatter');
+const getStringFormatData = require('../../lib/date-formatter');
 
 class TleController {
   constructor() {
