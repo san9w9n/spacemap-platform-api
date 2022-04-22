@@ -2,8 +2,7 @@
 /* eslint-disable no-console */
 
 const getStringFormatData = require('../../lib/date-formatter');
-
-// const PpdbModel = require('../../models/ppdb.model');
+const PpdbModel = require('../../models/ppdb.model');
 
 class PpdbService {
   async savePpdbOnDatabase(createdAt, ppdbTexts) {
@@ -33,7 +32,8 @@ class PpdbService {
         };
         return ppdb;
       });
-    console.log(ppdbs.length);
+    await PpdbModel.insertMany(ppdbs);
   }
 }
+
 module.exports = PpdbService;
