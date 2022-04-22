@@ -8,14 +8,14 @@ class App {
   constructor(controllers) {
     this.app = express();
 
-    this.initializeCors();
-    this.initializeMiddlewares();
-    this.initialzeControllers(controllers);
-    this.initializeNotFoundMiddleware();
-    this.initializeErrorHandling();
+    this.#initializeCors();
+    this.#initializeMiddlewares();
+    this.#initialzeControllers(controllers);
+    this.#initializeNotFoundMiddleware();
+    this.#initializeErrorHandling();
   }
 
-  initializeCors() {
+  #initializeCors() {
     const domains = ['http://localhost:4000', 'http://localhost:4007'];
     this.app.use(
       cors({
@@ -32,26 +32,26 @@ class App {
     );
   }
 
-  initializeMiddlewares() {
+  #initializeMiddlewares() {
     this.app.use(morgan('common'));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
   }
 
-  initialzeControllers(controllers) {
+  #initialzeControllers(controllers) {
     controllers.forEach((controller) => {
       this.app.use(controller.path, controller.router);
     });
   }
 
-  initializeNotFoundMiddleware() {
+  #initializeNotFoundMiddleware() {
     this.app.use((req, _res, next) => {
       if (!req.route) next(new NotFoundException());
       next();
     });
   }
 
-  initializeErrorHandling() {
+  #initializeErrorHandling() {
     this.app.use(errorMiddleware);
   }
 
