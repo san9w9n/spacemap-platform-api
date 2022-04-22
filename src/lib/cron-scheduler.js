@@ -9,9 +9,15 @@ class CronScheduler {
   constructor(taskObjs) {
     this.taskSchedulers = taskObjs.map((taskObj) => {
       const { period, handler } = taskObj;
-      return cron.schedule(period, handler, {
-        scheduled: false,
-      });
+      return cron.schedule(
+        period,
+        async (dateObj) => {
+          await handler(dateObj);
+        },
+        {
+          scheduled: false,
+        }
+      );
     });
   }
 

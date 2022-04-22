@@ -1,4 +1,5 @@
 .vscode
 .env
 *.tle
+*.txt
 /node_modules
