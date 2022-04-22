@@ -4,12 +4,12 @@
 const Client = require('ssh2-sftp-client');
 const fs = require('fs');
 const { promisify } = require('util');
+const PpdbService = require('./ppdb.service');
 const getStringFormatData = require('../../lib/date-formatter');
 
-const FROM_PPDB_PATH = '/data/COOP/workingFolder/PPDB2.txt';
-
 const readFilePromise = promisify(fs.readFile);
-
+const FROM_PPDB_PATH = '/data/COOP/workingFolder/PPDB2.txt';
+const ppdbService = new PpdbService();
 class PpdbTask {
   #sftp = new Client();
 
@@ -27,12 +27,10 @@ class PpdbTask {
     const date = getStringFormatData(year, month, day, hours);
     const ppdbPath = `./public/ppdb/${date}.txt`;
     try {
-      console.log('connect start');
       await this.#connect();
-      console.log('connect success');
       await this.#savePPDBFileBySFTP(ppdbPath);
       const ppdbFile = await this.#readPPDBFileFromLocal(ppdbPath);
-      console.log(ppdbFile);
+      await ppdbService.savePpdbOnDatabase(date, ppdbFile);
     } catch (err) {
       console.error(err);
     } finally {
