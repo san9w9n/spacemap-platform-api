@@ -4,6 +4,9 @@ const morgan = require('morgan');
 const { NotFoundException } = require('./common/exceptions');
 const errorMiddleware = require('./middlewares/error.middleware');
 
+const PORT = process.env.PORT || 3003;
+require('dotenv').config();
+
 class App {
   constructor(controllers) {
     this.app = express();
@@ -13,6 +16,13 @@ class App {
     this.#initialzeControllers(controllers);
     this.#initializeNotFoundMiddleware();
     this.#initializeErrorHandling();
+  }
+
+  listen() {
+    this.app.listen(PORT, () => {
+      // eslint-disable-next-line no-console
+      console.log(`App listening on ${PORT}`);
+    });
   }
 
   #initializeCors() {
@@ -53,14 +63,6 @@ class App {
 
   #initializeErrorHandling() {
     this.app.use(errorMiddleware);
-  }
-
-  listen() {
-    const PORT = process.env.PORT || 3007;
-    this.app.listen(PORT, () => {
-      // eslint-disable-next-line no-console
-      console.log(`App listening on ${PORT}`);
-    });
   }
 }
 

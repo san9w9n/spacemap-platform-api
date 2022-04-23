@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
 const cron = require('node-cron');
+const { getCurrentFormatDate } = require('./date-handler');
 
 class CronScheduler {
   /**
@@ -11,8 +12,8 @@ class CronScheduler {
       const { period, handler } = taskObj;
       return cron.schedule(
         period,
-        async (dateObj) => {
-          await handler(dateObj);
+        async () => {
+          await handler(getCurrentFormatDate());
         },
         {
           scheduled: false,
@@ -21,7 +22,7 @@ class CronScheduler {
     });
   }
 
-  startAllScheduler() {
+  startAllSchedule() {
     this.taskSchedulers.forEach((taskObj) => {
       taskObj.start();
     });
