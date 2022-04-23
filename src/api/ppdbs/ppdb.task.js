@@ -1,44 +1,41 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
 
-const Client = require('ssh2-sftp-client');
 const fs = require('fs');
 const { promisify } = require('util');
+const Client = require('ssh2-sftp-client');
 const PpdbService = require('./ppdb.service');
-const getStringFormatData = require('../../lib/date-formatter');
 
+const ppdbService = new PpdbService();
 const readFilePromise = promisify(fs.readFile);
 const FROM_PPDB_PATH = '/data/COOP/workingFolder/PPDB2.txt';
-const ppdbService = new PpdbService();
 class PpdbTask {
   #sftp = new Client();
 
   constructor() {
     this.name = 'PPDB TASK';
-    this.period = '*/10 * * * * *';
+    this.period = '0 0 0 * * *';
     this.handler = this.#ppdbScheduleHandler.bind(this);
   }
 
-  async #ppdbScheduleHandler(dateObj) {
-    const year = dateObj.getUTCFullYear();
-    const month = dateObj.getUTCMonth() + 1;
-    const day = dateObj.getUTCDate();
-    const hours = dateObj.getUTCHours();
-    const date = getStringFormatData(year, month, day, hours);
+  /**
+   * @param {String} date
+   */
+  async #ppdbScheduleHandler(date) {
     const ppdbPath = `./public/ppdb/${date}.txt`;
     try {
-      await this.#connect();
-      await this.#savePPDBFileBySFTP(ppdbPath);
+      await this.#connectSftp();
+      await this.#savePpdbFileFromSftp(ppdbPath);
       const ppdbFile = await this.#readPPDBFileFromLocal(ppdbPath);
       await ppdbService.savePpdbOnDatabase(date, ppdbFile);
     } catch (err) {
       console.error(err);
     } finally {
-      await this.#end();
+      await this.#endSftp();
     }
   }
 
-  async #connect() {
+  async #connectSftp() {
     return this.#sftp.connect({
       host: process.env.SFTP_HOST,
       port: process.env.SFTP_PORT,
@@ -47,7 +44,7 @@ class PpdbTask {
     });
   }
 
-  async #savePPDBFileBySFTP(path) {
+  async #savePpdbFileFromSftp(path) {
     return this.#sftp.fastGet(FROM_PPDB_PATH, path);
   }
 
@@ -57,7 +54,7 @@ class PpdbTask {
     });
   }
 
-  async #end() {
+  async #endSftp() {
     return this.#sftp.end();
   }
 }

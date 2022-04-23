@@ -13,7 +13,7 @@ const main = async () => {
   const schedulers = new CronScheduler([new TleTask(), new PpdbTask()]);
 
   app.listen();
-  schedulers.startAllScheduler();
+  schedulers.startAllSchedule();
 };
 
 main();

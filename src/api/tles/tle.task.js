@@ -1,16 +1,16 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
 
-const request = require('request');
 const fs = require('fs');
-const { Cookie } = require('request-cookies');
+const request = require('request');
 const { promisify } = require('util');
-const getStringFormatData = require('../../lib/date-formatter');
+const { Cookie } = require('request-cookies');
 const TleService = require('./tle.service');
+const { isTleTableClearDay } = require('../../lib/date-handler');
 
+const tleService = new TleService();
 const requestPromise = promisify(request);
 const writeFilePromise = promisify(fs.writeFile);
-const tleService = new TleService();
 
 const SPACETRACK_URL = 'https://www.space-track.org';
 const AUTH_URL = 'ajaxauth/login';
@@ -24,20 +24,17 @@ class TleTask {
     this.handler = this.#tleScheduleHandler.bind(this);
   }
 
-  async #tleScheduleHandler(dateObj) {
-    const year = dateObj.getUTCFullYear();
-    const month = dateObj.getUTCMonth() + 1;
-    const day = dateObj.getUTCDate();
-    const hours = dateObj.getUTCHours();
-    const date = getStringFormatData(year, month, day, hours);
-
+  /**
+   * @param {String} date
+   */
+  async #tleScheduleHandler(date) {
     try {
-      if (day === 0 && hours === 0) {
+      if (isTleTableClearDay()) {
         await tleService.deleteTles();
       }
       const loginCookie = await this.#getLoginCookieFromSpaceTrack();
       const tles = await this.#getTlesFromSpaceTrack(loginCookie);
-      await this.#saveTlesOnFile(date, tles, 0);
+      await this.#saveTlesOnFile(date, tles);
       await tleService.saveTlesOnDatabase(date, tles);
       console.log(`Save satellite TLE at : ${date}`);
     } catch (err) {
@@ -82,17 +79,8 @@ class TleTask {
     return res.body;
   }
 
-  async #saveTlesOnFile(date, tles, errorCount) {
-    if (errorCount === 5) {
-      throw new Error('FATAL: Cannot save TLE file.');
-    }
-    try {
-      await writeFilePromise(`./public/tle/${date}.tle`, tles);
-      console.log('TLE file is successfully saved.');
-    } catch (err) {
-      console.error(err);
-      await this.saveTlesOnFile(date, tles, errorCount + 1);
-    }
+  async #saveTlesOnFile(date, tles) {
+    return writeFilePromise(`./public/tle/${date}.tle`, tles);
   }
 }
 

@@ -5,7 +5,7 @@ const { Router } = require('express');
 const TleService = require('./tle.service');
 const wrapper = require('../../lib/request-handler');
 const { BadRequestException } = require('../../common/exceptions');
-const getStringFormatData = require('../../lib/date-formatter');
+const { getFormatDate } = require('../../lib/date-handler');
 
 class TleController {
   constructor() {
@@ -32,7 +32,7 @@ class TleController {
     if (!name || !year || !month || !date || !hours) {
       throw new BadRequestException('Wrong params.');
     }
-    const stringDate = getStringFormatData(year, month, date, hours);
+    const stringDate = getFormatDate(year, month, date, hours);
     const tles = await this.tleService.getTlesByNameOrDateService(
       stringDate,
       name
@@ -47,7 +47,7 @@ class TleController {
     if (!year || !month || !date || !hours) {
       throw new BadRequestException('Wrong params.');
     }
-    const stringDate = getStringFormatData(year, month, date, hours);
+    const stringDate = getFormatDate(year, month, date, hours);
     const tles = await this.tleService.getTlesByNameOrDateService(stringDate);
     return {
       date: tles,

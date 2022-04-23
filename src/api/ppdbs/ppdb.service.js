@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
 
-const getStringFormatData = require('../../lib/date-formatter');
+const { getFormatDate } = require('../../lib/date-handler');
 const PpdbModel = require('../../models/ppdb.model');
 
 class PpdbService {
@@ -13,7 +13,7 @@ class PpdbService {
       .filter((rawPpdb) => rawPpdb[0] !== '%')
       .map((rawPpdb) => {
         const parsedPpdb = rawPpdb.split('\t');
-        const date = getStringFormatData(
+        const date = getFormatDate(
           parsedPpdb[6],
           parsedPpdb[7],
           parsedPpdb[8],
