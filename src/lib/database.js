@@ -8,7 +8,7 @@ const initializeDatabase = async () => {
   await mongoose.connect(MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    dbName: 'SPACEPLATFORM',
+    dbName: 'SPACEMAP-PLATFORM',
   });
   console.log('DB successfully connected.');
 };
