@@ -1,19 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const GoogleStrategy = require('passport-google-oauth2').Strategy;
 const passport = require('passport');
 const session = require('express-session');
 const { NotFoundException } = require('./common/exceptions');
 const errorMiddleware = require('./middlewares/error.middleware');
-const bcrypt = require('bcrypt');
-const User = require('./models/user.model');
 
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3003;
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_OAUTH_ID;
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_OAUTH_SECRET;
+// const GOOGLE_CLIENT_ID = process.env.GOOGLE_OAUTH_ID;
+// const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_OAUTH_SECRET;
 
 class App {
   constructor(controllers) {
@@ -35,75 +32,11 @@ class App {
   }
 
   #initializePassport() {
-    // this.app.get('/', (req, res) => {
-    //   res.send(200);
-    // });
     this.app.use(
       session({ secret: 'SECRET_CODE', resave: true, saveUninitialized: false })
     );
     this.app.use(passport.initialize());
     this.app.use(passport.session());
-    passport.serializeUser((user, done) => {
-      done(null, user.id);
-    });
-    passport.deserializeUser(async (id, done) => {
-      try {
-        const user = await User.findOne({
-          where: { id },
-        });
-        done(null, user); //req.user
-      } catch (err) {
-        console.error(err);
-        done(err);
-      }
-    });
-    passport.use(
-      new GoogleStrategy(
-        {
-          clientID: GOOGLE_CLIENT_ID,
-          clientSecret: GOOGLE_CLIENT_SECRET,
-          callbackURL: '/oauth/google/redirect',
-        },
-        async (accessToken, refreshToken, profile, done) => {
-          const exUser = await User.findOne({
-            where: {
-              email: profile.emails[0].value,
-              provider: 'google',
-            },
-          });
-          if (exUser) {
-            return done(null, exUser);
-          } else {
-            const hashedPassword = await bcrypt.hash(profile.displayName, 11);
-            const newUser = await User.create({
-              email: profile.emails[0].value,
-              password: hashedPassword,
-              nickname: profile.displayName,
-              snsId: profile.id,
-              provider: 'google',
-            });
-            done(null, newUser);
-          }
-        }
-      )
-    );
-    this.app.get('/oauth/google', (req, res, next) => {
-      console.log('oauth');
-      passport.authenticate('google', { scope: ['profile', 'email'] })(
-        req,
-        res,
-        next
-      );
-    });
-    this.app.get(
-      '/oauth/google/redirect',
-      passport.authenticate('google', {
-        failureRedirect: '/',
-      }),
-      async (req, res, next) => {
-        return res.status(200).redirect('http://localhost:4032');
-      }
-    );
   }
 
   #initializeCors() {
