@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const PpdbScheme = new Schema({
-  created_at: {
+  createdAt: {
     type: String,
     required: true,
   },
@@ -19,23 +19,19 @@ const PpdbScheme = new Schema({
     type: Number,
     required: true,
   },
-  sid: {
+  dca: {
     type: Number,
     required: true,
   },
-  pdca: {
+  tca: {
     type: Number,
     required: true,
   },
-  sdca: {
+  tcaStart: {
     type: Number,
     required: true,
   },
-  ptca: {
-    type: Number,
-    required: true,
-  },
-  stca: {
+  tcaEnd: {
     type: Number,
     required: true,
   },

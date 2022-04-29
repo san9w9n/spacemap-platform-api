@@ -6,6 +6,10 @@ const { promisify } = require('util');
 const promiseReadFile = promisify(fs.readFile);
 
 class TleHandler {
+  static isValidString(string) {
+    return string && string.length > 0;
+  }
+
   static parseTlePlainTexts(date, tlePlainTexts) {
     const tleArray = tlePlainTexts.split('\r\n');
     const tleArrayLength = tleArray.length;
@@ -14,12 +18,18 @@ class TleHandler {
       const satelliteName = tleArray[i].slice(2, tleArray[i].length);
       const firstLine = tleArray[i + 1];
       const secondLine = tleArray[i + 2];
-      tles.push({
-        date,
-        name: satelliteName,
-        firstline: firstLine,
-        secondline: secondLine,
-      });
+      if (
+        this.isValidString(satelliteName) &&
+        this.isValidString(firstLine) &&
+        this.isValidString(secondLine)
+      ) {
+        tles.push({
+          date,
+          name: satelliteName,
+          firstline: firstLine,
+          secondline: secondLine,
+        });
+      }
     }
     return tles;
   }
