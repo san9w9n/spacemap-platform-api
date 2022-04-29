@@ -4,8 +4,8 @@
 const { Router } = require('express');
 const TleService = require('./tle.service');
 const wrapper = require('../../lib/request-handler');
+const DateHandler = require('../../lib/date-handler');
 const { BadRequestException } = require('../../common/exceptions');
-const { getFormatDate } = require('../../lib/date-handler');
 
 class TleController {
   constructor() {
@@ -18,39 +18,31 @@ class TleController {
   initializeRoutes() {
     this.router
       .get(
-        '/:name/:year/:month/:date/:hours',
-        wrapper(this.getTlesByNameAndDateController.bind(this))
+        '/:year/:month/:date/:hours/:name',
+        wrapper(this.findTles.bind(this))
       )
-      .get(
-        '/:year/:month/:date/:hours',
-        wrapper(this.getTlesByDateController.bind(this))
-      );
+      .get('/:year/:month/:date/:hours', wrapper(this.findTles.bind(this)));
   }
 
-  async getTlesByNameAndDateController(req, _res) {
+  async findTles(req, _res) {
     const { name, year, month, date, hours } = req.params;
-    if (!name || !year || !month || !date || !hours) {
-      throw new BadRequestException('Wrong params.');
-    }
-    const stringDate = getFormatDate(year, month, date, hours);
-    const tles = await this.tleService.getTlesByNameOrDateService(
-      stringDate,
-      name
-    );
-    return {
-      date: tles,
-    };
-  }
-
-  async getTlesByDateController(req, res) {
-    const { year, month, date, hours } = req.params;
     if (!year || !month || !date || !hours) {
       throw new BadRequestException('Wrong params.');
     }
-    const stringDate = getFormatDate(year, month, date, hours);
-    const tles = await this.tleService.getTlesByNameOrDateService(stringDate);
+    const formatDate = DateHandler.getCertainFormatDate(
+      year,
+      month,
+      date,
+      hours
+    );
+    const tles = await this.tleService.getTlesByNameOrDateService(
+      formatDate,
+      name
+    );
     return {
-      date: tles,
+      data: {
+        tles,
+      },
     };
   }
 }

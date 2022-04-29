@@ -6,7 +6,7 @@ const request = require('request');
 const { promisify } = require('util');
 const { Cookie } = require('request-cookies');
 const TleService = require('./tle.service');
-const { isTleTableClearDay } = require('../../lib/date-handler');
+const DateHandler = require('../../lib/date-handler');
 
 const tleService = new TleService();
 const requestPromise = promisify(request);
@@ -24,18 +24,15 @@ class TleTask {
     this.handler = this.#tleScheduleHandler.bind(this);
   }
 
-  /**
-   * @param {String} date
-   */
   async #tleScheduleHandler(date) {
     try {
-      if (isTleTableClearDay()) {
+      if (DateHandler.isTleDatabaseCleanDay()) {
         await tleService.deleteTles();
       }
       const loginCookie = await this.#getLoginCookieFromSpaceTrack();
-      const tles = await this.#getTlesFromSpaceTrack(loginCookie);
-      await this.#saveTlesOnFile(date, tles);
-      await tleService.saveTlesOnDatabase(date, tles);
+      const tlePlainTexts = await this.#getTlesFromSpaceTrack(loginCookie);
+      await this.#saveTlesOnFile(date, tlePlainTexts);
+      await tleService.saveTlesOnDatabase(date, tlePlainTexts);
       console.log(`Save satellite TLE at : ${date}`);
     } catch (err) {
       console.error(err);
@@ -55,14 +52,7 @@ class TleTask {
     if (!rawCookies) {
       throw new Error('Space track login failed.');
     }
-    const parsedCookies = await Promise.all(
-      rawCookies.map((rawCookie) => {
-        const parsedCookie = new Cookie(rawCookie);
-        return `${parsedCookie.key}=${parsedCookie.value}`;
-      })
-    );
-    const cookie = parsedCookies.join('; ');
-    return cookie;
+    return this.#parseLoginCookie(rawCookies);
   }
 
   async #getTlesFromSpaceTrack(loginCookie) {
@@ -77,6 +67,16 @@ class TleTask {
       throw new Error('Response status code is not 200. (spacetrack)');
     }
     return res.body;
+  }
+
+  async #parseLoginCookie(rawCookies) {
+    const parsedCookies = await Promise.all(
+      rawCookies.map((rawCookie) => {
+        const parsedCookie = new Cookie(rawCookie);
+        return `${parsedCookie.key}=${parsedCookie.value}`;
+      })
+    );
+    return parsedCookies.join('; ');
   }
 
   async #saveTlesOnFile(date, tles) {

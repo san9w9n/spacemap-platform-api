@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 
 const { getFormatDate } = require('../../lib/date-handler');
-const PpdbModel = require('../../models/ppdb.model');
+const PpdbModel = require('./ppdb.model');
 
 class PpdbService {
   async savePpdbOnDatabase(createdAt, ppdbTexts) {
