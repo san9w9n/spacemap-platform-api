@@ -1,8 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const { NotFoundException } = require('./common/exceptions');
 const errorMiddleware = require('./middlewares/error.middleware');
+const { NotFoundException } = require('./common/exceptions');
 
 const PORT = process.env.PORT || 3003;
 require('dotenv').config();

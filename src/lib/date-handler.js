@@ -1,47 +1,39 @@
-const getCurrentUTCDate = () => {
-  const date = new Date();
-  return {
-    year: date.getUTCFullYear(),
-    month: date.getUTCMonth() + 1,
-    day: date.getUTCDate(),
-    whichDay: date.getUTCDay(),
-    hours: date.getUTCHours(),
+class DateHandler {
+  static getCurrentUTCDate() {
+    const date = new Date();
+    return {
+      year: date.getUTCFullYear(),
+      month: date.getUTCMonth() + 1,
+      date: date.getUTCDate(),
+      day: date.getUTCDay(),
+      hours: date.getUTCHours(),
+    };
+  }
+
+  static getformattedDateElement(dateElement) {
+    return `0${dateElement}`.slice(-2);
+  }
+
+  static getFormatDate(year, month, date, hours) {
+    const formattedMonth = this.getformattedDateElement(month);
+    const formattedDate = this.getformattedDateElement(date);
+    const formattedHours = this.getformattedDateElement(hours);
+    return `${year}-${formattedMonth}-${formattedDate}-${formattedHours}`;
+  }
+
+  static getCurrentFormatDate() {
+    const { year, month, date, hours } = this.getCurrentUTCDate();
+    return this.getFormatDate(year, month, date, hours);
+  }
+
+  static getCertainFormatDate(year, month, date, hours) {
+    return this.getFormatDate(year, month, date, hours);
+  }
+
+  static isTleDatabaseCleanDay = () => {
+    const { day, hours } = this.getCurrentUTCDate();
+    return day === 0 && hours === 0;
   };
-};
+}
 
-/**
- * @param {Number} dateElement
- * @returns {String}
- */
-const getformattedDateElement = (dateElement) => {
-  return `0${dateElement}`.slice(-2);
-};
-
-/**
- * @returns {String}
- */
-const getCurrentFormatDate = () => {
-  const { year, month, day, hours } = getCurrentUTCDate();
-  const formattedMonth = getformattedDateElement(month);
-  const formattedDay = getformattedDateElement(day);
-  const formattedHours = getformattedDateElement(hours);
-  return `${year}-${formattedMonth}-${formattedDay}-${formattedHours}`;
-};
-
-const getFormatDate = (year, month, day, hours) => {
-  const formattedMonth = getformattedDateElement(month);
-  const formattedDay = getformattedDateElement(day);
-  const formattedHours = getformattedDateElement(hours);
-  return `${year}-${formattedMonth}-${formattedDay}-${formattedHours}`;
-};
-
-const isTleTableClearDay = () => {
-  const { day, hours } = getCurrentFormatDate();
-  return day === 0 && hours === 0;
-};
-
-module.exports = {
-  getFormatDate,
-  getCurrentFormatDate,
-  isTleTableClearDay,
-};
+module.exports = DateHandler;
