@@ -3,6 +3,7 @@
 
 const { Router } = require('express');
 const TleService = require('./tle.service');
+const TleHandler = require('../../lib/tle-handler');
 const wrapper = require('../../lib/request-handler');
 const DateHandler = require('../../lib/date-handler');
 const { BadRequestException } = require('../../common/exceptions');
@@ -26,18 +27,13 @@ class TleController {
     if (!year || !month || !date || !hours) {
       throw new BadRequestException('Wrong params.');
     }
-    let stringId = '';
-    if (id) {
-      stringId = id.replace(/^\s*|\s*$/g, ''); // 좌우 공백 제거
-      if (stringId === '' || Number.isNaN(stringId)) {
-        throw new BadRequestException('Wrong params.');
-      }
+    if (id && !TleHandler.isNumeric(id)) {
+      throw new BadRequestException("Wrong params. ('id' is not number.)");
     }
-
     const requestDate = DateHandler.getCertainUTCDate(year, month, date, hours);
     const requestTles = await this.tleService.findTlesByIdOrDate(
       requestDate,
-      id ? Number(stringId) : undefined
+      id ? Number(id) : undefined
     );
     return {
       data: {

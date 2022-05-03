@@ -21,6 +21,7 @@ class TleTask {
   constructor() {
     this.name = 'TLE TASK';
     this.period = '0 0 0 * * *';
+    this.excuting = false;
     this.handler = this.#tleScheduleHandler.bind(this);
   }
 
@@ -28,17 +29,24 @@ class TleTask {
    * @param {Date} dateObj
    */
   async #tleScheduleHandler(dateObj) {
-    try {
-      if (DateHandler.isTleDatabaseCleanDay()) {
-        await tleService.deleteTles();
+    if (!this.excuting) {
+      console.log('tle scheduler start.');
+      this.excuting = true;
+      try {
+        if (DateHandler.isTleDatabaseCleanDay()) {
+          await tleService.deleteTles();
+        }
+        const loginCookie = await this.#getLoginCookieFromSpaceTrack();
+        const tlePlainTexts = await this.#getTlesFromSpaceTrack(loginCookie);
+        await this.#saveTlesOnFile(dateObj, tlePlainTexts);
+        await tleService.saveTlesOnDatabase(dateObj, tlePlainTexts);
+        console.log(`Save satellite TLE at : ${dateObj}`);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        this.excuting = false;
+        console.log('tle scheduler finish.');
       }
-      const loginCookie = await this.#getLoginCookieFromSpaceTrack();
-      const tlePlainTexts = await this.#getTlesFromSpaceTrack(loginCookie);
-      await this.#saveTlesOnFile(dateObj, tlePlainTexts);
-      await tleService.saveTlesOnDatabase(dateObj, tlePlainTexts);
-      console.log(`Save satellite TLE at : ${dateObj}`);
-    } catch (err) {
-      console.error(err);
     }
   }
 

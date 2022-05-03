@@ -18,24 +18,40 @@ class TleService {
    * @param {Date} dateObj
    */
   async findTlesByIdOrDate(dateObj, id) {
-    let tles = await (id
-      ? TleModel.find({ id, date: dateObj })
-      : TleModel.find({ date: dateObj }));
-    if (!tles || tles.length === 0) {
+    let tleModels = await (id
+      ? TleModel.find({ id, date: dateObj }).exec()
+      : TleModel.find({ date: dateObj }).exec());
+    if (!tleModels || tleModels.length === 0) {
       const tleFromFile = await TleHandler.readTleFromLocalFile(dateObj);
       await this.saveTlesOnDatabase(dateObj, tleFromFile);
-      tles = await (id
-        ? TleModel.find({ id, date: dateObj })
-        : TleModel.find({ date: dateObj }));
+      tleModels = await (id
+        ? TleModel.find({ id, date: dateObj }).exec()
+        : TleModel.find({ date: dateObj }).exec());
     }
+    const tles = tleModels.map((tleModel) => {
+      return {
+        name: tleModel.name,
+        firstLine: tleModel.firstLine,
+        secondLine: tleModel.secondLine,
+      };
+    });
     return tles;
   }
 
   async deleteTles(dateObj = undefined) {
     if (dateObj) {
-      return TleModel.deleteMany({ date: dateObj });
+      return TleModel.deleteMany({ date: dateObj }).exec();
     }
-    return TleModel.deleteMany({});
+    return TleModel.deleteMany({}).exec();
+  }
+
+  async findNameById(id) {
+    const tleModel = await TleModel.findOne({ id }).exec();
+    if (!tleModel) {
+      return 'UNKNOWN';
+    }
+    const { name } = tleModel;
+    return name || 'UNKNOWN';
   }
 }
 

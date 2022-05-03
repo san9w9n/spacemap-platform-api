@@ -7,7 +7,7 @@ const DateHandler = require('./date-handler');
 const promiseReadFile = promisify(fs.readFile);
 
 class TleHandler {
-  static #isNumeric(inputString) {
+  static isNumeric(inputString) {
     const stringId = inputString.replace(/^\s*|\s*$/g, ''); // 좌우 공백 제거
     if (stringId === '' || Number.isNaN(Number(stringId))) {
       return false;
@@ -25,7 +25,7 @@ class TleHandler {
       throw new Error('firstLine split failed.');
     }
     const stringId = firstLineArray[1].replace('U', '');
-    if (!this.#isNumeric(stringId)) {
+    if (!this.isNumeric(stringId)) {
       throw new Error('Undefined Id.');
     }
     return Number(stringId);

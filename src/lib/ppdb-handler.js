@@ -1,4 +1,7 @@
 const DateHandler = require('./date-handler');
+const TleService = require('../api/tles/tle.service');
+
+const tleService = new TleService();
 
 class PpdbHandler {
   static #isNotComment(rawPpdb) {
@@ -8,7 +11,7 @@ class PpdbHandler {
     return rawPpdb[0] !== '%';
   }
 
-  static #parseRawPpdb(createdAt, rawPpdb) {
+  static async #getPpdbObject(createdAt, rawPpdb) {
     const splitPpdb = rawPpdb.split('\t');
     const [
       pid,
@@ -19,38 +22,78 @@ class PpdbHandler {
       tcaEnd,
       year,
       month,
-      pdate,
-      hrs,
+      date,
+      hours,
       min,
       sec,
       probability,
     ] = splitPpdb;
-    const date = DateHandler.getCertainFormatDate(
+
+    const standardTime = DateHandler.getCertainUTCDate(
       year,
       month,
-      pdate,
-      0
-    ).substring(0, 10);
-    const time = `${hrs}:${min}:${sec}`;
-    return {
-      createdAt,
       date,
-      time,
+      hours,
+      min,
+      sec
+    );
+    const tcaTime = DateHandler.getRelativeUTCDate(
+      Number(tca),
+      year,
+      month,
+      date,
+      hours,
+      min,
+      sec,
+      DateHandler.getMilliSecondFromSecond(tca)
+    );
+    const tcaStartTime = DateHandler.getRelativeUTCDate(
+      Number(tcaStart),
+      year,
+      month,
+      date,
+      hours,
+      min,
+      sec,
+      DateHandler.getMilliSecondFromSecond(tcaStart)
+    );
+    const tcaEndTime = DateHandler.getRelativeUTCDate(
+      Number(tcaEnd),
+      year,
+      month,
+      date,
+      hours,
+      min,
+      sec,
+      DateHandler.getMilliSecondFromSecond(tcaEnd)
+    );
+    const pName = await tleService.findNameById(pid);
+    const sName = await tleService.findNameById(sid);
+    const ppdbObj = {
+      createdAt,
+      standardTime,
       pid,
+      pName,
       sid,
+      sName,
       dca,
-      tca,
-      tcaStart,
-      tcaEnd,
+      tcaTime,
+      tcaStartTime,
+      tcaEndTime,
       probability,
     };
+    return ppdbObj;
   }
 
-  static getPpdbObjectsArray(createdAt, ppdbTexts) {
+  static async getPpdbObjectsArray(createdDateObj, ppdbTexts) {
     const ppdbArray = ppdbTexts.split('\n');
-    const ppdbs = ppdbArray
-      .filter(this.#isNotComment)
-      .map((rawPpdb) => this.#parseRawPpdb(createdAt, rawPpdb));
+    const filteredPpdbs = ppdbArray.filter(this.#isNotComment).slice(0, 5);
+    const ppdbs = await Promise.all(
+      filteredPpdbs.map(async (rawPpdb) => {
+        const ppdbObj = await this.#getPpdbObject(createdDateObj, rawPpdb);
+        return ppdbObj;
+      })
+    );
     return ppdbs;
   }
 }

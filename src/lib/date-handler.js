@@ -1,6 +1,36 @@
 class DateHandler {
-  static getCertainUTCDate(year, month, date, hours) {
-    return new Date(Date.UTC(year, month - 1, date, hours, 0, 0, 0));
+  static getCertainUTCDate(
+    year,
+    month,
+    date,
+    hours = 0,
+    min = 0,
+    sec = 0,
+    ms = 0
+  ) {
+    return new Date(Date.UTC(year, month - 1, date, hours, min, sec, ms));
+  }
+
+  static getRelativeUTCDate(addSec, year, month, date, hours, min, sec, ms) {
+    const dateObj = this.getCertainUTCDate(
+      year,
+      month,
+      date,
+      hours,
+      min,
+      sec,
+      ms
+    );
+    dateObj.setSeconds(dateObj.getSeconds() + sec);
+    return dateObj;
+  }
+
+  static getMilliSecondFromSecond(sec) {
+    const splitSec = sec.split('.');
+    if (splitSec.length <= 1) {
+      return 0;
+    }
+    return Number(splitSec[1]);
   }
 
   static getCurrentUTCDate() {
