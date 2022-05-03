@@ -6,28 +6,52 @@ const TleModel = require('./tle.model');
 const TleHandler = require('../../lib/tle-handler');
 
 class TleService {
-  async saveTlesOnDatabase(date, tlePlainTexts) {
-    const tles = TleHandler.parseTlePlainTexts(date, tlePlainTexts);
-    await TleModel.insertMany(tles);
+  /**
+   * @param {Date} dateObj
+   */
+  async saveTlesOnDatabase(dateObj, tlePlainTexts) {
+    const tles = TleHandler.parseTlePlainTexts(dateObj, tlePlainTexts);
+    return TleModel.insertMany(tles);
   }
 
-  async findTlesByNameOrDate(date, name = undefined) {
-    let tles = await (name
-      ? TleModel.find({ name, date })
-      : TleModel.find({ date }));
-    if (!tles || tles.length === 0) {
-      const tleFromFile = await TleHandler.readTleFromLocalFile(date);
-      await this.saveTlesOnDatabase(date, tleFromFile);
-      tles = await (name
-        ? TleModel.find({ name, date })
-        : TleModel.find({ date }));
+  /**
+   * @param {Date} dateObj
+   */
+  async findTlesByIdOrDate(dateObj, id) {
+    let tleModels = await (id
+      ? TleModel.find({ id, date: dateObj }).exec()
+      : TleModel.find({ date: dateObj }).exec());
+    if (!tleModels || tleModels.length === 0) {
+      const tleFromFile = await TleHandler.readTleFromLocalFile(dateObj);
+      await this.saveTlesOnDatabase(dateObj, tleFromFile);
+      tleModels = await (id
+        ? TleModel.find({ id, date: dateObj }).exec()
+        : TleModel.find({ date: dateObj }).exec());
     }
+    const tles = tleModels.map((tleModel) => {
+      return {
+        name: tleModel.name,
+        firstLine: tleModel.firstLine,
+        secondLine: tleModel.secondLine,
+      };
+    });
     return tles;
   }
 
-  async deleteTles(date = undefined) {
-    if (date) await TleModel.deleteMany({ date });
-    else await TleModel.deleteMany({});
+  async deleteTles(dateObj = undefined) {
+    if (dateObj) {
+      return TleModel.deleteMany({ date: dateObj }).exec();
+    }
+    return TleModel.deleteMany({}).exec();
+  }
+
+  async findNameById(id) {
+    const tleModel = await TleModel.findOne({ id }).exec();
+    if (!tleModel) {
+      return 'UNKNOWN';
+    }
+    const { name } = tleModel;
+    return name || 'UNKNOWN';
   }
 }
 

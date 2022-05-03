@@ -4,9 +4,12 @@ const PpdbModel = require('./ppdb.model');
 const PpdbHandler = require('../../lib/ppdb-handler');
 
 class PpdbService {
-  async savePpdbOnDatabase(createdAt, ppdbTexts) {
-    const ppdbs = PpdbHandler.getPpdbObjectsArray(createdAt, ppdbTexts);
-    await PpdbModel.insertMany(ppdbs);
+  async savePpdbOnDatabase(createdDateObj, ppdbTexts) {
+    const ppdbs = await PpdbHandler.getPpdbObjectsArray(
+      createdDateObj,
+      ppdbTexts
+    );
+    return PpdbModel.insertMany(ppdbs);
   }
 }
 

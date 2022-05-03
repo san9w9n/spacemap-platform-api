@@ -5,6 +5,7 @@ const fs = require('fs');
 const { promisify } = require('util');
 const Client = require('ssh2-sftp-client');
 const PpdbService = require('./ppdb.service');
+const DateHandler = require('../../lib/date-handler');
 
 const ppdbService = new PpdbService();
 const readFilePromise = promisify(fs.readFile);
@@ -14,24 +15,33 @@ class PpdbTask {
 
   constructor() {
     this.name = 'PPDB TASK';
-    this.period = '0 0 0 * * *';
+    this.period = '0 0 3 * * *';
+    this.excuting = false;
     this.handler = this.#ppdbScheduleHandler.bind(this);
   }
 
   /**
-   * @param {String} date
+   * @param {Date} dateObj
    */
-  async #ppdbScheduleHandler(date) {
-    const ppdbPath = `./public/ppdb/${date}.txt`;
-    try {
-      await this.#connectSftp();
-      await this.#savePpdbFileFromSftp(ppdbPath);
-      const ppdbFile = await this.#readPPDBFileFromLocal(ppdbPath);
-      await ppdbService.savePpdbOnDatabase(date, ppdbFile);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      await this.#endSftp();
+  async #ppdbScheduleHandler(dateObj) {
+    if (!this.excuting) {
+      console.log('ppdb scheduler start.');
+      this.excuting = true;
+      const ppdbFileName = DateHandler.getFileNameByDateObject(dateObj);
+      const ppdbPath = `./public/ppdb/${ppdbFileName}.txt`;
+      try {
+        await this.#connectSftp();
+        await this.#savePpdbFileFromSftp(ppdbPath);
+        const ppdbFile = await this.#readPPDBFileFromLocal(ppdbPath);
+        await ppdbService.savePpdbOnDatabase(dateObj, ppdbFile);
+        console.log(`Save PPDB at: ${dateObj}`);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        await this.#endSftp();
+        this.excuting = false;
+        console.log('ppdb scheduler finish.');
+      }
     }
   }
 

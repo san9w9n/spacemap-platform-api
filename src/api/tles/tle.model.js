@@ -3,7 +3,11 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const TleScheme = new Schema({
   date: {
-    type: String,
+    type: Date,
+    required: true,
+  },
+  id: {
+    type: Number,
     required: true,
   },
   name: {
