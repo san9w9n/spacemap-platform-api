@@ -7,24 +7,19 @@ const PpdbService = require('./ppdb.service');
 
 class PpdbController {
   constructor() {
-    this.templateService = new PpdbService();
-    this.path = '/template';
+    this.ppdbService = new PpdbService();
+    this.path = '/ppdbs';
     this.router = Router();
     this.initializeRoutes();
   }
 
   initializeRoutes() {
-    this.router
-      .get('/', wrapper(this.template1.bind(this)))
-      .post('/', wrapper(this.template2.bind(this)));
+    this.router.get('/conjunctions', wrapper(this.findConjunctions.bind(this)));
   }
 
-  template1(req, res) {
-    return {};
-  }
-
-  template2(req, res) {
-    return {};
+  findConjunctions(req, _res) {
+    const { limit = 100, start = 0, sort = 'date' } = req.query;
+    this.ppdbService.getConjunctions(limit, start, undefined);
   }
 }
 

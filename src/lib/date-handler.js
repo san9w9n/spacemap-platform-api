@@ -1,37 +1,57 @@
 class DateHandler {
-  static getCurrentUTCDate() {
-    const date = new Date();
-    return {
-      year: date.getUTCFullYear(),
-      month: date.getUTCMonth() + 1,
-      date: date.getUTCDate(),
-      day: date.getUTCDay(),
-      hours: date.getUTCHours(),
-    };
+  static getCertainUTCDate(year, month, date, hours) {
+    return new Date(Date.UTC(year, month - 1, date, hours, 0, 0, 0));
   }
 
-  static getformattedDateElement(dateElement) {
+  static getCurrentUTCDate() {
+    const currentDate = new Date();
+    const year = currentDate.getUTCFullYear();
+    const month = currentDate.getUTCMonth() + 1;
+    const date = currentDate.getUTCDate();
+    const hours = currentDate.getUTCHours();
+    return this.getCertainUTCDate(year, month, date, hours);
+  }
+
+  static #getformattedDateElement(dateElement) {
     return `0${dateElement}`.slice(-2);
   }
 
-  static getFormatDate(year, month, date, hours) {
-    const formattedMonth = this.getformattedDateElement(month);
-    const formattedDate = this.getformattedDateElement(date);
-    const formattedHours = this.getformattedDateElement(hours);
+  /**
+   * @param {Date} dateObj
+   */
+  static #getFileName(dateObj) {
+    const year = dateObj.getUTCFullYear();
+    const month = dateObj.getUTCMonth() + 1;
+    const date = dateObj.getUTCDate();
+    const hours = dateObj.getUTCHours();
+
+    const formattedMonth = this.#getformattedDateElement(month);
+    const formattedDate = this.#getformattedDateElement(date);
+    const formattedHours = this.#getformattedDateElement(hours);
     return `${year}-${formattedMonth}-${formattedDate}-${formattedHours}`;
   }
 
-  static getCurrentFormatDate() {
-    const { year, month, date, hours } = this.getCurrentUTCDate();
-    return this.getFormatDate(year, month, date, hours);
+  static getFileNameByCurrentDate() {
+    const currentDate = this.getCurrentUTCDate();
+    return this.#getFileName(currentDate);
   }
 
-  static getCertainFormatDate(year, month, date, hours) {
-    return this.getFormatDate(year, month, date, hours);
+  static getFileNameByCertainDate(year, month, date, hours) {
+    const certainDate = this.getCertainUTCDate(year, month, date, hours);
+    return this.#getFileName(certainDate);
+  }
+
+  /**
+   * @param {Date} dateObj
+   */
+  static getFileNameByDateObject(dateObj) {
+    return this.#getFileName(dateObj);
   }
 
   static isTleDatabaseCleanDay = () => {
-    const { day, hours } = this.getCurrentUTCDate();
+    const currentDate = this.getCurrentUTCDate();
+    const day = currentDate.getUTCDay();
+    const hours = currentDate.getUTCHours();
     return day === 0 && hours === 0;
   };
 }

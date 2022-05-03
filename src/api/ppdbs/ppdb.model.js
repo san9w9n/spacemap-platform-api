@@ -7,8 +7,20 @@ const PpdbScheme = new Schema({
     type: String,
     required: true,
   },
-  date: {
+  standardDate: {
     type: String,
+    required: true,
+  },
+  tcaDate: {
+    type: Number,
+    required: true,
+  },
+  tcaStartDate: {
+    type: Number,
+    required: true,
+  },
+  tcaEndDate: {
+    type: Number,
     required: true,
   },
   time: {
@@ -23,18 +35,7 @@ const PpdbScheme = new Schema({
     type: Number,
     required: true,
   },
-  tca: {
-    type: Number,
-    required: true,
-  },
-  tcaStart: {
-    type: Number,
-    required: true,
-  },
-  tcaEnd: {
-    type: Number,
-    required: true,
-  },
+
   probability: {
     type: String,
     required: true,

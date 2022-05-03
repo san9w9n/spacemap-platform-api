@@ -24,16 +24,19 @@ class TleTask {
     this.handler = this.#tleScheduleHandler.bind(this);
   }
 
-  async #tleScheduleHandler(date) {
+  /**
+   * @param {Date} dateObj
+   */
+  async #tleScheduleHandler(dateObj) {
     try {
       if (DateHandler.isTleDatabaseCleanDay()) {
         await tleService.deleteTles();
       }
       const loginCookie = await this.#getLoginCookieFromSpaceTrack();
       const tlePlainTexts = await this.#getTlesFromSpaceTrack(loginCookie);
-      await this.#saveTlesOnFile(date, tlePlainTexts);
-      await tleService.saveTlesOnDatabase(date, tlePlainTexts);
-      console.log(`Save satellite TLE at : ${date}`);
+      await this.#saveTlesOnFile(dateObj, tlePlainTexts);
+      await tleService.saveTlesOnDatabase(dateObj, tlePlainTexts);
+      console.log(`Save satellite TLE at : ${dateObj}`);
     } catch (err) {
       console.error(err);
     }
@@ -79,8 +82,13 @@ class TleTask {
     return parsedCookies.join('; ');
   }
 
-  async #saveTlesOnFile(date, tles) {
-    return writeFilePromise(`./public/tle/${date}.tle`, tles);
+  /**
+   * @param {Date} dateObj
+   * @param {String} tles
+   */
+  async #saveTlesOnFile(dateObj, tles) {
+    const fileName = DateHandler.getFileNameByDateObject(dateObj);
+    return writeFilePromise(`./public/tle/${fileName}.tle`, tles);
   }
 }
 

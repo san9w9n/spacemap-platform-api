@@ -6,28 +6,36 @@ const TleModel = require('./tle.model');
 const TleHandler = require('../../lib/tle-handler');
 
 class TleService {
-  async saveTlesOnDatabase(date, tlePlainTexts) {
-    const tles = TleHandler.parseTlePlainTexts(date, tlePlainTexts);
-    await TleModel.insertMany(tles);
+  /**
+   * @param {Date} dateObj
+   */
+  async saveTlesOnDatabase(dateObj, tlePlainTexts) {
+    const tles = TleHandler.parseTlePlainTexts(dateObj, tlePlainTexts);
+    return TleModel.insertMany(tles);
   }
 
-  async findTlesByNameOrDate(date, name = undefined) {
-    let tles = await (name
-      ? TleModel.find({ name, date })
-      : TleModel.find({ date }));
+  /**
+   * @param {Date} dateObj
+   */
+  async findTlesByIdOrDate(dateObj, id) {
+    let tles = await (id
+      ? TleModel.find({ id, date: dateObj })
+      : TleModel.find({ date: dateObj }));
     if (!tles || tles.length === 0) {
-      const tleFromFile = await TleHandler.readTleFromLocalFile(date);
-      await this.saveTlesOnDatabase(date, tleFromFile);
-      tles = await (name
-        ? TleModel.find({ name, date })
-        : TleModel.find({ date }));
+      const tleFromFile = await TleHandler.readTleFromLocalFile(dateObj);
+      await this.saveTlesOnDatabase(dateObj, tleFromFile);
+      tles = await (id
+        ? TleModel.find({ id, date: dateObj })
+        : TleModel.find({ date: dateObj }));
     }
     return tles;
   }
 
-  async deleteTles(date = undefined) {
-    if (date) await TleModel.deleteMany({ date });
-    else await TleModel.deleteMany({});
+  async deleteTles(dateObj = undefined) {
+    if (dateObj) {
+      return TleModel.deleteMany({ date: dateObj });
+    }
+    return TleModel.deleteMany({});
   }
 }
 

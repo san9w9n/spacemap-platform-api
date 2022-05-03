@@ -2,15 +2,40 @@
 
 const fs = require('fs');
 const { promisify } = require('util');
+const DateHandler = require('./date-handler');
 
 const promiseReadFile = promisify(fs.readFile);
 
 class TleHandler {
-  static isValidString(string) {
+  static #isNumeric(inputString) {
+    const stringId = inputString.replace(/^\s*|\s*$/g, ''); // 좌우 공백 제거
+    if (stringId === '' || Number.isNaN(Number(stringId))) {
+      return false;
+    }
+    return true;
+  }
+
+  static #isValidString(string) {
     return string && string.length > 0;
   }
 
-  static parseTlePlainTexts(date, tlePlainTexts) {
+  static #getTleIdFromFirstLine(firstLine) {
+    const firstLineArray = firstLine.split(/[ \t]+/);
+    if (!firstLineArray || firstLineArray.length < 5) {
+      throw new Error('firstLine split failed.');
+    }
+    const stringId = firstLineArray[1].replace('U', '');
+    if (!this.#isNumeric(stringId)) {
+      throw new Error('Undefined Id.');
+    }
+    return Number(stringId);
+  }
+
+  /**
+   * @param {Date} dateObj
+   * @param {String} tlePlainTexts
+   */
+  static parseTlePlainTexts(dateObj, tlePlainTexts) {
     const tleArray = tlePlainTexts.split('\r\n');
     const tleArrayLength = tleArray.length;
     const tles = [];
@@ -19,12 +44,20 @@ class TleHandler {
       const firstLine = tleArray[i + 1];
       const secondLine = tleArray[i + 2];
       if (
-        this.isValidString(satelliteName) &&
-        this.isValidString(firstLine) &&
-        this.isValidString(secondLine)
+        this.#isValidString(satelliteName) &&
+        this.#isValidString(firstLine) &&
+        this.#isValidString(secondLine)
       ) {
+        let id;
+        try {
+          id = this.#getTleIdFromFirstLine(firstLine);
+        } catch (err) {
+          // eslint-disable-next-line no-continue
+          continue;
+        }
         tles.push({
-          date,
+          date: dateObj,
+          id,
           name: satelliteName,
           firstline: firstLine,
           secondline: secondLine,
@@ -34,8 +67,12 @@ class TleHandler {
     return tles;
   }
 
-  static async readTleFromLocalFile(date) {
-    const tleFilePath = `./public/tle/${date}.tle`;
+  /**
+   * @param {String} dateObj
+   */
+  static async readTleFromLocalFile(dateObj) {
+    const tleFileName = DateHandler.getFileNameByDateObject(dateObj);
+    const tleFilePath = `./public/tle/${tleFileName}.tle`;
     const readOptions = {
       encoding: 'utf-8',
     };

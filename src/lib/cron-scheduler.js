@@ -13,7 +13,7 @@ class CronScheduler {
       return cron.schedule(
         period,
         async () => {
-          await handler(DateHandler.getCurrentFormatDate());
+          await handler(DateHandler.getCurrentUTCDate());
         },
         {
           scheduled: false,
