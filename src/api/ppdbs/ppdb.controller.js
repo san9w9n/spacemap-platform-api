@@ -5,6 +5,7 @@ const { Router } = require('express');
 const { isNumeric } = require('../../lib/ppdb-handler');
 const wrapper = require('../../lib/request-handler');
 const PpdbService = require('./ppdb.service');
+const { BadRequestException } = require('../../common/exceptions');
 
 class PpdbController {
   constructor() {
@@ -19,22 +20,46 @@ class PpdbController {
   }
 
   async findConjunctions(req, _res) {
-    let { limit, page, sort, id } = req.query;
-    if (!limit || limit >= 50) limit = 10;
-    if (!page || page < 0) page = 0;
-    if (
-      !sort ||
-      sort !== 'tcaTime' ||
-      sort !== 'dca' ||
-      sort !== 'probability'
-    ) {
+    let { limit = 10, page = 0, sort = 'tcaTime', dec = '' } = req.query;
+    const { satelite } = req.query;
+
+    if (page < 0) {
+      page = 0;
+    }
+    if (limit <= 0) {
+      limit = 10;
+    }
+    if (sort !== 'tcaTime' || sort !== 'dca' || sort !== 'probability') {
       sort = 'tcaTime';
     }
-    if (id && !isNumeric(id)) {
-      id = undefined;
+    if (dec !== '-') {
+      dec = '';
+    }
+    sort = `${dec}${sort}`;
+
+    if (satelite) {
+      const { conjunctions, totalcount } = await (isNumeric(satelite)
+        ? this.ppdbService.findConjunctionsByIdService(
+            limit,
+            page,
+            sort,
+            satelite
+          )
+        : this.ppdbService.findConjunctionsByNameService(
+            limit,
+            page,
+            sort,
+            satelite
+          ));
+      return {
+        data: {
+          totalcount,
+          conjunctions,
+        },
+      };
     }
     const { conjunctions, totalcount } =
-      await this.ppdbService.findConjunctionsService(limit, page, sort, id);
+      await this.ppdbService.findConjunctionsService(limit, page, sort);
     return {
       data: {
         totalcount,
