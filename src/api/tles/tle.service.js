@@ -22,6 +22,23 @@ class TleService {
       ? TleModel.find({ id, date: dateObj }).exec()
       : TleModel.find({ date: dateObj }).exec());
     if (!tleModels || tleModels.length === 0) {
+      const year = dateObj.getFullYear();
+      const month = dateObj.getMonth();
+      const date = dateObj.getDate();
+      const tleModel = await TleModel.findOne({
+        date: {
+          $gte: new Date(year, month, date),
+          $lt: new Date(year, month, date + 1),
+        },
+      }).exec();
+      if (tleModel) {
+        const reSearchDate = tleModel.date;
+        tleModels = await (id
+          ? TleModel.find({ id, date: reSearchDate }).exec()
+          : TleModel.find({ date: reSearchDate }).exec());
+      }
+    }
+    if (!tleModels || tleModels.length === 0) {
       const tleFromFile = await TleHandler.readTleFromLocalFile(dateObj);
       await this.saveTlesOnDatabase(dateObj, tleFromFile);
       tleModels = await (id
@@ -31,8 +48,8 @@ class TleService {
     const tles = tleModels.map((tleModel) => {
       return {
         name: tleModel.name,
-        firstLine: tleModel.firstLine,
-        secondLine: tleModel.secondLine,
+        firstLine: tleModel.firstline,
+        secondLine: tleModel.secondline,
       };
     });
     return tles;
