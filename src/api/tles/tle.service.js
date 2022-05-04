@@ -45,13 +45,22 @@ class TleService {
     return TleModel.deleteMany({}).exec();
   }
 
-  async findNameById(id) {
-    const tleModel = await TleModel.findOne({ id }).exec();
+  async getIdNamePairs() {
+    const tleModel = await TleModel.findOne({ id: 11 }).exec();
     if (!tleModel) {
-      return 'UNKNOWN';
+      throw new Error('Something is wrong. (at getIdNamePairs)');
     }
-    const { name } = tleModel;
-    return name || 'UNKNOWN';
+    const { date } = tleModel;
+    const tleModels = await TleModel.find({ date }).exec();
+    if (!tleModels || tleModels.length === 0) {
+      throw new Error('Something is wrong. (at getIdNamePairs)');
+    }
+    const idNamePairs = {};
+    tleModels.forEach((model) => {
+      const { id, name } = model;
+      idNamePairs[id] = name;
+    });
+    return idNamePairs;
   }
 }
 

@@ -67,30 +67,29 @@ class PpdbHandler {
       sec,
       DateHandler.getMilliSecondFromSecond(tcaEnd)
     );
-    const pName = await tleService.findNameById(pid);
-    const sName = await tleService.findNameById(sid);
-    const ppdbObj = {
+    return {
       createdAt,
-      standardTime,
       pid,
-      pName,
       sid,
-      sName,
       dca,
       tcaTime,
       tcaStartTime,
       tcaEndTime,
+      standardTime,
       probability,
     };
-    return ppdbObj;
   }
 
   static async getPpdbObjectsArray(createdDateObj, ppdbTexts) {
+    const idNamePairs = await tleService.getIdNamePairs();
     const ppdbArray = ppdbTexts.split('\n');
-    const filteredPpdbs = ppdbArray.filter(this.#isNotComment).slice(0, 5);
+    const filteredPpdbs = ppdbArray.filter(this.#isNotComment);
     const ppdbs = await Promise.all(
       filteredPpdbs.map(async (rawPpdb) => {
         const ppdbObj = await this.#getPpdbObject(createdDateObj, rawPpdb);
+        const { pid, sid } = ppdbObj;
+        ppdbObj.pName = idNamePairs[pid] || 'UNKNOWN';
+        ppdbObj.sName = idNamePairs[sid] || 'UNKNOWN';
         return ppdbObj;
       })
     );
