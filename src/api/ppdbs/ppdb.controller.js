@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 
 const { Router } = require('express');
+const { isNumeric } = require('../../lib/ppdb-handler');
 const wrapper = require('../../lib/request-handler');
 const PpdbService = require('./ppdb.service');
 
@@ -17,9 +18,29 @@ class PpdbController {
     this.router.get('/conjunctions', wrapper(this.findConjunctions.bind(this)));
   }
 
-  findConjunctions(req, _res) {
-    const { limit = 100, start = 0, sort = 'date' } = req.query;
-    this.ppdbService.getConjunctions(limit, start, undefined);
+  async findConjunctions(req, _res) {
+    let { limit, page, sort, id } = req.query;
+    if (!limit || limit >= 50) limit = 10;
+    if (!page || page < 0) page = 0;
+    if (
+      !sort ||
+      sort !== 'tcaTime' ||
+      sort !== 'dca' ||
+      sort !== 'probability'
+    ) {
+      sort = 'tcaTime';
+    }
+    if (id && !isNumeric(id)) {
+      id = undefined;
+    }
+    const { conjunctions, totalcount } =
+      await this.ppdbService.findConjunctionsService(limit, page, sort, id);
+    return {
+      data: {
+        totalcount,
+        conjunctions,
+      },
+    };
   }
 }
 

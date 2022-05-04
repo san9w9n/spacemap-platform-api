@@ -4,6 +4,14 @@ const TleService = require('../api/tles/tle.service');
 const tleService = new TleService();
 
 class PpdbHandler {
+  static isNumeric(inputString) {
+    const stringId = inputString.replace(/^\s*|\s*$/g, ''); // 좌우 공백 제거
+    if (stringId === '' || Number.isNaN(Number(stringId))) {
+      return false;
+    }
+    return true;
+  }
+
   static #isNotComment(rawPpdb) {
     if (!rawPpdb || rawPpdb.length === 0) {
       return false;

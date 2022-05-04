@@ -33,6 +33,7 @@ class PpdbTask {
         await this.#connectSftp();
         await this.#savePpdbFileFromSftp(ppdbPath);
         const ppdbFile = await this.#readPPDBFileFromLocal(ppdbPath);
+        await ppdbService.clearPpdbDatabase();
         await ppdbService.savePpdbOnDatabase(dateObj, ppdbFile);
         console.log(`Save PPDB at: ${dateObj}`);
       } catch (err) {
