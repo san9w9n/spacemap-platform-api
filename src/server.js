@@ -6,11 +6,30 @@ const DataBase = require('./lib/database');
 const CronScheduler = require('./lib/cron-scheduler');
 const TleTask = require('./api/tles/tle.task');
 const PpdbTask = require('./api/ppdbs/ppdb.task');
+const TleService = require('./api/tles/tle.service');
+const PpdbService = require('./api/ppdbs/ppdb.service');
+
+const getServices = () => {
+  const tleService = new TleService();
+  const ppdbService = new PpdbService(tleService);
+
+  return {
+    ppdbService,
+    tleService,
+  };
+};
 
 const main = async () => {
   await DataBase.initializeDatabase();
-  const app = new App([new TleController(), new PpdbController()]);
-  const schedulers = new CronScheduler([new TleTask(), new PpdbTask()]);
+  const { tleService, ppdbService } = getServices();
+  const app = new App([
+    new TleController(tleService),
+    new PpdbController(ppdbService),
+  ]);
+  const schedulers = new CronScheduler([
+    new TleTask(tleService),
+    new PpdbTask(ppdbService),
+  ]);
 
   app.listen();
   schedulers.startAllSchedule();

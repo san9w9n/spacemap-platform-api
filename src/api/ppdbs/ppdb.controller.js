@@ -2,14 +2,14 @@
 /* eslint-disable no-unused-vars */
 
 const { Router } = require('express');
-const { isNumeric } = require('../../lib/ppdb-handler');
+const StringHandler = require('../../lib/string-handler');
 const wrapper = require('../../lib/request-handler');
 const PpdbService = require('./ppdb.service');
-const { BadRequestException } = require('../../common/exceptions');
 
 class PpdbController {
-  constructor() {
-    this.ppdbService = new PpdbService();
+  /** @param {PpdbService} ppdbService */
+  constructor(ppdbService) {
+    this.ppdbService = ppdbService;
     this.path = '/ppdbs';
     this.router = Router();
     this.initializeRoutes();
@@ -38,7 +38,9 @@ class PpdbController {
     sort = `${dec}${sort}`;
 
     if (satelite) {
-      const { conjunctions, totalcount } = await (isNumeric(satelite)
+      const { conjunctions, totalcount } = await (StringHandler.isNumeric(
+        satelite
+      )
         ? this.ppdbService.findConjunctionsByIdService(
             limit,
             page,

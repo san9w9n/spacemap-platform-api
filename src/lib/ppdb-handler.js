@@ -1,24 +1,8 @@
 const DateHandler = require('./date-handler');
-const TleService = require('../api/tles/tle.service');
-
-const tleService = new TleService();
+const StringHandler = require('./string-handler');
+const { promiseReadFile } = require('./promise-io');
 
 class PpdbHandler {
-  static isNumeric(inputString) {
-    const stringId = inputString.replace(/^\s*|\s*$/g, ''); // 좌우 공백 제거
-    if (stringId === '' || Number.isNaN(Number(stringId))) {
-      return false;
-    }
-    return true;
-  }
-
-  static #isNotComment(rawPpdb) {
-    if (!rawPpdb || rawPpdb.length === 0) {
-      return false;
-    }
-    return rawPpdb[0] !== '%';
-  }
-
   static async #getPpdbObject(createdAt, rawPpdb) {
     const splitPpdb = rawPpdb.split('\t');
     const [
@@ -89,19 +73,20 @@ class PpdbHandler {
   }
 
   static async getPpdbObjectsArray(createdDateObj, ppdbTexts) {
-    const idNamePairs = await tleService.getIdNamePairs();
     const ppdbArray = ppdbTexts.split('\n');
-    const filteredPpdbs = ppdbArray.filter(this.#isNotComment);
+    const filteredPpdbs = ppdbArray.filter(StringHandler.isNotComment);
     const ppdbs = await Promise.all(
       filteredPpdbs.map(async (rawPpdb) => {
-        const ppdbObj = await this.#getPpdbObject(createdDateObj, rawPpdb);
-        const { pid, sid } = ppdbObj;
-        ppdbObj.pName = idNamePairs[pid] || 'UNKNOWN';
-        ppdbObj.sName = idNamePairs[sid] || 'UNKNOWN';
-        return ppdbObj;
+        return this.#getPpdbObject(createdDateObj, rawPpdb);
       })
     );
     return ppdbs;
+  }
+
+  static async readPpdbFileFromLocal(path) {
+    return promiseReadFile(path, {
+      encoding: 'utf-8',
+    });
   }
 }
 
