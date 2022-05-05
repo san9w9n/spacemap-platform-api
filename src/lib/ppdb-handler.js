@@ -1,16 +1,8 @@
 const DateHandler = require('./date-handler');
-const TleService = require('../api/tles/tle.service');
-
-const tleService = new TleService();
+const StringHandler = require('./string-handler');
+const { promiseReadFile } = require('./promise-io');
 
 class PpdbHandler {
-  static #isNotComment(rawPpdb) {
-    if (!rawPpdb || rawPpdb.length === 0) {
-      return false;
-    }
-    return rawPpdb[0] !== '%';
-  }
-
   static async #getPpdbObject(createdAt, rawPpdb) {
     const splitPpdb = rawPpdb.split('\t');
     const [
@@ -67,34 +59,34 @@ class PpdbHandler {
       sec,
       DateHandler.getMilliSecondFromSecond(tcaEnd)
     );
-    const pName = await tleService.findNameById(pid);
-    const sName = await tleService.findNameById(sid);
-    const ppdbObj = {
+    return {
       createdAt,
-      standardTime,
       pid,
-      pName,
       sid,
-      sName,
       dca,
       tcaTime,
       tcaStartTime,
       tcaEndTime,
+      standardTime,
       probability,
     };
-    return ppdbObj;
   }
 
   static async getPpdbObjectsArray(createdDateObj, ppdbTexts) {
     const ppdbArray = ppdbTexts.split('\n');
-    const filteredPpdbs = ppdbArray.filter(this.#isNotComment).slice(0, 5);
+    const filteredPpdbs = ppdbArray.filter(StringHandler.isNotComment);
     const ppdbs = await Promise.all(
       filteredPpdbs.map(async (rawPpdb) => {
-        const ppdbObj = await this.#getPpdbObject(createdDateObj, rawPpdb);
-        return ppdbObj;
+        return this.#getPpdbObject(createdDateObj, rawPpdb);
       })
     );
     return ppdbs;
+  }
+
+  static async readPpdbFileFromLocal(path) {
+    return promiseReadFile(path, {
+      encoding: 'utf-8',
+    });
   }
 }
 
