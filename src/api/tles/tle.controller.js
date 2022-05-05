@@ -3,14 +3,15 @@
 
 const { Router } = require('express');
 const TleService = require('./tle.service');
-const TleHandler = require('../../lib/tle-handler');
 const wrapper = require('../../lib/request-handler');
+const StringHandler = require('../../lib/string-handler');
 const DateHandler = require('../../lib/date-handler');
 const { BadRequestException } = require('../../common/exceptions');
 
 class TleController {
-  constructor() {
-    this.tleService = new TleService();
+  /** @param { TleService } tleService */
+  constructor(tleService) {
+    this.tleService = tleService;
     this.path = '/tles';
     this.router = Router();
     this.initializeRoutes();
@@ -27,7 +28,7 @@ class TleController {
     if (!year || !month || !date || !hours) {
       throw new BadRequestException('Wrong params.');
     }
-    if (id && !TleHandler.isNumeric(id)) {
+    if (id && !StringHandler.isNumeric(id)) {
       throw new BadRequestException("Wrong params. ('id' is not number.)");
     }
     const requestDate = DateHandler.getCertainUTCDate(year, month, date, hours);

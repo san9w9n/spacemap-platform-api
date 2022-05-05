@@ -4,35 +4,57 @@
 
 const TleModel = require('./tle.model');
 const TleHandler = require('../../lib/tle-handler');
+const DateHandler = require('../../lib/date-handler');
 
 class TleService {
-  /**
-   * @param {Date} dateObj
-   */
   async saveTlesOnDatabase(dateObj, tlePlainTexts) {
     const tles = TleHandler.parseTlePlainTexts(dateObj, tlePlainTexts);
     return TleModel.insertMany(tles);
   }
 
-  /**
-   * @param {Date} dateObj
-   */
+  async findTlesByOnlyDate(dateObj, id) {
+    const { year, month, date } =
+      DateHandler.getElementsFromDateObject(dateObj);
+    const tleModel = await TleModel.findOne({
+      date: {
+        $gte: new Date(year, month, date),
+        $lt: new Date(year, month, date + 1),
+      },
+    }).exec();
+    if (!tleModel) {
+      return undefined;
+    }
+    const reSearchDate = tleModel.date;
+    const tleModels = await (id
+      ? TleModel.find({ id, date: reSearchDate }).exec()
+      : TleModel.find({ date: reSearchDate }).exec());
+    return tleModels;
+  }
+
+  async findTlesFromFile(dateObj, id) {
+    const tleFromFile = await TleHandler.readTlePlainTextsFromFile(dateObj);
+    await this.saveTlesOnDatabase(dateObj, tleFromFile);
+    const tleModels = await (id
+      ? TleModel.find({ id, date: dateObj }).exec()
+      : TleModel.find({ date: dateObj }).exec());
+    return tleModels;
+  }
+
   async findTlesByIdOrDate(dateObj, id) {
     let tleModels = await (id
       ? TleModel.find({ id, date: dateObj }).exec()
       : TleModel.find({ date: dateObj }).exec());
     if (!tleModels || tleModels.length === 0) {
-      const tleFromFile = await TleHandler.readTleFromLocalFile(dateObj);
-      await this.saveTlesOnDatabase(dateObj, tleFromFile);
-      tleModels = await (id
-        ? TleModel.find({ id, date: dateObj }).exec()
-        : TleModel.find({ date: dateObj }).exec());
+      tleModels = await this.findTlesByOnlyDate(dateObj, id);
+    }
+    if (!tleModels || tleModels.length === 0) {
+      tleModels = await this.findTlesFromFile(dateObj, id);
     }
     const tles = tleModels.map((tleModel) => {
       return {
         name: tleModel.name,
-        firstLine: tleModel.firstLine,
-        secondLine: tleModel.secondLine,
+        firstLine: tleModel.firstline,
+        secondLine: tleModel.secondline,
       };
     });
     return tles;
@@ -45,13 +67,22 @@ class TleService {
     return TleModel.deleteMany({}).exec();
   }
 
-  async findNameById(id) {
-    const tleModel = await TleModel.findOne({ id }).exec();
+  async getIdNamePairs() {
+    const tleModel = await TleModel.findOne({ id: 11 }).exec();
     if (!tleModel) {
-      return 'UNKNOWN';
+      throw new Error('Something is wrong. (at getIdNamePairs)');
     }
-    const { name } = tleModel;
-    return name || 'UNKNOWN';
+    const { date } = tleModel;
+    const tleModels = await TleModel.find({ date }).exec();
+    if (!tleModels || tleModels.length === 0) {
+      throw new Error('Something is wrong. (at getIdNamePairs)');
+    }
+    const idNamePairs = {};
+    tleModels.forEach((model) => {
+      const { id, name } = model;
+      idNamePairs[id] = name;
+    });
+    return idNamePairs;
   }
 }
 

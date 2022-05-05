@@ -6,12 +6,11 @@ const MONGO_URI = process.env.MONGO_INFO;
 
 class DataBase {
   static async initializeDatabase() {
-    await mongoose.connect(MONGO_URI, {
+    return mongoose.connect(MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       dbName: 'SPACEMAP-PLATFORM',
     });
-    console.log('DB successfully connected.');
   }
 }
 

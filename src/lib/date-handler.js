@@ -71,9 +71,6 @@ class DateHandler {
     return this.#getFileName(certainDate);
   }
 
-  /**
-   * @param {Date} dateObj
-   */
   static getFileNameByDateObject(dateObj) {
     return this.#getFileName(dateObj);
   }
@@ -84,6 +81,14 @@ class DateHandler {
     const hours = currentDate.getUTCHours();
     return day === 0 && hours === 0;
   };
+
+  static getElementsFromDateObject(dateObj) {
+    return {
+      year: dateObj.getFullYear(),
+      month: dateObj.getMonth(),
+      date: dateObj.getDate(),
+    };
+  }
 }
 
 module.exports = DateHandler;

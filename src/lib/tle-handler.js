@@ -1,76 +1,56 @@
 /* eslint-disable class-methods-use-this */
-
-const fs = require('fs');
-const { promisify } = require('util');
+const { promiseReadFile, promiseWriteFile } = require('./promise-io');
+const StringHandler = require('./string-handler');
 const DateHandler = require('./date-handler');
 
-const promiseReadFile = promisify(fs.readFile);
-
 class TleHandler {
-  static isNumeric(inputString) {
-    const stringId = inputString.replace(/^\s*|\s*$/g, ''); // 좌우 공백 제거
-    if (stringId === '' || Number.isNaN(Number(stringId))) {
-      return false;
-    }
-    return true;
-  }
-
-  static #isValidString(string) {
-    return string && string.length > 0;
-  }
-
   static #getTleIdFromFirstLine(firstLine) {
     const firstLineArray = firstLine.split(/[ \t]+/);
     if (!firstLineArray || firstLineArray.length < 5) {
       throw new Error('firstLine split failed.');
     }
     const stringId = firstLineArray[1].replace('U', '');
-    if (!this.isNumeric(stringId)) {
+    if (!StringHandler.isNumeric(stringId)) {
       throw new Error('Undefined Id.');
     }
     return Number(stringId);
   }
 
-  /**
-   * @param {Date} dateObj
-   * @param {String} tlePlainTexts
-   */
-  static parseTlePlainTexts(dateObj, tlePlainTexts) {
+  static #isVaildTle(name, firstLine, secondLine) {
+    return (
+      StringHandler.isValidString(name) &&
+      StringHandler.isValidString(firstLine) &&
+      StringHandler.isValidString(secondLine)
+    );
+  }
+
+  static parseTlePlainTexts(date, tlePlainTexts) {
     const tleArray = tlePlainTexts.split('\r\n');
     const tleArrayLength = tleArray.length;
     const tles = [];
     for (let i = 0; i < tleArrayLength; i += 3) {
-      const satelliteName = tleArray[i].slice(2, tleArray[i].length);
-      const firstLine = tleArray[i + 1];
-      const secondLine = tleArray[i + 2];
-      if (
-        this.#isValidString(satelliteName) &&
-        this.#isValidString(firstLine) &&
-        this.#isValidString(secondLine)
-      ) {
-        let id;
+      const name = tleArray[i].slice(2, tleArray[i].length);
+      const firstline = tleArray[i + 1];
+      const secondline = tleArray[i + 2];
+      if (this.#isVaildTle(name, firstline, secondline)) {
         try {
-          id = this.#getTleIdFromFirstLine(firstLine);
+          const id = this.#getTleIdFromFirstLine(firstline);
+          tles.push({
+            date,
+            id,
+            name,
+            firstline,
+            secondline,
+          });
         } catch (err) {
-          // eslint-disable-next-line no-continue
-          continue;
+          // pass
         }
-        tles.push({
-          date: dateObj,
-          id,
-          name: satelliteName,
-          firstline: firstLine,
-          secondline: secondLine,
-        });
       }
     }
     return tles;
   }
 
-  /**
-   * @param {String} dateObj
-   */
-  static async readTleFromLocalFile(dateObj) {
+  static async readTlePlainTextsFromFile(dateObj) {
     const tleFileName = DateHandler.getFileNameByDateObject(dateObj);
     const tleFilePath = `./public/tle/${tleFileName}.tle`;
     const readOptions = {
@@ -78,6 +58,11 @@ class TleHandler {
     };
     const tlePlainTexts = await promiseReadFile(tleFilePath, readOptions);
     return tlePlainTexts;
+  }
+
+  static async saveTlesOnFile(dateObj, tles) {
+    const fileName = DateHandler.getFileNameByDateObject(dateObj);
+    return promiseWriteFile(`./public/tle/${fileName}.tle`, tles);
   }
 }
 
