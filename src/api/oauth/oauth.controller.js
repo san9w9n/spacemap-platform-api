@@ -43,13 +43,29 @@ class OauthController {
   }
 
   googleAuthRedirct(req, res) {
-    console.log('redirect');
     passport.authenticate('google', {
       failureRedirect: '/',
     }),
       async (req, res, next) => {
-        return res.status(200).redirect('http://localhost:4032');
+        return res
+          .status(200)
+          .redirect('http://localhost:4032');
       };
+  }
+
+  signOut(req, res) {
+    req.logout();
+    req.session.save(function(){
+      res.redirect('/')
+    })
+  }
+
+  loginCheck(req, res) {
+    if (!req.isAuthenticated()) {
+      res.status(401)
+    }else{
+      res.status(200)
+    }
   }
 }
 
