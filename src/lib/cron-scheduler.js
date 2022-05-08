@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
 const cron = require('node-cron');
-const { getCurrentFormatDate } = require('./date-handler');
+const DateHandler = require('./date-handler');
 
 class CronScheduler {
   /**
@@ -13,7 +13,7 @@ class CronScheduler {
       return cron.schedule(
         period,
         async () => {
-          await handler(getCurrentFormatDate());
+          await handler(DateHandler.getCurrentUTCDate());
         },
         {
           scheduled: false,

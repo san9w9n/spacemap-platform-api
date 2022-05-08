@@ -40,7 +40,7 @@ class App {
   }
 
   #initializeCors() {
-    const domains = ['http://localhost:4032', 'http://localhost:3002'];
+    const domains = ['http://localhost:4000', 'http://localhost:4052'];
     this.app.use(
       cors({
         origin(origin, callback) {

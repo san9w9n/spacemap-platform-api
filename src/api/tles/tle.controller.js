@@ -4,12 +4,14 @@
 const { Router } = require('express');
 const TleService = require('./tle.service');
 const wrapper = require('../../lib/request-handler');
+const StringHandler = require('../../lib/string-handler');
+const DateHandler = require('../../lib/date-handler');
 const { BadRequestException } = require('../../common/exceptions');
-const { getFormatDate } = require('../../lib/date-handler');
 
 class TleController {
-  constructor() {
-    this.tleService = new TleService();
+  /** @param { TleService } tleService */
+  constructor(tleService) {
+    this.tleService = tleService;
     this.path = '/tles';
     this.router = Router();
     this.initializeRoutes();
@@ -17,40 +19,27 @@ class TleController {
 
   initializeRoutes() {
     this.router
-      .get(
-        '/:name/:year/:month/:date/:hours',
-        wrapper(this.getTlesByNameAndDateController.bind(this))
-      )
-      .get(
-        '/:year/:month/:date/:hours',
-        wrapper(this.getTlesByDateController.bind(this))
-      );
+      .get('/:year/:month/:date/:hours/:id', wrapper(this.findTles.bind(this)))
+      .get('/:year/:month/:date/:hours', wrapper(this.findTles.bind(this)));
   }
 
-  async getTlesByNameAndDateController(req, _res) {
-    const { name, year, month, date, hours } = req.params;
-    if (!name || !year || !month || !date || !hours) {
-      throw new BadRequestException('Wrong params.');
-    }
-    const stringDate = getFormatDate(year, month, date, hours);
-    const tles = await this.tleService.getTlesByNameOrDateService(
-      stringDate,
-      name
-    );
-    return {
-      date: tles,
-    };
-  }
-
-  async getTlesByDateController(req, res) {
-    const { year, month, date, hours } = req.params;
+  async findTles(req, _res) {
+    const { id, year, month, date, hours } = req.params;
     if (!year || !month || !date || !hours) {
       throw new BadRequestException('Wrong params.');
     }
-    const stringDate = getFormatDate(year, month, date, hours);
-    const tles = await this.tleService.getTlesByNameOrDateService(stringDate);
+    if (id && !StringHandler.isNumeric(id)) {
+      throw new BadRequestException("Wrong params. ('id' is not number.)");
+    }
+    const requestDate = DateHandler.getCertainUTCDate(year, month, date, hours);
+    const requestTles = await this.tleService.findTlesByIdOrDate(
+      requestDate,
+      id ? Number(id) : undefined
+    );
     return {
-      date: tles,
+      data: {
+        tles: requestTles,
+      },
     };
   }
 }

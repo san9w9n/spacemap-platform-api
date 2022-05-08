@@ -4,13 +4,14 @@ const mongoose = require('mongoose');
 
 const MONGO_URI = process.env.MONGO_INFO;
 
-const initializeDatabase = async () => {
-  await mongoose.connect(MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    dbName: 'SPACEMAP-PLATFORM',
-  });
-  console.log('DB successfully connected.');
-};
+class DataBase {
+  static async initializeDatabase() {
+    return mongoose.connect(MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      dbName: 'SPACEMAP-PLATFORM',
+    });
+  }
+}
 
-module.exports = initializeDatabase;
+module.exports = DataBase;

@@ -1,38 +1,82 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
 
-const { getFormatDate } = require('../../lib/date-handler');
-const PpdbModel = require('../../models/ppdb.model');
+// eslint-disable-next-line no-unused-vars
+const TleService = require('../tles/tle.service');
+const PpdbHandler = require('../../lib/ppdb-handler');
+const PpdbModel = require('./ppdb.model');
 
 class PpdbService {
-  async savePpdbOnDatabase(createdAt, ppdbTexts) {
-    console.log(createdAt);
-    /** @type [String] */
-    const ppdbArray = ppdbTexts.split('\n');
-    const ppdbs = ppdbArray
-      .filter((rawPpdb) => rawPpdb[0] !== '%')
-      .map((rawPpdb) => {
-        const parsedPpdb = rawPpdb.split('\t');
-        const date = getFormatDate(
-          parsedPpdb[6],
-          parsedPpdb[7],
-          parsedPpdb[8],
-          0
-        ).substring(0, 10);
-        const ppdb = {
-          createdAt,
-          date,
-          time: `${parsedPpdb[9]}:${parsedPpdb[10]}:${parsedPpdb[11]}`,
-          pid: Number(parsedPpdb[0]),
-          sid: Number(parsedPpdb[1]),
-          pdca: Number(parsedPpdb[2]),
-          sdca: Number(parsedPpdb[3]),
-          ptca: Number(parsedPpdb[4]),
-          stca: Number(parsedPpdb[5]),
-        };
-        return ppdb;
-      });
-    await PpdbModel.insertMany(ppdbs);
+  /** @param { TleService } tleService */
+  constructor(tleService) {
+    this.tleService = tleService;
+  }
+
+  async savePpdbOnDatabase(createdDateObj, ppdbTexts) {
+    const idNamePairs = await this.tleService.getIdNamePairs();
+    const ppdbs = await PpdbHandler.getPpdbObjectsArray(
+      createdDateObj,
+      ppdbTexts
+    );
+    ppdbs.forEach((ppdb) => {
+      const { pid, sid } = ppdb;
+      ppdb.pName = idNamePairs[pid] || 'UNKNOWN';
+      ppdb.sName = idNamePairs[sid] || 'UNKNOWN';
+    });
+    return PpdbModel.insertMany(ppdbs);
+  }
+
+  async clearPpdbDatabase() {
+    return PpdbModel.deleteMany({}).exec();
+  }
+
+  async findConjunctionsService(limit, page, sort) {
+    const totalcount = await PpdbModel.count().exec();
+    const conjunctions = await PpdbModel.find()
+      .skip(limit * page)
+      .limit(limit)
+      .sort(sort)
+      .exec();
+    return {
+      totalcount,
+      conjunctions,
+    };
+  }
+
+  async findConjunctionsByIdService(limit, page, sort, id) {
+    const queryOption = {
+      $or: [{ pid: id }, { sid: id }],
+    };
+    const totalcount = await PpdbModel.countDocuments(queryOption).exec();
+    const conjunctions = await PpdbModel.find(queryOption)
+      .skip(limit * page)
+      .limit(limit)
+      .sort(sort)
+      .exec();
+    return {
+      totalcount,
+      conjunctions,
+    };
+  }
+
+  async findConjunctionsByNameService(limit, page, sort, name) {
+    const queryOption = {
+      $or: [
+        { pName: { $regex: name, $options: 'i' } },
+        { sName: { $regex: name, $options: 'i' } },
+      ],
+    };
+    const totalcount = await PpdbModel.countDocuments(queryOption).exec();
+    const conjunctions = await PpdbModel.find(queryOption)
+      .skip(limit * page)
+      .limit(limit)
+      .sort(sort)
+      .exec();
+    return {
+      totalcount,
+      conjunctions,
+    };
   }
 }
 

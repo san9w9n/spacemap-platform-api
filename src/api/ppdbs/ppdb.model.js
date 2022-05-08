@@ -3,40 +3,44 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const PpdbScheme = new Schema({
-  created_at: {
-    type: String,
-    required: true,
-  },
-  date: {
-    type: String,
-    required: true,
-  },
-  time: {
-    type: String,
+  createdAt: {
+    type: Date,
     required: true,
   },
   pid: {
     type: Number,
     required: true,
   },
+  pName: {
+    type: String,
+    required: true,
+  },
   sid: {
     type: Number,
     required: true,
   },
-  pdca: {
+  sName: {
+    type: String,
+    required: true,
+  },
+  dca: {
     type: Number,
     required: true,
   },
-  sdca: {
-    type: Number,
+  tcaTime: {
+    type: Date,
     required: true,
   },
-  ptca: {
-    type: Number,
+  tcaStartTime: {
+    type: Date,
     required: true,
   },
-  stca: {
-    type: Number,
+  tcaEndTime: {
+    type: Date,
+    required: true,
+  },
+  standardTime: {
+    type: Date,
     required: true,
   },
   probability: {
