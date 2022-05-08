@@ -33,7 +33,7 @@ class App {
 
   #initializePassport() {
     this.app.use(
-      session({ secret: 'SECRET_CODE', resave: true, saveUninitialized: false })
+      session({ secret: 'SECRET_CODE', resave: true, saveUninitialized: false,cookie:{maxAge:60000} })
     );
     this.app.use(passport.initialize());
     this.app.use(passport.session());
