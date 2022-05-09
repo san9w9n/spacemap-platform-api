@@ -6,6 +6,8 @@ const DataBase = require('./lib/database');
 const CronScheduler = require('./lib/cron-scheduler');
 const TleTask = require('./api/tles/tle.task');
 const PpdbTask = require('./api/ppdbs/ppdb.task');
+const OauthController = require('./api/oauth/oauth.controller');
+
 const TleService = require('./api/tles/tle.service');
 const PpdbService = require('./api/ppdbs/ppdb.service');
 
@@ -25,6 +27,7 @@ const main = async () => {
   const app = new App([
     new TleController(tleService),
     new PpdbController(ppdbService),
+    new OauthController(),
   ]);
   const schedulers = new CronScheduler([
     new TleTask(tleService),

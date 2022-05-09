@@ -1,16 +1,22 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const errorMiddleware = require('./middlewares/error.middleware');
+const passport = require('passport');
+const session = require('express-session');
 const { NotFoundException } = require('./common/exceptions');
+const errorMiddleware = require('./middlewares/error.middleware');
+
+require('dotenv').config();
 
 const PORT = process.env.PORT || 3003;
-require('dotenv').config();
+// const GOOGLE_CLIENT_ID = process.env.GOOGLE_OAUTH_ID;
+// const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_OAUTH_SECRET;
 
 class App {
   constructor(controllers) {
     this.app = express();
 
+    this.#initializePassport();
     this.#initializeCors();
     this.#initializeMiddlewares();
     this.#initialzeControllers(controllers);
@@ -23,6 +29,14 @@ class App {
       // eslint-disable-next-line no-console
       console.log(`App listening on ${PORT}`);
     });
+  }
+
+  #initializePassport() {
+    this.app.use(
+      session({ secret: 'SECRET_CODE', resave: true, saveUninitialized: false,cookie:{maxAge:60000} })
+    );
+    this.app.use(passport.initialize());
+    this.app.use(passport.session());
   }
 
   #initializeCors() {
