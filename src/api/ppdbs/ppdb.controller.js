@@ -34,7 +34,7 @@ class PpdbController {
     if (limit <= 0) {
       limit = 10;
     }
-    if (sort !== 'tcaTime' || sort !== 'dca' || sort !== 'probability') {
+    if (sort !== 'tcaTime' && sort !== 'dca' && sort !== 'probability') {
       sort = 'tcaTime';
     }
     if (dec !== '-') {
