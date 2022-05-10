@@ -24,8 +24,8 @@ class PpdbService {
       ppdb.pName = idNamePairs[pid] || 'UNKNOWN';
       ppdb.sName = idNamePairs[sid] || 'UNKNOWN';
     });
-    PpdbModel.insertMany(ppdbs);
-    PpdbModel.createIndexes({ tcaTime: 1, probability: 1, dca: 1 });
+    await PpdbModel.insertMany(ppdbs);
+    return PpdbModel.createIndexes({ tcaTime: 1, probability: 1, dca: 1 });
   }
 
   async clearPpdbDatabase() {

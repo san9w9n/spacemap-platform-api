@@ -10,7 +10,7 @@ class PpdbController {
   /** @param {PpdbService} ppdbService */
   constructor(ppdbService) {
     this.ppdbService = ppdbService;
-    this.path = '/ppdbs';
+    this.path = '/ppdb';
     this.router = Router();
     this.initializeRoutes();
   }
@@ -34,7 +34,7 @@ class PpdbController {
     if (limit <= 0) {
       limit = 10;
     }
-    if (sort !== 'tcaTime' || sort !== 'dca' || sort !== 'probability') {
+    if (sort !== 'tcaTime' && sort !== 'dca' && sort !== 'probability') {
       sort = 'tcaTime';
     }
     if (dec !== '-') {

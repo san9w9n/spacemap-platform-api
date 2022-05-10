@@ -25,7 +25,7 @@ class TleHandler {
   }
 
   static parseTlePlainTexts(date, tlePlainTexts) {
-    const tleArray = tlePlainTexts.split('\r\n');
+    const tleArray = tlePlainTexts.split(/[\r\n]+/);
     const tleArrayLength = tleArray.length;
     const tles = [];
     for (let i = 0; i < tleArrayLength; i += 3) {
