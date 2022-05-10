@@ -18,7 +18,8 @@ class InterestedSatellitesController {
   initializeRoutes() {
     this.router
       .get('/', wrapper(this.readInterestedSatellites.bind(this)))
-      .get('/:option', wrapper(this.findInterestedSatellites.bind(this)))
+      .get('/conjunctions', wrapper(this.readInterestedConjunctions.bind(this)))
+      .get('/find/:option', wrapper(this.findInterestedSatellites.bind(this)))
       .post('/:id', wrapper(this.addToInterestedSatellites.bind(this)))
       .delete('/:id', wrapper(this.removeFromInterestedSatellites.bind(this)));
   }
@@ -51,6 +52,20 @@ class InterestedSatellitesController {
       return {
         data: searchedSatellites,
       };
+    }
+    return {
+      message: 'Sign in first',
+    };
+  }
+
+  async readInterestedConjunctions(req, _res) {
+    if (req.user) {
+      const { email } = req.user;
+      const queryResult =
+        await this.interestedSatellitesService.readInterestedConjunctions(
+          email
+        );
+      return { data: queryResult };
     }
     return {
       message: 'Sign in first',

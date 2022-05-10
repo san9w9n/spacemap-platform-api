@@ -1,6 +1,7 @@
 /* eslint-disable class-methods-use-this */
 const InterestedSatellitesModel = require('./interestedSatellites.model');
 const TleModel = require('../tles/tle.model');
+const PpdbModel = require('../ppdbs/ppdb.model');
 
 class InterestedSatellitesService {
   async readInterestedSatellites(email) {
@@ -49,6 +50,20 @@ class InterestedSatellitesService {
       });
     });
     return searchedSatellitesWithInterested;
+  }
+
+  async readInterestedConjunctions(email) {
+    const interestedSatellites = await InterestedSatellitesModel.findOne({
+      email,
+    });
+    const queryOption = {
+      $or: [
+        { pid: { $in: interestedSatellites.satellitesIDs } },
+        { sid: { $in: interestedSatellites.satellitesIDs } },
+      ],
+    };
+    const interestedConjunctions = await PpdbModel.find(queryOption);
+    return interestedConjunctions;
   }
 
   async createOrUpdateInterestedSatelliteID(email, interestedSatelliteID) {
