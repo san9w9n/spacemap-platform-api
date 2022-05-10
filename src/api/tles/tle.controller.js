@@ -20,7 +20,8 @@ class TleController {
   initializeRoutes() {
     this.router
       .get('/:year/:month/:date/:hours/:id', wrapper(this.findTles.bind(this)))
-      .get('/:year/:month/:date/:hours', wrapper(this.findTles.bind(this)));
+      .get('/:year/:month/:date/:hours', wrapper(this.findTles.bind(this)))
+      .get('/', wrapper(this.findMostRecentTles.bind(this)));
   }
 
   async findTles(req, _res) {
@@ -36,6 +37,15 @@ class TleController {
       requestDate,
       id
     );
+    return {
+      data: {
+        tles: requestTles,
+      },
+    };
+  }
+
+  async findMostRecentTles(req, _res) {
+    const requestTles = await this.tleService.findMostRecentTles();
     return {
       data: {
         tles: requestTles,

@@ -5,6 +5,7 @@
 const TleModel = require('./tle.model');
 const TleHandler = require('../../lib/tle-handler');
 const DateHandler = require('../../lib/date-handler');
+const { BadRequestException } = require('../../common/exceptions');
 
 class TleService {
   async saveTlesOnDatabase(dateObj, tlePlainTexts) {
@@ -83,6 +84,15 @@ class TleService {
       idNamePairs[id] = name;
     });
     return idNamePairs;
+  }
+
+  async findMostRecentTles() {
+    const tleModel = await TleModel.find().sort({ date: -1 }).limit(10).exec();
+    if (!tleModel || tleModel.length === 0) {
+      throw new BadRequestException('Empty tle table.');
+    }
+    const { date } = tleModel[0];
+    return TleModel.find({ date }).exec();
   }
 }
 
