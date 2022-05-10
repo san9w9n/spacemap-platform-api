@@ -18,7 +18,7 @@ module.exports = () => {
         const exUser = await UserModel.findOne({
           $and: [{ email: profile.emails[0].value }, { provider: 'google' }],
         });
-        
+
         if (exUser) {
           return done(null, exUser);
         }
