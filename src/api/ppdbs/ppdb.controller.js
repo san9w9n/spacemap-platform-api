@@ -25,7 +25,7 @@ class PpdbController {
       page = 0,
       sort = 'tcaTime',
       dec = '',
-      satelite,
+      satellite,
     } = req.query;
 
     if (page < 0) {
@@ -41,8 +41,8 @@ class PpdbController {
       dec = '';
     }
     sort = `${dec}${sort}`;
-    if (satelite) {
-      satelite = satelite.toUpperCase();
+    if (satellite) {
+      satellite = satellite.toUpperCase();
     }
 
     if (satellite) {

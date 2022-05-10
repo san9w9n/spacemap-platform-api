@@ -4,28 +4,54 @@ const TleModel = require('../tles/tle.model');
 
 class InterestedSatellitesService {
   async readInterestedSatellites(email) {
-    console.log(email);
-    const interestedSatellites = InterestedSatellitesModel.find({ email });
+    const interestedSatellites = InterestedSatellitesModel.findOne({ email });
     return interestedSatellites;
   }
 
-  async findSatellitesByIdService(satelliteID) {
-    console.log('ID: ', satelliteID);
+  async findSatellitesByIdService(email, satelliteID) {
+    const interestedSatellites = await InterestedSatellitesModel.findOne({
+      email,
+    });
     const searchedSatellites = await TleModel.find({ id: satelliteID });
-    return searchedSatellites;
+    const searchedSatellitesWithInterested = [];
+    searchedSatellites.forEach(async (searchedSatellite) => {
+      const isInterested = await this.isMyInterestedSatellites(
+        searchedSatellite.id,
+        interestedSatellites
+      );
+      searchedSatellitesWithInterested.push({
+        id: searchedSatellite.id,
+        name: searchedSatellite.name,
+        isInterested,
+      });
+    });
+    return searchedSatellitesWithInterested;
   }
 
-  async findSatellitesByNameService(satelliteName) {
-    console.log('Name: ', satelliteName);
+  async findSatellitesByNameService(email, satelliteName) {
+    const interestedSatellites = await InterestedSatellitesModel.findOne({
+      email,
+    });
     const queryOption = {
       name: { $regex: satelliteName, $options: 'i' },
     };
     const searchedSatellites = await TleModel.find(queryOption);
-    return searchedSatellites;
+    const searchedSatellitesWithInterested = [];
+    searchedSatellites.forEach(async (searchedSatellite) => {
+      const isInterested = await this.isMyInterestedSatellites(
+        searchedSatellite.id,
+        interestedSatellites
+      );
+      searchedSatellitesWithInterested.push({
+        id: searchedSatellite.id,
+        name: searchedSatellite.name,
+        isInterested,
+      });
+    });
+    return searchedSatellitesWithInterested;
   }
 
   async createOrUpdateInterestedSatelliteID(email, interestedSatelliteID) {
-    console.log(email, interestedSatelliteID);
     const options = { upsert: true, new: true, setDefaultsOnInsert: true };
     const interestedSatellites = InterestedSatellitesModel.findOneAndUpdate(
       {
@@ -47,6 +73,10 @@ class InterestedSatellitesService {
       options
     );
     return interestedSatellites;
+  }
+
+  async isMyInterestedSatellites(searcedSatelliteID, interestedSatellites) {
+    return interestedSatellites.satellitesIDs.includes(searcedSatelliteID);
   }
 }
 module.exports = InterestedSatellitesService;

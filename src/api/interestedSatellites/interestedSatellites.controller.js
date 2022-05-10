@@ -25,10 +25,9 @@ class InterestedSatellitesController {
 
   async readInterestedSatellites(req, _res) {
     if (req.user) {
+      const { email } = req.user;
       const readInterestedSatellites =
-        this.interestedSatellitesService.readInterestedSatellites(
-          req.user.email
-        );
+        this.interestedSatellitesService.readInterestedSatellites(email);
       return readInterestedSatellites;
     }
     return {
@@ -38,11 +37,17 @@ class InterestedSatellitesController {
 
   async findInterestedSatellites(req, _res) {
     const { option } = req.params;
-
-    if (option) {
-      const { searchedSatellites } = await (StringHandler.isNumeric(option)
-        ? this.interestedSatellitesService.findSatellitesByIdService(option)
-        : this.interestedSatellitesService.findSatellitesByNameService(option));
+    if (req.user && option) {
+      const { email } = req.user;
+      const searchedSatellites = await (StringHandler.isNumeric(option)
+        ? this.interestedSatellitesService.findSatellitesByIdService(
+            email,
+            option
+          )
+        : this.interestedSatellitesService.findSatellitesByNameService(
+            email,
+            option
+          ));
       return {
         data: searchedSatellites,
       };
@@ -53,14 +58,21 @@ class InterestedSatellitesController {
   }
 
   async addToInterestedSatellites(req, _res) {
-    if (req.user) {
-      const queryResult =
-        await this.interestedSatellitesService.createOrUpdateInterestedSatelliteID(
-          req.user.email,
-          req.params.id
-        );
+    if (StringHandler.isNumeric(req.params.id)) {
+      if (req.user) {
+        const { email } = req.user;
+        const queryResult =
+          await this.interestedSatellitesService.createOrUpdateInterestedSatelliteID(
+            email,
+            req.params.id
+          );
+        return {
+          data: queryResult,
+        };
+      }
+    } else {
       return {
-        data: queryResult,
+        message: 'Put in only number',
       };
     }
     return {
@@ -69,14 +81,21 @@ class InterestedSatellitesController {
   }
 
   async removeFromInterestedSatellites(req, _res) {
-    if (req.user) {
-      const queryResult =
-        await this.interestedSatellitesService.deleteInterestedSatelliteID(
-          req.user.email,
-          req.params.id
-        );
+    if (StringHandler.isNumeric(req.params.id)) {
+      if (req.user) {
+        const { email } = req.user;
+        const queryResult =
+          await this.interestedSatellitesService.deleteInterestedSatelliteID(
+            email,
+            req.params.id
+          );
+        return {
+          data: queryResult,
+        };
+      }
+    } else {
       return {
-        data: queryResult,
+        message: 'Put in only number',
       };
     }
     return {
