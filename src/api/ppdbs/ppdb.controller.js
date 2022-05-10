@@ -10,7 +10,7 @@ class PpdbController {
   /** @param {PpdbService} ppdbService */
   constructor(ppdbService) {
     this.ppdbService = ppdbService;
-    this.path = '/ppdbs';
+    this.path = '/ppdb';
     this.router = Router();
     this.initializeRoutes();
   }
