@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 // eslint-disable-next-line no-unused-vars
 
-const { promiseWriteFile } = require('../../lib/promise-io');
+const RsoHandler = require('../../lib/rso-handler');
 const SendRequestHandler = require('../../lib/sendRequest-handler');
 
 class RsoParamsTask {
@@ -23,7 +23,7 @@ class RsoParamsTask {
   /**
    * @param {Date} dateObj
    */
-  async #rsoScheduleHandler(dateObj) {
+  async #rsoScheduleHandler() {
     if (!this.excuting) {
       console.log('rso scheduler start.');
       this.excuting = true;
@@ -36,11 +36,9 @@ class RsoParamsTask {
           `${this.#SPACETRACK_URL}/${this.#QUERY_URL}`,
           loginCookie
         );
-        // console.log(rsoParamsPlainText);
-        await promiseWriteFile(
-          `./public/rsoParam/test.xml`,
-          rsoParamsPlainText
-        );
+        const rsoJson = RsoHandler.parseRsoXml(rsoParamsPlainText);
+        const rsoParams = RsoHandler.getRsoParamArrays(rsoJson);
+        console.log(rsoParams);
       } catch (err) {
         console.error(err);
       } finally {
