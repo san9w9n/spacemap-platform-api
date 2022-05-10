@@ -13,7 +13,7 @@ const InterestedSatellitesController = require('./api/interestedSatellites/inter
 const CronScheduler = require('./lib/cron-scheduler');
 const TleTask = require('./api/tles/tle.task');
 const PpdbTask = require('./api/ppdbs/ppdb.task');
-const RsoParamsTask = require('./api/rsoParams/rso.task');
+const RsoParamsTask = require('./api/rso/rso.task');
 
 const schedulerEnabled = process.env.SCHEDULER_ENABLE || false;
 
