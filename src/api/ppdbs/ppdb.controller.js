@@ -21,7 +21,7 @@ class PpdbController {
 
   async findConjunctions(req, _res) {
     let { limit = 10, page = 0, sort = 'tcaTime', dec = '' } = req.query;
-    const { satelite } = req.query;
+    const { satellite } = req.query;
 
     if (page < 0) {
       page = 0;
@@ -37,21 +37,21 @@ class PpdbController {
     }
     sort = `${dec}${sort}`;
 
-    if (satelite) {
+    if (satellite) {
       const { conjunctions, totalcount } = await (StringHandler.isNumeric(
-        satelite
+        satellite
       )
         ? this.ppdbService.findConjunctionsByIdService(
             limit,
             page,
             sort,
-            satelite
+            satellite
           )
         : this.ppdbService.findConjunctionsByNameService(
             limit,
             page,
             sort,
-            satelite
+            satellite
           ));
       return {
         data: {

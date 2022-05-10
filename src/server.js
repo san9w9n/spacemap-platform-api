@@ -10,9 +10,9 @@ const PpdbController = require('./api/ppdbs/ppdb.controller');
 const OauthController = require('./api/oauth/oauth.controller');
 const InterestedSatellitesController = require('./api/interestedSatellites/interestedSatellites.controller');
 
-const CronScheduler = require('./lib/cron-scheduler');
-const TleTask = require('./api/tles/tle.task');
-const PpdbTask = require('./api/ppdbs/ppdb.task');
+// const CronScheduler = require('./lib/cron-scheduler');
+// const TleTask = require('./api/tles/tle.task');
+// const PpdbTask = require('./api/ppdbs/ppdb.task');
 
 const getServices = () => {
   const tleService = new TleService();
@@ -36,13 +36,13 @@ const main = async () => {
     new InterestedSatellitesController(interestedSatellitesService),
     new OauthController(),
   ]);
-  const schedulers = new CronScheduler([
-    new TleTask(tleService),
-    new PpdbTask(ppdbService),
-  ]);
+  // const schedulers = new CronScheduler([
+  //   new TleTask(tleService),
+  //   new PpdbTask(ppdbService),
+  // ]);
 
   app.listen();
-  schedulers.startAllSchedule();
+  // schedulers.startAllSchedule();
 };
 
 main();
