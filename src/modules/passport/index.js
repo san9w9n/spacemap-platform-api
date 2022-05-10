@@ -5,7 +5,6 @@ const google = require('./google');
 
 module.exports = () => {
   passport.serializeUser((user, done) => {
-    // console.log(user);
     done(null, user.id);
   });
   passport.deserializeUser((id, done) => {
