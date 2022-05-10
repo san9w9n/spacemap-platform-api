@@ -3,6 +3,7 @@
 
 const { Router } = require('express');
 const passport = require('passport');
+const { UnauthorizedException } = require('../../common/exceptions');
 const wrapper = require('../../lib/request-handler');
 const initializePassport = require('../../modules/passport/index');
 
@@ -16,8 +17,9 @@ class OauthController {
 
   initializeRoutes() {
     this.router
-      .get('/', this.loginCheck)
-      .get('/google', function (req, res, next) {
+      .get('/', wrapper(this.loginCheck.bind(this)))
+      .get('/logout', wrapper(this.signOut.bind(this)))
+      .get('/google', (req, res, next) => {
         passport.authenticate('google', { scope: ['profile', 'email'] })(
           req,
           res,
@@ -29,33 +31,31 @@ class OauthController {
         passport.authenticate('google', {
           failureRedirect: '/',
         }),
-        async (req, res, next) => {
-          return res.status(200).redirect(process.env.REDIRECT_URL);
+        (req, res, next) => {
+          res.status(200).redirect('http://localhost:4032');
         }
-      )
-      .get('/logout', this.signOut);
+      );
   }
 
   signOut(req, res) {
     req.logout();
-    req.session.save(function () {
-      return res.send(200).json();
+    req.session.save(() => {
+      return {};
     });
   }
 
   loginCheck(req, res) {
     if (!req.isAuthenticated()) {
-      return res.status(401).send({
-        data: {
-          login: 'fail',
-          message: 'Unauthorization',
-        },
-      });
+      throw new UnauthorizedException('Login failed.');
     }
     const { email, nickname, provider } = req.user;
-    return res.status(200).send({
-      data: { login: 'success', data: { email, nickname, provider } },
-    });
+    return {
+      data: {
+        email,
+        nickname,
+        provider,
+      },
+    };
   }
 }
 
