@@ -33,14 +33,19 @@ class App {
 
   #initializePassport() {
     this.app.use(
-      session({ secret: 'SECRET_CODE', resave: true, saveUninitialized: false,cookie:{maxAge:60000} })
+      session({
+        secret: 'SECRET_CODE',
+        resave: true,
+        saveUninitialized: false,
+        cookie: {},
+      })
     );
     this.app.use(passport.initialize());
     this.app.use(passport.session());
   }
 
   #initializeCors() {
-    const domains = ['http://localhost:4000', 'http://localhost:4052'];
+    const domains = JSON.parse(process.env.CORS_LIST);
     this.app.use(
       cors({
         origin(origin, callback) {
