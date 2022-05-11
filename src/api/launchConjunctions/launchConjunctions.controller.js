@@ -2,10 +2,16 @@
 /* eslint-disable no-unused-vars */
 
 const { Router } = require('express');
+const fs = require('fs').promises;
 const wrapper = require('../../lib/request-handler');
 const LaunchConjunctionsService = require('./launchConjunctions.service');
 const upload = require('../../lib/file-upload');
 const SshHandler = require('../../lib/ssh-handler');
+const EngineCommand = require('../../common/engineCommand');
+const {
+  startMomentOfPredictionWindow,
+  endMomentOfPredictionWindow,
+} = require('../../common/predictionWindow');
 
 class LaunchConjunctionsController {
   /** @param { LaunchConjunctionsService } launchConjunctionsService */
@@ -43,8 +49,17 @@ class LaunchConjunctionsController {
 
   async predictLaunchConjunctions(req, _res) {
     console.log(req.file);
-    await this.sshHandler.connect();
-    await this.sshHandler.exec();
+    const data = await fs.readFile(req.file.path);
+    /* 
+    해야할 일:
+        1) data -> trajectory hadler
+        2) trajectory -> ssh handler
+        3) 결과들 db에 저장
+        4) 각종 api 생성...
+    */
+    // await this.sshHandler.connect();
+    const command = await EngineCommand.predictLaunchConjunction;
+    // await this.sshHandler.exec(command);
     return { message: 'hi' };
   }
 

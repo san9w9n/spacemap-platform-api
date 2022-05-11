@@ -21,13 +21,16 @@ class SshHandler {
   }
 
   async exec(command) {
-    try {
-      this.ssh.exec('whoami').then((data) => {
+    this.ssh.exec(command).then(
+      (data) => {
         console.log(data); // ubuntu
-      });
-    } catch (err) {
-      throw new BadRequestException('Fail to execute command by SSH2.');
-    }
+      },
+      (err) => {
+        throw new BadRequestException(
+          `Fail to execute command by SSH2. (${err})`
+        );
+      }
+    );
   }
 }
 
