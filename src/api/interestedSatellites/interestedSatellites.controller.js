@@ -25,8 +25,8 @@ class InterestedSatellitesController {
   }
 
   async readInterestedSatellites(req, _res) {
-    if (true) {
-      const email = 'shchoi.vdrc@gmail.com';
+    if (req.user) {
+      const { email } = req.user;
       const readInterestedSatellites =
         this.interestedSatellitesService.readInterestedSatellites(email);
       return readInterestedSatellites;
@@ -38,8 +38,8 @@ class InterestedSatellitesController {
 
   async findInterestedSatellites(req, _res) {
     const { option } = req.params;
-    if (true && option) {
-      const email = 'shchoi.vdrc@gmail.com';
+    if (req.user && option) {
+      const { email } = req.user;
       const searchedSatellites = await (StringHandler.isNumeric(option)
         ? this.interestedSatellitesService.findSatellitesByIdService(
             email,
@@ -59,8 +59,8 @@ class InterestedSatellitesController {
   }
 
   async readInterestedConjunctions(req, _res) {
-    if (true) {
-      const email = 'shchoi.vdrc@gmail.com';
+    if (req.user) {
+      const { email } = req.user;
       const queryResult =
         await this.interestedSatellitesService.readInterestedConjunctions(
           email
@@ -74,8 +74,8 @@ class InterestedSatellitesController {
 
   async addToInterestedSatellites(req, _res) {
     if (StringHandler.isNumeric(req.params.id)) {
-      if (true) {
-        const email = 'shchoi.vdrc@gmail.com';
+      if (req.user) {
+        const { email } = req.user;
         const queryResult =
           await this.interestedSatellitesService.createOrUpdateInterestedSatelliteId(
             email,
@@ -97,8 +97,8 @@ class InterestedSatellitesController {
 
   async removeFromInterestedSatellites(req, _res) {
     if (StringHandler.isNumeric(req.params.id)) {
-      if (true) {
-        const email = 'shchoi.vdrc@gmail.com';
+      if (req.user) {
+        const { email } = req.user;
         const queryResult =
           await this.interestedSatellitesService.deleteInterestedSatelliteId(
             email,
