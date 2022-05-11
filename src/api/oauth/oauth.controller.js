@@ -32,7 +32,7 @@ class OauthController {
           failureRedirect: '/',
         }),
         (req, res, next) => {
-          res.status(200).redirect('http://localhost:4032');
+          res.status(200).redirect(process.env.REDIRECT_URL);
         }
       );
   }

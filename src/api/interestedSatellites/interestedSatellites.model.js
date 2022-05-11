@@ -7,9 +7,14 @@ const InterestedSatellitesScheme = new Schema({
     type: String,
     required: true,
   },
-  satellitesIDs: {
+  satellitesIds: {
     type: Array,
     items: { type: Number, uniqueItems: true },
+    required: true,
+  },
+  satellitesNames: {
+    type: Array,
+    items: { type: String, uniqueItems: true },
     required: true,
   },
 });

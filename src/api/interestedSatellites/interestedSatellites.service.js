@@ -9,11 +9,11 @@ class InterestedSatellitesService {
     return interestedSatellites;
   }
 
-  async findSatellitesByIdService(email, satelliteID) {
+  async findSatellitesByIdService(email, satelliteId) {
     const interestedSatellites = await InterestedSatellitesModel.findOne({
       email,
     });
-    const searchedSatellites = await TleModel.find({ id: satelliteID });
+    const searchedSatellites = await TleModel.find({ id: satelliteId });
     const searchedSatellitesWithInterested = [];
     searchedSatellites.forEach(async (searchedSatellite) => {
       const isInterested = await this.isMyInterestedSatellites(
@@ -58,40 +58,60 @@ class InterestedSatellitesService {
     });
     const queryOption = {
       $or: [
-        { pid: { $in: interestedSatellites.satellitesIDs } },
-        { sid: { $in: interestedSatellites.satellitesIDs } },
+        { pid: { $in: interestedSatellites.satellitesIds } },
+        { sid: { $in: interestedSatellites.satellitesIds } },
       ],
     };
     const interestedConjunctions = await PpdbModel.find(queryOption);
     return interestedConjunctions;
   }
 
-  async createOrUpdateInterestedSatelliteID(email, interestedSatelliteID) {
+  async createOrUpdateInterestedSatelliteId(email, interestedSatelliteId) {
+    ///  Temp... you will change this method use input parameter ///////////////////
+    const searchedSatellites = await TleModel.findOne({
+      id: interestedSatelliteId,
+    });
+    ///  Temp... you will change this method use input parameter ///////////////////
     const options = { upsert: true, new: true, setDefaultsOnInsert: true };
     const interestedSatellites = InterestedSatellitesModel.findOneAndUpdate(
       {
         email,
       },
-      { $addToSet: { satellitesIDs: interestedSatelliteID } },
+      {
+        $addToSet: {
+          satellitesIds: interestedSatelliteId,
+          satellitesNames: searchedSatellites.name,
+        },
+      },
       options
     );
     return interestedSatellites;
   }
 
-  async deleteInterestedSatelliteID(email, interestedSatelliteID) {
+  async deleteInterestedSatelliteId(email, interestedSatelliteId) {
+    ///  Temp... you will change this method use input parameter ///////////////////
+    const searchedSatellites = await TleModel.findOne({
+      id: interestedSatelliteId,
+    });
+    ///  Temp... you will change this method use input parameter ///////////////////
     const options = { upsert: true, new: true, setDefaultsOnInsert: true };
     const interestedSatellites = InterestedSatellitesModel.findOneAndUpdate(
       {
         email,
       },
-      { $pull: { satellitesIDs: interestedSatelliteID } },
+      {
+        $pull: {
+          satellitesIds: interestedSatelliteId,
+          satellitesNames: searchedSatellites.name,
+        },
+      },
       options
     );
     return interestedSatellites;
   }
 
-  async isMyInterestedSatellites(searcedSatelliteID, interestedSatellites) {
-    return interestedSatellites.satellitesIDs.includes(searcedSatelliteID);
+  async isMyInterestedSatellites(searcedSatelliteId, interestedSatellites) {
+    return interestedSatellites.satellitesIds.includes(searcedSatelliteId);
   }
 }
 module.exports = InterestedSatellitesService;

@@ -25,8 +25,8 @@ class InterestedSatellitesController {
   }
 
   async readInterestedSatellites(req, _res) {
-    if (req.user) {
-      const { email } = req.user;
+    if (true) {
+      const email = 'shchoi.vdrc@gmail.com';
       const readInterestedSatellites =
         this.interestedSatellitesService.readInterestedSatellites(email);
       return readInterestedSatellites;
@@ -38,8 +38,8 @@ class InterestedSatellitesController {
 
   async findInterestedSatellites(req, _res) {
     const { option } = req.params;
-    if (req.user && option) {
-      const { email } = req.user;
+    if (true && option) {
+      const email = 'shchoi.vdrc@gmail.com';
       const searchedSatellites = await (StringHandler.isNumeric(option)
         ? this.interestedSatellitesService.findSatellitesByIdService(
             email,
@@ -59,8 +59,8 @@ class InterestedSatellitesController {
   }
 
   async readInterestedConjunctions(req, _res) {
-    if (req.user) {
-      const { email } = req.user;
+    if (true) {
+      const email = 'shchoi.vdrc@gmail.com';
       const queryResult =
         await this.interestedSatellitesService.readInterestedConjunctions(
           email
@@ -74,10 +74,10 @@ class InterestedSatellitesController {
 
   async addToInterestedSatellites(req, _res) {
     if (StringHandler.isNumeric(req.params.id)) {
-      if (req.user) {
-        const { email } = req.user;
+      if (true) {
+        const email = 'shchoi.vdrc@gmail.com';
         const queryResult =
-          await this.interestedSatellitesService.createOrUpdateInterestedSatelliteID(
+          await this.interestedSatellitesService.createOrUpdateInterestedSatelliteId(
             email,
             req.params.id
           );
@@ -97,10 +97,10 @@ class InterestedSatellitesController {
 
   async removeFromInterestedSatellites(req, _res) {
     if (StringHandler.isNumeric(req.params.id)) {
-      if (req.user) {
-        const { email } = req.user;
+      if (true) {
+        const email = 'shchoi.vdrc@gmail.com';
         const queryResult =
-          await this.interestedSatellitesService.deleteInterestedSatelliteID(
+          await this.interestedSatellitesService.deleteInterestedSatelliteId(
             email,
             req.params.id
           );

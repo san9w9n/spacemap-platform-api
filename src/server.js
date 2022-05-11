@@ -3,10 +3,12 @@ const DataBase = require('./lib/database');
 
 const TleService = require('./api/tles/tle.service');
 const PpdbService = require('./api/ppdbs/ppdb.service');
+const LaunchConjunctionsService = require('./api/launchConjunctions/launchConjunctions.service');
 const InterestedSatellitesService = require('./api/interestedSatellites/interestedSatellites.service');
 
 const TleController = require('./api/tles/tle.controller');
 const PpdbController = require('./api/ppdbs/ppdb.controller');
+const LaunchConjunctionsController = require('./api/launchConjunctions/launchConjunctions.controller');
 const OauthController = require('./api/oauth/oauth.controller');
 const InterestedSatellitesController = require('./api/interestedSatellites/interestedSatellites.controller');
 
@@ -21,22 +23,29 @@ const getServices = () => {
   const tleService = new TleService();
   const ppdbService = new PpdbService(tleService);
   const interestedSatellitesService = new InterestedSatellitesService();
+  const launchConjunctionsService = new LaunchConjunctionsService();
 
   return {
     ppdbService,
     tleService,
     interestedSatellitesService,
+    launchConjunctionsService,
   };
 };
 
 const main = async () => {
   await DataBase.initializeDatabase();
-  const { tleService, ppdbService, interestedSatellitesService } =
-    getServices();
+  const {
+    tleService,
+    ppdbService,
+    interestedSatellitesService,
+    launchConjunctionsService,
+  } = getServices();
   const app = new App([
     new TleController(tleService),
     new PpdbController(ppdbService),
     new InterestedSatellitesController(interestedSatellitesService),
+    new LaunchConjunctionsController(launchConjunctionsService),
     new OauthController(),
   ]);
 
