@@ -2,16 +2,10 @@
 /* eslint-disable no-unused-vars */
 
 const { Router } = require('express');
-const fs = require('fs').promises;
+
 const wrapper = require('../../lib/request-handler');
 const LaunchConjunctionsService = require('./launchConjunctions.service');
 const upload = require('../../lib/file-upload');
-const SshHandler = require('../../lib/ssh-handler');
-const EngineCommand = require('../../common/engineCommand');
-const {
-  startMomentOfPredictionWindow,
-  endMomentOfPredictionWindow,
-} = require('../../common/predictionWindow');
 
 class LaunchConjunctionsController {
   /** @param { LaunchConjunctionsService } launchConjunctionsService */
@@ -19,7 +13,6 @@ class LaunchConjunctionsController {
     this.launchConjunctionsService = launchConjunctionsService;
     this.path = '/launch-conjunctions';
     this.router = Router();
-    this.sshHandler = new SshHandler();
     this.initializeRoutes();
   }
 
@@ -49,7 +42,14 @@ class LaunchConjunctionsController {
 
   async predictLaunchConjunctions(req, _res) {
     console.log(req.file);
-    const data = await fs.readFile(req.file.path);
+    // req.user.email = 'shchoi.vdrc@gmail.com';
+    const email = 'shchoi.vdrc@gmail.com';
+    await this.launchConjunctionsService.enqueTask(email, req.file.path);
+    await this.launchConjunctionsService.executeToPredictLaunchConjunctions(
+      email,
+      req.file,
+      req.body.threshold
+    );
     /* 
     해야할 일:
         1) data -> trajectory hadler
@@ -58,7 +58,8 @@ class LaunchConjunctionsController {
         4) 각종 api 생성...
     */
     // await this.sshHandler.connect();
-    const command = await EngineCommand.predictLaunchConjunction;
+
+    // console.log(command);
     // await this.sshHandler.exec(command);
     return { message: 'hi' };
   }

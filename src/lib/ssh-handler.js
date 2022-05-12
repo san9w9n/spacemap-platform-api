@@ -17,20 +17,24 @@ class SshHandler {
   }
 
   async end() {
-    return this.ssh.end();
+    return this.ssh.close();
   }
 
   async exec(command) {
-    this.ssh.exec(command).then(
-      (data) => {
-        console.log(data); // ubuntu
-      },
-      (err) => {
-        throw new BadRequestException(
-          `Fail to execute command by SSH2. (${err})`
-        );
-      }
-    );
+    console.log('Command: ', command);
+    const exitCode = await this.ssh.exec(`${command} > /dev/null ; echo $?`);
+    // plz handle error and exit code...
+    return exitCode;
+    // this.ssh.exec(command).then(
+    //   (data) => {
+    //     console.log(data); // ubuntu
+    //   },
+    //   (err) => {
+    //     throw new BadRequestException(
+    //       `Fail to execute command by SSH2. (${err})`
+    //     );
+    //   }
+    // );
   }
 }
 

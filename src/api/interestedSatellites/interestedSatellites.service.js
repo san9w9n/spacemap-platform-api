@@ -16,15 +16,23 @@ class InterestedSatellitesService {
     const searchedSatellites = await TleModel.find({ id: satelliteId });
     const searchedSatellitesWithInterested = [];
     searchedSatellites.forEach(async (searchedSatellite) => {
-      const isInterested = await this.isMyInterestedSatellites(
-        searchedSatellite.id,
-        interestedSatellites
-      );
-      searchedSatellitesWithInterested.push({
-        id: searchedSatellite.id,
-        name: searchedSatellite.name,
-        isInterested,
-      });
+      if (interestedSatellites === null) {
+        searchedSatellitesWithInterested.push({
+          id: searchedSatellite.id,
+          name: searchedSatellite.name,
+          isInterested: false,
+        });
+      } else {
+        const isInterested = await this.isMyInterestedSatellites(
+          searchedSatellite.id,
+          interestedSatellites
+        );
+        searchedSatellitesWithInterested.push({
+          id: searchedSatellite.id,
+          name: searchedSatellite.name,
+          isInterested,
+        });
+      }
     });
     return searchedSatellitesWithInterested;
   }
@@ -39,15 +47,23 @@ class InterestedSatellitesService {
     const searchedSatellites = await TleModel.find(queryOption);
     const searchedSatellitesWithInterested = [];
     searchedSatellites.forEach(async (searchedSatellite) => {
-      const isInterested = await this.isMyInterestedSatellites(
-        searchedSatellite.id,
-        interestedSatellites
-      );
-      searchedSatellitesWithInterested.push({
-        id: searchedSatellite.id,
-        name: searchedSatellite.name,
-        isInterested,
-      });
+      if (interestedSatellites === null) {
+        searchedSatellitesWithInterested.push({
+          id: searchedSatellite.id,
+          name: searchedSatellite.name,
+          isInterested: false,
+        });
+      } else {
+        const isInterested = await this.isMyInterestedSatellites(
+          searchedSatellite.id,
+          interestedSatellites
+        );
+        searchedSatellitesWithInterested.push({
+          id: searchedSatellite.id,
+          name: searchedSatellite.name,
+          isInterested,
+        });
+      }
     });
     return searchedSatellitesWithInterested;
   }

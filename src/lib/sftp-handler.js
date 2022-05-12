@@ -21,6 +21,14 @@ class SftpHandler {
   async getFile(fromPath, toPath) {
     return this.sftp.fastGet(fromPath, toPath);
   }
+
+  async putFile(fromPath, toPath) {
+    return this.sftp.fastPut(fromPath, toPath);
+  }
+
+  async mkdir(toDir) {
+    return this.sftp.mkdir(toDir);
+  }
 }
 
 module.exports = SftpHandler;
