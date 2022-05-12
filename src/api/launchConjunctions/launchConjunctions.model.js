@@ -16,7 +16,7 @@ const LaunchConjunctionsScheme = new Schema({
     require: true,
   },
   lpdbFilePath: {
-    type: string,
+    type: String,
   },
   launchConjunctionsId: {},
 });
