@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
 // eslint-disable-next-line no-unused-vars
-
+const RsoService = require('./rso.service');
 const RsoHandler = require('../../lib/rso-handler');
 const SendRequestHandler = require('../../lib/sendRequest-handler');
 
@@ -13,17 +13,19 @@ class RsoParamsTask {
   #QUERY_URL =
     'basicspacedata/query/class/gp/orderby/NORAD_CAT_ID,EPOCH/format/xml';
 
-  constructor() {
+  /** @param {RsoService} rsoService */
+  constructor(rsoService) {
     this.name = 'RSO-PARAMS TASK';
-    this.period = '0 0 0 2 * *';
+    this.period = '0 30 1 * * *';
     this.excuting = false;
+    this.rsoService = rsoService;
     this.handler = this.#rsoScheduleHandler.bind(this);
   }
 
   /**
    * @param {Date} dateObj
    */
-  async #rsoScheduleHandler() {
+  async #rsoScheduleHandler(dateObj) {
     if (!this.excuting) {
       console.log('rso scheduler start.');
       this.excuting = true;
@@ -37,8 +39,9 @@ class RsoParamsTask {
           loginCookie
         );
         const rsoJson = RsoHandler.parseRsoXml(rsoParamsPlainText);
-        const rsoParams = RsoHandler.getRsoParamArrays(rsoJson);
-        console.log(rsoParams);
+        const rsoParamsArray = RsoHandler.getRsoParamArrays(rsoJson);
+        await this.rsoService.updateRsoParams(rsoParamsArray);
+        console.log(`Rso params updated at ${dateObj}`);
       } catch (err) {
         console.error(err);
       } finally {
