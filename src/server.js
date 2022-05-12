@@ -5,12 +5,14 @@ const TleService = require('./api/tles/tle.service');
 const PpdbService = require('./api/ppdbs/ppdb.service');
 const LaunchConjunctionsService = require('./api/launchConjunctions/launchConjunctions.service');
 const InterestedSatellitesService = require('./api/interestedSatellites/interestedSatellites.service');
+const RsoService = require('./api/rso/rso.service');
 
 const TleController = require('./api/tles/tle.controller');
 const PpdbController = require('./api/ppdbs/ppdb.controller');
 const LaunchConjunctionsController = require('./api/launchConjunctions/launchConjunctions.controller');
 const OauthController = require('./api/oauth/oauth.controller');
 const InterestedSatellitesController = require('./api/interestedSatellites/interestedSatellites.controller');
+const RsoController = require('./api/rso/rso.controller');
 
 const CronScheduler = require('./lib/cron-scheduler');
 const TleTask = require('./api/tles/tle.task');
@@ -24,12 +26,14 @@ const getServices = () => {
   const ppdbService = new PpdbService(tleService);
   const interestedSatellitesService = new InterestedSatellitesService();
   const launchConjunctionsService = new LaunchConjunctionsService();
+  const rsoService = new RsoService();
 
   return {
     ppdbService,
     tleService,
     interestedSatellitesService,
     launchConjunctionsService,
+    rsoService,
   };
 };
 
@@ -40,6 +44,7 @@ const main = async () => {
     ppdbService,
     interestedSatellitesService,
     launchConjunctionsService,
+    rsoService,
   } = getServices();
   const app = new App([
     new TleController(tleService),
@@ -47,12 +52,13 @@ const main = async () => {
     new InterestedSatellitesController(interestedSatellitesService),
     new LaunchConjunctionsController(launchConjunctionsService),
     new OauthController(),
+    new RsoController(rsoService),
   ]);
 
   const schedulers = new CronScheduler([
     new TleTask(tleService),
     new PpdbTask(ppdbService),
-    new RsoParamsTask(),
+    new RsoParamsTask(rsoService),
   ]);
 
   app.listen();

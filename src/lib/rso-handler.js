@@ -27,10 +27,10 @@ class RsoHandler {
         const RCS_SIZE = USER_DEFINED[5];
         const COUNTRY_CODE = USER_DEFINED[6];
         return {
-          NORAD_CAT_ID,
-          OBJECT_TYPE,
-          RCS_SIZE,
-          COUNTRY_CODE,
+          id: NORAD_CAT_ID,
+          objtype: OBJECT_TYPE,
+          rcssize: RCS_SIZE === '' ? 'UNKNOWN' : RCS_SIZE,
+          country: COUNTRY_CODE === '' ? 'UNKNOWN' : COUNTRY_CODE,
         };
       });
     return rsoParams;
