@@ -29,7 +29,9 @@ class InterestedSatellitesController {
       const { email } = req.user;
       const readInterestedSatellites =
         this.interestedSatellitesService.readInterestedSatellites(email);
-      return readInterestedSatellites;
+      return {
+        data: readInterestedSatellites,
+      };
     }
     return {
       message: 'Sign in first',
