@@ -1,119 +1,123 @@
 /* eslint-disable no-continue */
 /* eslint-disable no-restricted-syntax */
-const fs = require('fs').promises;
-const moment = require('moment');
+
+const DateHandler = require('./date-handler');
+const StringHandler = require('./string-handler');
 const { BadRequestException } = require('../common/exceptions');
-const {
-  startMomentOfPredictionWindow,
-  endMomentOfPredictionWindow,
-} = require('../common/predictionWindow');
+const { promiseReadFile, promiseWriteFile } = require('./promise-io');
 
 class TrajectoryHandler {
-  static async trajectoryParser(trajcetory) {
-    let timeAndPosition = '';
-    let launchEpochTime;
-    let coordinateSystem;
-    let site;
-    let diffSeconds;
-    const splitedLines = trajcetory.split('\n');
-    if (splitedLines === null)
-      throw new BadRequestException(`Trajectory file is empty`);
-
-    // splitedLines.forEach(async (line) => {
-    for await (const line of splitedLines) {
-      const words = line.split(/[\t\s,]+/);
-      if (words[0] === '%coordinate') {
-        [, , coordinateSystem] = words;
-        continue;
-      }
-      if (words[0] === '%site:') {
-        [, site] = words;
-        continue;
-      }
-      if (words[0] === '%epochtime:') {
-        [, launchEpochTime] = words;
-        if (!(await this.isValidDate(launchEpochTime))) {
-          throw new BadRequestException(
-            `Epochtime of trajectory is out of prediction window. Prediction window is between ${startMomentOfPredictionWindow} and ${endMomentOfPredictionWindow}`
-          );
-        }
-        diffSeconds = await this.diffSeconds(launchEpochTime);
-        console.log(`diff: ${diffSeconds}`);
-        continue;
-      }
-      const [time, x, y, z] = words;
-      if (time !== '') {
-        const changedTime = Number(time) + diffSeconds;
-        // console.log(words);
-        timeAndPosition += String(changedTime);
-        timeAndPosition += '\t';
-        timeAndPosition += x;
-        timeAndPosition += '\t';
-        timeAndPosition += y;
-        timeAndPosition += '\t';
-        timeAndPosition += z;
-        timeAndPosition += '\n';
-      }
-    }
-    return { timeAndPosition, launchEpochTime, coordinateSystem, site };
+  static #isAllValidParams(time, x, y, z) {
+    return (
+      StringHandler.isValidString(time) &&
+      StringHandler.isValidString(x) &&
+      StringHandler.isValidString(y) &&
+      StringHandler.isValidString(z)
+    );
   }
 
-  static async writeChangedTrajectory(
-    filePath,
+  static async #getMetaData(splitedLines) {
+    const metaData = {};
+    await Promise.all(
+      splitedLines
+        .filter((line) => !StringHandler.isNotComment(line))
+        .map(async (line) => {
+          const splitedLine = line.split(':');
+          if (!splitedLine || splitedLine.length < 2) {
+            return 1;
+          }
+          const title = splitedLine[0];
+          const data = splitedLine[1].trim();
+          switch (title) {
+            case '%coordinate system':
+              metaData.coordinateSystem = data;
+              break;
+            case '%site':
+              metaData.site = data;
+              break;
+            case '%epochtime':
+              if (!(await DateHandler.isValidDate(data))) {
+                throw new BadRequestException('Epoch date is not valid.');
+              }
+              metaData.launchEpochTime = data;
+              metaData.diffSeconds = await DateHandler.diffSeconds(data);
+              break;
+            default:
+          }
+          return 0;
+        })
+    );
+    const { coordinateSystem, site, launchEpochTime } = metaData;
+    if (!coordinateSystem || !site || !launchEpochTime) {
+      throw new BadRequestException('Cannot parse trajectory files.');
+    }
+    return metaData;
+  }
+
+  static #getChangedTrajectory(
     timeAndPosition,
-    launchEpochTime,
     coordinateSystem,
-    site
+    site,
+    launchEpochTime
   ) {
-    let changedTrajectory = `%coordinate system: ${coordinateSystem}\n`;
-    changedTrajectory += `%epochtime: ${launchEpochTime}\n`;
-    changedTrajectory += `%site: ${site}\n`;
-    changedTrajectory += timeAndPosition;
-    await fs.writeFile(filePath, changedTrajectory, function (err) {
-      if (err)
-        throw new BadRequestException('Fail to write changed trajectory.');
+    const stringTimeAndPosition = timeAndPosition.join('');
+    const stringCoordinate = `%coordinate system: ${coordinateSystem}\n`;
+    const stringSite = `%site: ${site}\n`;
+    const stringLaunchEpochTime = `%epochtime: ${launchEpochTime}\n`;
+    return `${stringCoordinate}${stringSite}${stringLaunchEpochTime}${stringTimeAndPosition}`;
+  }
+
+  static async #trajectoryParseAndChange(trajcetory) {
+    const splitedLines = trajcetory.split(/[\r\n]+/);
+    if (!StringHandler.isValidString(splitedLines))
+      throw new BadRequestException('Trajectory file is empty');
+
+    const { coordinateSystem, site, launchEpochTime, diffSeconds } =
+      await this.#getMetaData(splitedLines);
+
+    const timeAndPositionArray = splitedLines
+      .filter((line) => StringHandler.isNotComment(line))
+      .map((line) => {
+        const words = line.split(/[\t\s,]+/);
+        const [time, x, y, z] = words;
+        if (!this.#isAllValidParams(time, x, y, z)) {
+          throw new BadRequestException('Invalid trajectory file.');
+        }
+        return `${Number(time) + diffSeconds}\t${x}\t${y}\t${z}\n`;
+      });
+
+    return {
+      timeAndPositionArray,
+      coordinateSystem,
+      site,
+      launchEpochTime,
+    };
+  }
+
+  static async #writeTrajectory(filePath, trajectory) {
+    return promiseWriteFile(filePath, trajectory, {
+      encoding: 'utf-8',
     });
   }
 
-  static async diffSeconds(launchEpochTime) {
-    const diffSeconds = moment(launchEpochTime).diff(
-      moment(startMomentOfPredictionWindow),
-      'seconds'
-    );
-    return diffSeconds;
-  }
-
-  static async isValidDate(launchEpochTime) {
-    if (
-      moment(launchEpochTime).isSameOrAfter(
-        moment(startMomentOfPredictionWindow)
-      ) &&
-      moment(launchEpochTime).isSameOrBefore(
-        moment(endMomentOfPredictionWindow)
-      )
-    )
-      return true;
-    return false;
-  }
-
-  static async openTrajectory(filePath) {
-    const trajcetory = await fs.readFile(filePath, 'utf8');
-    return trajcetory;
+  static async #openTrajectory(filePath) {
+    return promiseReadFile(filePath, {
+      encoding: 'utf-8',
+    });
   }
 
   static async checkTrajectoryAndGetLaunchEpochTime(filePath) {
-    const trajectory = await this.openTrajectory(filePath);
-    const { timeAndPosition, launchEpochTime, coordinateSystem, site } =
-      await this.trajectoryParser(trajectory);
-    // console.log(timeAndPosition);
-    await this.writeChangedTrajectory(
-      filePath,
-      timeAndPosition,
-      launchEpochTime,
+    const trajectory = await this.#openTrajectory(filePath);
+    const { timeAndPositionArray, coordinateSystem, site, launchEpochTime } =
+      await this.#trajectoryParseAndChange(trajectory);
+    const changedTrajectory = this.#getChangedTrajectory(
+      timeAndPositionArray,
       coordinateSystem,
-      site
+      site,
+      launchEpochTime
     );
-    return [launchEpochTime, moment(startMomentOfPredictionWindow)];
+    await this.#writeTrajectory(filePath, changedTrajectory);
+    return [launchEpochTime, DateHandler.getStartMomentOfPredicWindow()];
   }
 }
 

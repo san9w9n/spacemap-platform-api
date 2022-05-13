@@ -24,7 +24,7 @@ class LaunchConjunctionsService {
     const { placeId } = taskResult;
     const lpdbResult = await LpdbModel.find(placeId);
     const launchConjunctionsResult = {
-      trajectoryFileㅖㅁ소: taskResult.trajectoryPath,
+      trajectoryFilePath: taskResult.trajectoryPath,
       predictionEpochTime: taskResult.predictionEpochTime,
       launchEpochTime: taskResult.launchEpochTime,
       lpdb: lpdbResult,
@@ -41,7 +41,7 @@ class LaunchConjunctionsService {
     const result = await LaunchConjunctionsModel.create({
       email,
       trajectoryPath,
-      status: 'Pending',
+      status: 'PENDING',
       launchEpochTime,
       predictionEpochTime,
     });
@@ -70,10 +70,10 @@ class LaunchConjunctionsService {
       threshold
     );
     // await sshHandler.connect();
-    console.log('connect');
+    // console.log('connect');
     let exitCode = await sshHandler.exec(command);
     exitCode = Number(exitCode);
-    console.log(exitCode);
+    // console.log(exitCode);
     // await sshHandler.end();
     if (exitCode === 0) {
       await sftpHandler.connect();
@@ -88,7 +88,7 @@ class LaunchConjunctionsService {
 
   async updateTaskStatus(task, exitCode, lpdbFilePath) {
     if (exitCode === 0) {
-      console.log('task: ', task);
+      // console.log('task: ', task);
       const result = await LaunchConjunctionsModel.findOneAndUpdate(
         { task },
         { status: 'Done', lpdbFilePath }

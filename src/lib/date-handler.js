@@ -1,4 +1,17 @@
+const moment = require('moment');
+
 class DateHandler {
+  static #startMomentOfPredictionWindow = moment()
+    .utc()
+    .startOf('day')
+    .toISOString();
+
+  static #endMomentOfPredictionWindow = moment()
+    .utc()
+    .add(2, 'd')
+    .startOf('day')
+    .toISOString();
+
   static getCertainUTCDate(
     year,
     month,
@@ -88,6 +101,31 @@ class DateHandler {
       month: dateObj.getMonth(),
       date: dateObj.getDate(),
     };
+  }
+
+  static async isValidDate(launchEpochTime) {
+    if (
+      moment(launchEpochTime).isSameOrAfter(
+        moment(this.#startMomentOfPredictionWindow)
+      ) &&
+      moment(launchEpochTime).isSameOrBefore(
+        moment(this.#endMomentOfPredictionWindow)
+      )
+    )
+      return true;
+    return false;
+  }
+
+  static async diffSeconds(launchEpochTime) {
+    const diffSeconds = moment(launchEpochTime).diff(
+      moment(this.#startMomentOfPredictionWindow),
+      'seconds'
+    );
+    return diffSeconds;
+  }
+
+  static getStartMomentOfPredicWindow() {
+    return moment(this.#startMomentOfPredictionWindow);
   }
 }
 

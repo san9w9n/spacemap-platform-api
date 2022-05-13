@@ -62,6 +62,13 @@ class App {
     this.app.use(passport.session());
   }
 
+  #initializePublicRouter() {
+    this.app.use(
+      '/public/uploads',
+      express.static(path.join(__dirname, '../public/uploads'))
+    );
+  }
+
   #initialzeControllers(controllers) {
     controllers.forEach((controller) => {
       this.app.use(controller.path, controller.router);
@@ -77,14 +84,6 @@ class App {
 
   #initializeErrorHandling() {
     this.app.use(errorMiddleware);
-  }
-
-  #initializePublicRouter() {
-    this.app.use(
-      '/public/uploads',
-      express.static(path.join(__dirname, '../public/uploads'))
-    );
-    console.log(path.join(__dirname, '../public/'));
   }
 }
 

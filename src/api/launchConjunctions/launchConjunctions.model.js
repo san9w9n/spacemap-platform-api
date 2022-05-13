@@ -20,7 +20,13 @@ const LaunchConjunctionsScheme = new Schema({
   },
   status: {
     type: String,
-    require: true,
+    enum: ['PENDING', 'ERROR', 'DONE'],
+    required: true,
+    default: 'PENDING',
+  },
+  errorMessage: {
+    type: String,
+    default: undefined,
   },
   lpdbFilePath: {
     type: String,
