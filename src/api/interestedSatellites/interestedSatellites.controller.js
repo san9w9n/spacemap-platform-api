@@ -28,7 +28,7 @@ class InterestedSatellitesController {
     if (req.user) {
       const { email } = req.user;
       const readInterestedSatellites =
-        this.interestedSatellitesService.readInterestedSatellites(email);
+        await this.interestedSatellitesService.readInterestedSatellites(email);
       return {
         data: readInterestedSatellites,
       };
