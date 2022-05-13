@@ -11,7 +11,7 @@ const {
 class TrajectoryHandler {
   static async trajectoryParser(trajcetory) {
     let timeAndPosition = '';
-    let epochTime;
+    let launchEpochTime;
     let coordinateSystem;
     let site;
     let diffSeconds;
@@ -31,13 +31,13 @@ class TrajectoryHandler {
         continue;
       }
       if (words[0] === '%epochtime:') {
-        [, epochTime] = words;
-        if (!(await this.isValidDate(epochTime))) {
+        [, launchEpochTime] = words;
+        if (!(await this.isValidDate(launchEpochTime))) {
           throw new BadRequestException(
             `Epochtime of trajectory is out of prediction window. Prediction window is between ${startMomentOfPredictionWindow} and ${endMomentOfPredictionWindow}`
           );
         }
-        diffSeconds = await this.diffSeconds(epochTime);
+        diffSeconds = await this.diffSeconds(launchEpochTime);
         console.log(`diff: ${diffSeconds}`);
         continue;
       }
@@ -55,18 +55,18 @@ class TrajectoryHandler {
         timeAndPosition += '\n';
       }
     }
-    return { timeAndPosition, epochTime, coordinateSystem, site };
+    return { timeAndPosition, launchEpochTime, coordinateSystem, site };
   }
 
   static async writeChangedTrajectory(
     filePath,
     timeAndPosition,
-    epochTime,
+    launchEpochTime,
     coordinateSystem,
     site
   ) {
     let changedTrajectory = `%coordinate system: ${coordinateSystem}\n`;
-    changedTrajectory += `%epochtime: ${epochTime}\n`;
+    changedTrajectory += `%epochtime: ${launchEpochTime}\n`;
     changedTrajectory += `%site: ${site}\n`;
     changedTrajectory += timeAndPosition;
     await fs.writeFile(filePath, changedTrajectory, function (err) {
@@ -75,42 +75,45 @@ class TrajectoryHandler {
     });
   }
 
-  static async diffSeconds(epochTime) {
-    const diffSeconds = moment(epochTime).diff(
+  static async diffSeconds(launchEpochTime) {
+    const diffSeconds = moment(launchEpochTime).diff(
       moment(startMomentOfPredictionWindow),
       'seconds'
     );
     return diffSeconds;
   }
 
-  static async isValidDate(epochTime) {
+  static async isValidDate(launchEpochTime) {
     if (
-      moment(epochTime).isSameOrAfter(moment(startMomentOfPredictionWindow)) &&
-      moment(epochTime).isSameOrBefore(moment(endMomentOfPredictionWindow))
+      moment(launchEpochTime).isSameOrAfter(
+        moment(startMomentOfPredictionWindow)
+      ) &&
+      moment(launchEpochTime).isSameOrBefore(
+        moment(endMomentOfPredictionWindow)
+      )
     )
       return true;
     return false;
   }
-
-  static async addSecondsToTrajectory() {}
 
   static async openTrajectory(filePath) {
     const trajcetory = await fs.readFile(filePath, 'utf8');
     return trajcetory;
   }
 
-  static async checkTrajectory(filePath) {
+  static async checkTrajectoryAndGetLaunchEpochTime(filePath) {
     const trajectory = await this.openTrajectory(filePath);
-    const { timeAndPosition, epochTime, coordinateSystem, site } =
+    const { timeAndPosition, launchEpochTime, coordinateSystem, site } =
       await this.trajectoryParser(trajectory);
     // console.log(timeAndPosition);
     await this.writeChangedTrajectory(
       filePath,
       timeAndPosition,
-      epochTime,
+      launchEpochTime,
       coordinateSystem,
       site
     );
+    return [launchEpochTime, moment(startMomentOfPredictionWindow)];
   }
 }
 

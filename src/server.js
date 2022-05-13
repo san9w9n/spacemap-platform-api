@@ -3,6 +3,7 @@ const DataBase = require('./lib/database');
 
 const TleService = require('./api/tles/tle.service');
 const PpdbService = require('./api/ppdbs/ppdb.service');
+const LpdbService = require('./api/lpdb/lpdb.service');
 const LaunchConjunctionsService = require('./api/launchConjunctions/launchConjunctions.service');
 const InterestedSatellitesService = require('./api/interestedSatellites/interestedSatellites.service');
 const RsoService = require('./api/rso/rso.service');
@@ -24,12 +25,14 @@ const schedulerEnabled = process.env.SCHEDULER_ENABLE || false;
 const getServices = () => {
   const tleService = new TleService();
   const ppdbService = new PpdbService(tleService);
+  const lpdbService = new LpdbService(tleService);
   const interestedSatellitesService = new InterestedSatellitesService();
-  const launchConjunctionsService = new LaunchConjunctionsService();
+  const launchConjunctionsService = new LaunchConjunctionsService(lpdbService);
   const rsoService = new RsoService();
 
   return {
     ppdbService,
+    lpdbService,
     tleService,
     interestedSatellitesService,
     launchConjunctionsService,

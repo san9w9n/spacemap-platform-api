@@ -7,6 +7,7 @@ const LpdbScheme = new Schema({
     type: Date,
     required: true,
   },
+  placeId: {},
   pid: {
     type: Number,
     required: true,

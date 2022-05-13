@@ -3,9 +3,9 @@ const cors = require('cors');
 const morgan = require('morgan');
 const passport = require('passport');
 const session = require('express-session');
+const path = require('path');
 const { NotFoundException } = require('./common/exceptions');
 const errorMiddleware = require('./middlewares/error.middleware');
-
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3003;
@@ -16,6 +16,7 @@ class App {
 
     this.#initializeCors();
     this.#initializeMiddlewares();
+    this.#initializePublicRouter();
     this.#initialzeControllers(controllers);
     this.#initializeNotFoundMiddleware();
     this.#initializeErrorHandling();
@@ -47,8 +48,8 @@ class App {
 
   #initializeMiddlewares() {
     this.app.use(morgan('common'));
-    this.app.use(express.json());
-    this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(express.json({ extended: true, limit: '50mb' }));
+    this.app.use(express.urlencoded({ extended: true, limit: '50mb' }));
     this.app.use(
       session({
         secret: 'SECRET_CODE',
@@ -76,6 +77,14 @@ class App {
 
   #initializeErrorHandling() {
     this.app.use(errorMiddleware);
+  }
+
+  #initializePublicRouter() {
+    this.app.use(
+      '/public/uploads',
+      express.static(path.join(__dirname, '../public/uploads'))
+    );
+    console.log(path.join(__dirname, '../public/'));
   }
 }
 

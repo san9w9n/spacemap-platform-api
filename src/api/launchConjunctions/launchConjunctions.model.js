@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const LaunchConjunctionsScheme = new Schema({
+  createdAt: { type: Date, default: Date.now },
   email: {
     type: String,
     required: true,
@@ -11,6 +12,12 @@ const LaunchConjunctionsScheme = new Schema({
     type: String,
     required: true,
   },
+  predictionEpochTime: {
+    type: Date,
+  },
+  launchEpochTime: {
+    type: Date,
+  },
   status: {
     type: String,
     require: true,
@@ -18,7 +25,6 @@ const LaunchConjunctionsScheme = new Schema({
   lpdbFilePath: {
     type: String,
   },
-  launchConjunctionsId: {},
 });
 
 module.exports = mongoose.model('launchConjunctions', LaunchConjunctionsScheme);
