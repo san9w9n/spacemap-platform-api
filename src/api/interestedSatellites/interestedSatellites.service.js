@@ -5,7 +5,9 @@ const PpdbModel = require('../ppdbs/ppdb.model');
 
 class InterestedSatellitesService {
   async readInterestedSatellites(email) {
-    const interestedSatellites = InterestedSatellitesModel.findOne({ email });
+    const interestedSatellites = await InterestedSatellitesModel.findOne({
+      email,
+    });
     return interestedSatellites;
   }
 
