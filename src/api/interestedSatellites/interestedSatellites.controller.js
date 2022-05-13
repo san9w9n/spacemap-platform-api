@@ -5,6 +5,10 @@ const { Router } = require('express');
 const StringHandler = require('../../lib/string-handler');
 const wrapper = require('../../lib/request-handler');
 const InterestedSatellitesService = require('./interestedSatellites.service');
+const {
+  UnauthorizedException,
+  BadRequestException,
+} = require('../../common/exceptions');
 
 class InterestedSatellitesController {
   /** @param { InterestedSatellitesService } interestedSatellitesService */
@@ -33,9 +37,7 @@ class InterestedSatellitesController {
         data: readInterestedSatellites,
       };
     }
-    return {
-      message: 'Sign in first',
-    };
+    throw new UnauthorizedException();
   }
 
   async findInterestedSatellites(req, _res) {
@@ -55,9 +57,7 @@ class InterestedSatellitesController {
         data: searchedSatellites,
       };
     }
-    return {
-      message: 'Sign in first',
-    };
+    throw new UnauthorizedException();
   }
 
   async readInterestedConjunctions(req, _res) {
@@ -69,9 +69,7 @@ class InterestedSatellitesController {
         );
       return { data: queryResult };
     }
-    return {
-      message: 'Sign in first',
-    };
+    throw new UnauthorizedException();
   }
 
   async addToInterestedSatellites(req, _res) {
@@ -88,13 +86,9 @@ class InterestedSatellitesController {
         };
       }
     } else {
-      return {
-        message: 'Put in only number',
-      };
+      throw new BadRequestException();
     }
-    return {
-      message: 'Sign in first',
-    };
+    throw new UnauthorizedException();
   }
 
   async removeFromInterestedSatellites(req, _res) {
@@ -111,13 +105,9 @@ class InterestedSatellitesController {
         };
       }
     } else {
-      return {
-        message: 'Put in only number',
-      };
+      throw new BadRequestException();
     }
-    return {
-      message: 'Sign in first',
-    };
+    throw new UnauthorizedException();
   }
 }
 
