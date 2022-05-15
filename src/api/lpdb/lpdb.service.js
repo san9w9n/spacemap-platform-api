@@ -12,9 +12,7 @@ class LpdbService {
 
   async saveLpdbOnDatabase(lpdbPath, placeId) {
     const idNamePairs = await this.tleService.getIdNamePairs();
-    console.log(lpdbPath, placeId);
     const lpdbFile = await PpdbHandler.readPpdbFileFromLocal(lpdbPath);
-    console.log(lpdbFile);
     const createdAt = new Date();
     const lpdbs = await PpdbHandler.getPpdbObjectsArray(createdAt, lpdbFile);
     lpdbs.forEach((lpdb) => {

@@ -39,8 +39,12 @@ class LaunchConjunctionsController {
   }
 
   async findLauncConjunctions(req, _res) {
+    const { dbId } = req.params;
+    if (!dbId) {
+      throw new BadRequestException('Param is empty.');
+    }
     const data = await this.launchConjunctionsService.findLauncConjunctions(
-      req.params.dbId
+      dbId
     );
     return { data };
   }
@@ -77,7 +81,10 @@ class LaunchConjunctionsController {
       file,
       threshold
     );
-    return { message: 'hi' };
+    return {
+      message: 'Request success.',
+      data: {},
+    };
   }
 }
 
