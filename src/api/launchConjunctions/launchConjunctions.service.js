@@ -69,8 +69,6 @@ class LaunchConjunctionsService {
       remoteOutputFilePath,
       threshold
     );
-    // await sshHandler.connect();
-    // console.log('connect');
     let exitCode = await sshHandler.exec(command);
     exitCode = Number(exitCode);
     // console.log(exitCode);
@@ -91,13 +89,17 @@ class LaunchConjunctionsService {
       // console.log('task: ', task);
       const result = await LaunchConjunctionsModel.findOneAndUpdate(
         { task },
-        { status: 'Done', lpdbFilePath }
+        { status: 'DONE', lpdbFilePath }
       );
       return result;
     }
+    // const result = await LaunchConjunctionsModel.findOneAndUpdate(
+    //   { task },
+    //   { status: `Error - ${exitCode}`, lpdbFilePath }
+    // );
     const result = await LaunchConjunctionsModel.findOneAndUpdate(
       { task },
-      { status: `Error - ${exitCode}`, lpdbFilePath }
+      { status: 'ERROR', lpdbFilePath }
     );
     return result;
   }

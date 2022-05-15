@@ -36,11 +36,13 @@ class TrajectoryHandler {
               metaData.site = data;
               break;
             case '%epochtime':
-              if (!(await DateHandler.isValidDate(data))) {
+              // eslint-disable-next-line no-case-declarations
+              const date = splitedLine.slice(1).join(':');
+              if (!(await DateHandler.isValidDate(date))) {
                 throw new BadRequestException('Epoch date is not valid.');
               }
-              metaData.launchEpochTime = data;
-              metaData.diffSeconds = await DateHandler.diffSeconds(data);
+              metaData.launchEpochTime = DateHandler.getMomentOfString(date);
+              metaData.diffSeconds = await DateHandler.diffSeconds(date);
               break;
             default:
           }

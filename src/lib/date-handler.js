@@ -127,6 +127,10 @@ class DateHandler {
   static getStartMomentOfPredicWindow() {
     return moment(this.#startMomentOfPredictionWindow);
   }
+
+  static getMomentOfString(stringDate) {
+    return moment(stringDate);
+  }
 }
 
 module.exports = DateHandler;

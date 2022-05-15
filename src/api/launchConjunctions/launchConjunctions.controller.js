@@ -6,6 +6,7 @@ const wrapper = require('../../lib/request-handler');
 const TrajectoryHandler = require('../../lib/trajectory-handler');
 const LaunchConjunctionsService = require('./launchConjunctions.service');
 const upload = require('../../lib/file-upload');
+const { BadRequestException } = require('../../common/exceptions');
 
 class LaunchConjunctionsController {
   /** @param { LaunchConjunctionsService } launchConjunctionsService */
@@ -52,25 +53,30 @@ class LaunchConjunctionsController {
   }
 
   async predictLaunchConjunctions(req, _res) {
+    const { file } = req;
+    if (!file) {
+      throw new BadRequestException('No File.');
+    }
+    const { path } = file;
+    const { threshold } = req.body;
+    if (!path || !threshold) {
+      throw new BadRequestException('Empty Trajectory field.');
+    }
     const email = 'shchoi.vdrc@gmail.com';
     const [launchEpochTime, predictionEpochTime] =
-      await TrajectoryHandler.checkTrajectoryAndGetLaunchEpochTime(
-        req.file.path
-      );
-
-    // const task = await this.launchConjunctionsService.enqueTask(
-    //   email,
-    //   req.file.path,
-    //   launchEpochTime,
-    //   predictionEpochTime
-    // );
-    // console.log(`lauched at: ${launchEpochTime}`);
-    // this.launchConjunctionsService.executeToPredictLaunchConjunctions(
-    //   task,
-    //   email,
-    //   req.file,
-    //   req.body.threshold
-    // );
+      await TrajectoryHandler.checkTrajectoryAndGetLaunchEpochTime(path);
+    const task = await this.launchConjunctionsService.enqueTask(
+      email,
+      path,
+      launchEpochTime,
+      predictionEpochTime
+    );
+    this.launchConjunctionsService.executeToPredictLaunchConjunctions(
+      task,
+      email,
+      file,
+      threshold
+    );
     return { message: 'hi' };
   }
 }
