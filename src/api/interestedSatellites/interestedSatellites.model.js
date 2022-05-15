@@ -6,17 +6,20 @@ const InterestedSatellitesScheme = new Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
   },
-  satellitesIds: {
-    type: Array,
-    items: { type: Number, uniqueItems: true },
-    required: true,
-  },
-  satellitesNames: {
-    type: Array,
-    items: { type: String, uniqueItems: true },
-    required: true,
-  },
+  interestedArray: [
+    {
+      id: {
+        type: String,
+        required: true,
+      },
+      name: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
 
 module.exports = mongoose.model(

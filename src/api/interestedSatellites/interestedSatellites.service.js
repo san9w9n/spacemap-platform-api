@@ -2,86 +2,124 @@
 const InterestedSatellitesModel = require('./interestedSatellites.model');
 const TleModel = require('../tles/tle.model');
 const PpdbModel = require('../ppdbs/ppdb.model');
+const { BadRequestException } = require('../../common/exceptions');
 
 class InterestedSatellitesService {
   async readInterestedSatellites(email) {
     const interestedSatellites = await InterestedSatellitesModel.findOne({
       email,
-    });
+    }).exec();
+    if (!interestedSatellites) {
+      const newInterestedSatellite = {
+        email,
+        interestedArray: [],
+      };
+      await InterestedSatellitesModel.create(newInterestedSatellite);
+      return newInterestedSatellite;
+    }
     return interestedSatellites;
   }
 
   async findSatellitesByIdService(email, satelliteId) {
-    const interestedSatellites = await InterestedSatellitesModel.findOne({
+    let interestedSatellites = await InterestedSatellitesModel.findOne({
       email,
-    });
-    const searchedSatellites = await TleModel.find({ id: satelliteId });
-    const searchedSatellitesWithInterested = [];
-    searchedSatellites.forEach(async (searchedSatellite) => {
-      if (interestedSatellites === null) {
+    }).exec();
+    if (!interestedSatellites) {
+      interestedSatellites = {
+        email,
+        interestedArray: [],
+      };
+      await InterestedSatellitesModel.create(interestedSatellites);
+    }
+    const { interestedArray } = interestedSatellites;
+    const searchedSatellitesWithInterested = interestedArray
+      .filter((interesterItem) => {
+        return interesterItem.id === satelliteId;
+      })
+      .map((interestedItem) => {
+        const { id, name } = interestedItem;
+        return {
+          id,
+          name,
+          isInterested: true,
+        };
+      });
+    if (searchedSatellitesWithInterested.length === 0) {
+      const searchedSatellite = await TleModel.findOne({
+        id: satelliteId,
+      }).exec();
+      if (searchedSatellite) {
+        const { id, name } = searchedSatellite;
         searchedSatellitesWithInterested.push({
-          id: searchedSatellite.id,
-          name: searchedSatellite.name,
+          id,
+          name,
           isInterested: false,
         });
-      } else {
-        const isInterested = await this.isMyInterestedSatellites(
-          searchedSatellite.id,
-          interestedSatellites
-        );
-        searchedSatellitesWithInterested.push({
-          id: searchedSatellite.id,
-          name: searchedSatellite.name,
-          isInterested,
-        });
       }
-    });
+    }
     return searchedSatellitesWithInterested;
   }
 
   async findSatellitesByNameService(email, satelliteName) {
-    const interestedSatellites = await InterestedSatellitesModel.findOne({
+    let interestedSatellites = await InterestedSatellitesModel.findOne({
       email,
-    });
-    const queryOption = {
+    }).exec();
+    if (!interestedSatellites) {
+      interestedSatellites = {
+        email,
+        interestedArray: [],
+      };
+      await InterestedSatellitesModel.create(interestedSatellites);
+    }
+    const { interestedArray } = interestedSatellites;
+    const searchedArray = await TleModel.find({
       name: { $regex: satelliteName, $options: 'i' },
-    };
-    const searchedSatellites = await TleModel.find(queryOption);
-    const searchedSatellitesWithInterested = [];
-    searchedSatellites.forEach(async (searchedSatellite) => {
-      if (interestedSatellites === null) {
-        searchedSatellitesWithInterested.push({
-          id: searchedSatellite.id,
-          name: searchedSatellite.name,
-          isInterested: false,
-        });
-      } else {
-        const isInterested = await this.isMyInterestedSatellites(
-          searchedSatellite.id,
-          interestedSatellites
-        );
-        searchedSatellitesWithInterested.push({
-          id: searchedSatellite.id,
-          name: searchedSatellite.name,
-          isInterested,
-        });
+    }).exec();
+
+    const searchedSatellitesWithInterested = searchedArray.map(
+      (searchedElement) => {
+        const { id, name } = searchedElement;
+        const interestedLength = interestedArray.length;
+        let flag = false;
+        for (let i = 0; i < interestedLength; i += 1) {
+          if (interestedArray[i].id === String(id)) {
+            flag = true;
+            break;
+          }
+        }
+        return {
+          id,
+          name,
+          isInterested: flag,
+        };
       }
-    });
+    );
     return searchedSatellitesWithInterested;
   }
 
-  async readInterestedConjunctions(email, limit, page, sort) {
+  async readInterestedConjunctions(email, limit, page, sort, satelliteId) {
     const interestedSatellites = await InterestedSatellitesModel.findOne({
       email,
-    });
-    const queryOption = {
-      $or: [
-        { pid: { $in: interestedSatellites.satellitesIds } },
-        { sid: { $in: interestedSatellites.satellitesIds } },
-      ],
+    }).exec();
+    if (!interestedSatellites) {
+      return {
+        totalcount: 0,
+        conjunctions: {},
+      };
+    }
+    let queryOption = {
+      $or: [{ pid: satelliteId }, { sid: satelliteId }],
     };
-    let totalcount = await PpdbModel.find(queryOption);
-    totalcount = totalcount.length;
+    if (!satelliteId) {
+      const { interestedArray } = interestedSatellites;
+      const satellitesIds = interestedArray.map((satellite) => {
+        return satellite.id;
+      });
+      queryOption = {
+        $or: [{ pid: { $in: satellitesIds } }, { sid: { $in: satellitesIds } }],
+      };
+    }
+    const totalcount = await PpdbModel.countDocuments(queryOption).exec();
     const conjunctions = await PpdbModel.find(queryOption)
       .skip(limit * page)
       .limit(limit)
@@ -94,51 +132,66 @@ class InterestedSatellitesService {
   }
 
   async createOrUpdateInterestedSatelliteId(email, interestedSatelliteId) {
-    ///  Temp... you will change this method use input parameter ///////////////////
+    const interestedSatellite = await InterestedSatellitesModel.findOne({
+      email,
+    }).exec();
     const searchedSatellites = await TleModel.findOne({
       id: interestedSatelliteId,
     });
-    ///  Temp... you will change this method use input parameter ///////////////////
-    const options = { upsert: true, new: true, setDefaultsOnInsert: true };
-    const interestedSatellites = InterestedSatellitesModel.findOneAndUpdate(
-      {
+    if (!searchedSatellites) {
+      throw new BadRequestException(`There is not ${interestedSatelliteId}`);
+    }
+    const { id, name } = searchedSatellites;
+    if (interestedSatellite) {
+      const { interestedArray } = interestedSatellite;
+      const interestedLength = interestedArray.length;
+      for (let i = 0; i < interestedLength; i += 1) {
+        if (interestedArray[i].id === interestedSatelliteId) {
+          return {
+            email,
+            interestedArray,
+          };
+        }
+      }
+      interestedArray.push({ id, name });
+      await InterestedSatellitesModel.findOneAndUpdate(
+        { email },
+        { interestedArray }
+      ).exec();
+      return {
         email,
-      },
-      {
-        $addToSet: {
-          satellitesIds: interestedSatelliteId,
-          satellitesNames: searchedSatellites.name,
+        interestedArray,
+      };
+    }
+
+    const newInterestedSatellites = {
+      email,
+      interestedArray: [
+        {
+          id,
+          name,
         },
-      },
-      options
-    );
-    return interestedSatellites;
+      ],
+    };
+    await InterestedSatellitesModel.create(newInterestedSatellites);
+    return newInterestedSatellites;
   }
 
   async deleteInterestedSatelliteId(email, interestedSatelliteId) {
-    ///  Temp... you will change this method use input parameter ///////////////////
-    const searchedSatellites = await TleModel.findOne({
-      id: interestedSatelliteId,
+    const interestedSatellite = await InterestedSatellitesModel.findOne({
+      email,
+    }).exec();
+    const { interestedArray } = interestedSatellite;
+    const index = interestedArray.findIndex((object) => {
+      return object.id === interestedSatelliteId;
     });
-    ///  Temp... you will change this method use input parameter ///////////////////
-    const options = { upsert: true, new: true, setDefaultsOnInsert: true };
-    const interestedSatellites = InterestedSatellitesModel.findOneAndUpdate(
-      {
-        email,
-      },
-      {
-        $pull: {
-          satellitesIds: interestedSatelliteId,
-          satellitesNames: searchedSatellites.name,
-        },
-      },
-      options
-    );
-    return interestedSatellites;
-  }
-
-  async isMyInterestedSatellites(searcedSatelliteId, interestedSatellites) {
-    return interestedSatellites.satellitesIds.includes(searcedSatelliteId);
+    if (index > 0) {
+      interestedArray.splice(index, 1);
+    }
+    return {
+      email,
+      interestedArray,
+    };
   }
 }
 module.exports = InterestedSatellitesService;

@@ -7,6 +7,7 @@ const EngineCommand = require('../../common/engineCommand');
 const LaunchConjunctionsModel = require('./launchConjunctions.model');
 const LpdbModel = require('../lpdb/lpdb.model');
 const LpdbService = require('../lpdb/lpdb.service');
+const { BadRequestException } = require('../../common/exceptions');
 
 class LaunchConjunctionsService {
   /** @param { LpdbService } lpdbService */
@@ -19,12 +20,18 @@ class LaunchConjunctionsService {
     return result;
   }
 
-  async findLauncConjunctions(taskId) {
-    const taskResult = await LaunchConjunctionsModel.findOne({ taskId });
-    const { placeId } = taskResult;
-    const lpdbResult = await LpdbModel.find(placeId);
+  async findLauncConjunctions(placeId) {
+    const taskResult = await LaunchConjunctionsModel.findById(placeId);
+    if (!taskResult) {
+      throw new BadRequestException('No such task.');
+    }
+    const { status } = taskResult;
+    if (status !== 'DONE') {
+      throw new BadRequestException('Job has not finished.');
+    }
+    const lpdbResult = await LpdbModel.find({});
     const launchConjunctionsResult = {
-      trajectoryFileㅖㅁ소: taskResult.trajectoryPath,
+      trajectoryFilePath: taskResult.trajectoryPath,
       predictionEpochTime: taskResult.predictionEpochTime,
       launchEpochTime: taskResult.launchEpochTime,
       lpdb: lpdbResult,
@@ -32,16 +39,15 @@ class LaunchConjunctionsService {
     return launchConjunctionsResult;
   }
 
-  async deleteLaunchConjunctions(taskId) {
-    const result = await LpdbModel.findOneAndDelete({ taskId });
-    return result;
+  async deleteLaunchConjunctions(placeId) {
+    return LpdbModel.deleteMany({ placeId }).exec();
   }
 
   async enqueTask(email, trajectoryPath, launchEpochTime, predictionEpochTime) {
     const result = await LaunchConjunctionsModel.create({
       email,
       trajectoryPath,
-      status: 'Pending',
+      status: 'PENDING',
       launchEpochTime,
       predictionEpochTime,
     });
@@ -69,17 +75,19 @@ class LaunchConjunctionsService {
       remoteOutputFilePath,
       threshold
     );
-    // await sshHandler.connect();
-    console.log('connect');
     let exitCode = await sshHandler.exec(command);
     exitCode = Number(exitCode);
-    console.log(exitCode);
+    // console.log(exitCode);
     // await sshHandler.end();
     if (exitCode === 0) {
       await sftpHandler.connect();
       await sftpHandler.getFile(remoteOutputFilePath, localOutputPath);
       await sftpHandler.end();
-      await this.lpdbService.saveLpdbOnDatabase(localOutputPath, task.id);
+      await this.lpdbService.saveLpdbOnDatabase(
+        localOutputPath,
+        // eslint-disable-next-line no-underscore-dangle
+        task._id.toString()
+      );
     }
 
     // return [launchEpochTime, exitCode, localOutputPath];
@@ -88,16 +96,21 @@ class LaunchConjunctionsService {
 
   async updateTaskStatus(task, exitCode, lpdbFilePath) {
     if (exitCode === 0) {
-      console.log('task: ', task);
+      // console.log('task: ', task);
       const result = await LaunchConjunctionsModel.findOneAndUpdate(
         { task },
-        { status: 'Done', lpdbFilePath }
+        { status: 'DONE', lpdbFilePath }
       );
+      console.log('Successfully done.');
       return result;
     }
+    // const result = await LaunchConjunctionsModel.findOneAndUpdate(
+    //   { task },
+    //   { status: `Error - ${exitCode}`, lpdbFilePath }
+    // );
     const result = await LaunchConjunctionsModel.findOneAndUpdate(
       { task },
-      { status: `Error - ${exitCode}`, lpdbFilePath }
+      { status: 'ERROR', lpdbFilePath }
     );
     return result;
   }

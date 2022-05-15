@@ -1,5 +1,4 @@
 const Client = require('ssh2-promise');
-const { BadRequestException } = require('../common/exceptions');
 
 class SshHandler {
   constructor() {
@@ -21,10 +20,14 @@ class SshHandler {
   }
 
   async exec(command) {
-    console.log('Command: ', command);
-    const exitCode = await this.ssh.exec(`${command} > /dev/null ; echo $?`);
-    // plz handle error and exit code...
-    return exitCode;
+    try {
+      const exitCode = await this.ssh.exec(`${command} > /dev/null ; echo $?`);
+      return exitCode;
+    } catch (err) {
+      console.log(err.toString());
+      return -1;
+    }
+
     // this.ssh.exec(command).then(
     //   (data) => {
     //     console.log(data); // ubuntu

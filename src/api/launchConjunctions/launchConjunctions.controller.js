@@ -2,11 +2,11 @@
 /* eslint-disable no-unused-vars */
 
 const { Router } = require('express');
-
 const wrapper = require('../../lib/request-handler');
 const TrajectoryHandler = require('../../lib/trajectory-handler');
 const LaunchConjunctionsService = require('./launchConjunctions.service');
 const upload = require('../../lib/file-upload');
+const { BadRequestException } = require('../../common/exceptions');
 
 class LaunchConjunctionsController {
   /** @param { LaunchConjunctionsService } launchConjunctionsService */
@@ -21,15 +21,16 @@ class LaunchConjunctionsController {
     this.router
       .get('/', wrapper(this.readLaunchConjunctions.bind(this)))
       .get('/:dbId', wrapper(this.findLauncConjunctions.bind(this)))
+      .delete('/:dbId', wrapper(this.deleteLaunchConjunctions.bind(this)))
       .post(
         '/',
         upload.single('trajectory'),
         wrapper(this.predictLaunchConjunctions.bind(this))
-      )
-      .delete('/:dbId', wrapper(this.deleteLaunchConjunctions.bind(this)));
+      );
   }
 
   async readLaunchConjunctions(req, _res) {
+    // TODO: 로그인 한 유저의 이메일 -> req.user.email
     const email = 'shchoi.vdrc@gmail.com';
     const data = await this.launchConjunctionsService.readLaunchConjunctions(
       email
@@ -38,36 +39,14 @@ class LaunchConjunctionsController {
   }
 
   async findLauncConjunctions(req, _res) {
+    const { dbId } = req.params;
+    if (!dbId) {
+      throw new BadRequestException('Param is empty.');
+    }
     const data = await this.launchConjunctionsService.findLauncConjunctions(
-      req.params.dbId
+      dbId
     );
     return { data };
-  }
-
-  async predictLaunchConjunctions(req, _res) {
-    console.log(req.file);
-    // req.user.email = 'shchoi.vdrc@gmail.com';
-    const email = 'shchoi.vdrc@gmail.com';
-    const [launchEpochTime, predictionEpochTime] =
-      await TrajectoryHandler.checkTrajectoryAndGetLaunchEpochTime(
-        req.file.path
-      );
-
-    const task = await this.launchConjunctionsService.enqueTask(
-      email,
-      req.file.path,
-      launchEpochTime,
-      predictionEpochTime
-    );
-    console.log(`lauched at: ${launchEpochTime}`);
-    // const [launchEpochTime, exitCode, lpdbFilePath] =
-    this.launchConjunctionsService.executeToPredictLaunchConjunctions(
-      task,
-      email,
-      req.file,
-      req.body.threshold
-    );
-    return { message: 'hi' };
   }
 
   async deleteLaunchConjunctions(req, _res) {
@@ -75,6 +54,37 @@ class LaunchConjunctionsController {
       req.params.dbId
     );
     return { data };
+  }
+
+  async predictLaunchConjunctions(req, _res) {
+    const { file } = req;
+    if (!file) {
+      throw new BadRequestException('No File.');
+    }
+    const { path } = file;
+    const { threshold } = req.body;
+    if (!path || !threshold) {
+      throw new BadRequestException('Empty Trajectory field.');
+    }
+    const email = 'shchoi.vdrc@gmail.com';
+    const [launchEpochTime, predictionEpochTime] =
+      await TrajectoryHandler.checkTrajectoryAndGetLaunchEpochTime(path);
+    const task = await this.launchConjunctionsService.enqueTask(
+      email,
+      path,
+      launchEpochTime,
+      predictionEpochTime
+    );
+    this.launchConjunctionsService.executeToPredictLaunchConjunctions(
+      task,
+      email,
+      file,
+      threshold
+    );
+    return {
+      message: 'Request success.',
+      data: {},
+    };
   }
 }
 

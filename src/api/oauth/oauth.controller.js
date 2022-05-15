@@ -5,6 +5,7 @@ const { Router } = require('express');
 const passport = require('passport');
 const { UnauthorizedException } = require('../../common/exceptions');
 const wrapper = require('../../lib/request-handler');
+const verifyUser = require('../../middlewares/auth.middleware');
 const initializePassport = require('../../modules/passport/index');
 
 class OauthController {
@@ -18,7 +19,7 @@ class OauthController {
   initializeRoutes() {
     this.router
       .get('/', wrapper(this.loginCheck.bind(this)))
-      .get('/logout', wrapper(this.signOut.bind(this)))
+      .get('/logout', verifyUser, wrapper(this.signOut.bind(this)))
       .get('/google', (req, res, next) => {
         passport.authenticate('google', { scope: ['profile', 'email'] })(
           req,
