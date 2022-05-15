@@ -50,8 +50,12 @@ class LaunchConjunctionsController {
   }
 
   async deleteLaunchConjunctions(req, _res) {
+    const { dbId } = req.params;
+    if (!dbId) {
+      throw new BadRequestException('Wrong param.');
+    }
     const data = await this.launchConjunctionsService.deleteLaunchConjunctions(
-      req.params.dbId
+      dbId
     );
     return { data };
   }

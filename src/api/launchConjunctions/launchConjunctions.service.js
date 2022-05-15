@@ -40,6 +40,7 @@ class LaunchConjunctionsService {
   }
 
   async deleteLaunchConjunctions(placeId) {
+    await LaunchConjunctionsModel.deleteMany({ _id: placeId });
     return LpdbModel.deleteMany({ placeId }).exec();
   }
 
