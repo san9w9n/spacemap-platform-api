@@ -82,7 +82,7 @@ class InterestedSatellitesService {
         const interestedLength = interestedArray.length;
         let flag = false;
         for (let i = 0; i < interestedLength; i += 1) {
-          if (interestedArray[i].id === id) {
+          if (interestedArray[i].id === String(id)) {
             flag = true;
             break;
           }
