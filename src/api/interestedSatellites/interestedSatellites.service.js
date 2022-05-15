@@ -70,7 +70,7 @@ class InterestedSatellitesService {
     return searchedSatellitesWithInterested;
   }
 
-  async readInterestedConjunctions(email) {
+  async readInterestedConjunctions(email, limit, page, sort) {
     const interestedSatellites = await InterestedSatellitesModel.findOne({
       email,
     });
@@ -80,8 +80,17 @@ class InterestedSatellitesService {
         { sid: { $in: interestedSatellites.satellitesIds } },
       ],
     };
-    const interestedConjunctions = await PpdbModel.find(queryOption);
-    return interestedConjunctions;
+    let totalcount = await PpdbModel.find(queryOption);
+    totalcount = totalcount.length;
+    const conjunctions = await PpdbModel.find(queryOption)
+      .skip(limit * page)
+      .limit(limit)
+      .sort(sort)
+      .exec();
+    return {
+      totalcount,
+      conjunctions,
+    };
   }
 
   async createOrUpdateInterestedSatelliteId(email, interestedSatelliteId) {

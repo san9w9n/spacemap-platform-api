@@ -5,6 +5,10 @@ const { Router } = require('express');
 const StringHandler = require('../../lib/string-handler');
 const wrapper = require('../../lib/request-handler');
 const InterestedSatellitesService = require('./interestedSatellites.service');
+const {
+  UnauthorizedException,
+  BadRequestException,
+} = require('../../common/exceptions');
 
 class InterestedSatellitesController {
   /** @param { InterestedSatellitesService } interestedSatellitesService */
@@ -33,9 +37,7 @@ class InterestedSatellitesController {
         data: readInterestedSatellites,
       };
     }
-    return {
-      message: 'Sign in first',
-    };
+    throw new UnauthorizedException();
   }
 
   async findInterestedSatellites(req, _res) {
@@ -55,23 +57,83 @@ class InterestedSatellitesController {
         data: searchedSatellites,
       };
     }
-    return {
-      message: 'Sign in first',
-    };
+    throw new UnauthorizedException();
   }
 
   async readInterestedConjunctions(req, _res) {
     if (req.user) {
+      let {
+        limit = 10,
+        page = 0,
+        sort = 'tcaTime',
+        dec = '',
+        satellite,
+      } = req.query;
+
+      if (page < 0) {
+        page = 0;
+      }
+      if (limit <= 0) {
+        limit = 10;
+      }
+      if (sort !== 'tcaTime' && sort !== 'dca' && sort !== 'probability') {
+        sort = 'tcaTime';
+      }
+      if (dec !== '-') {
+        dec = '';
+      }
+      sort = `${dec}${sort}`;
+      if (satellite) {
+        satellite = satellite.toUpperCase();
+      }
+
       const { email } = req.user;
-      const queryResult =
+      if (satellite) {
+        const { conjunctions, totalcount } = await (StringHandler.isNumeric(
+          satellite
+        )
+          ? this.interestedSatellitesService.readInterestedConjunctions(
+              email,
+              limit,
+              page,
+              sort,
+              satellite
+            )
+          : this.interestedSatellitesService.readInterestedConjunctions(
+              limit,
+              page,
+              sort,
+              satellite
+            ));
+        return {
+          data: {
+            totalcount,
+            conjunctions,
+          },
+        };
+
+        // const { email } = req.user;
+        // const queryResult =
+        //   await this.interestedSatellitesService.readInterestedConjunctions(
+        //     email
+        //   );
+        // return { data: queryResult };
+      }
+      const { conjunctions, totalcount } =
         await this.interestedSatellitesService.readInterestedConjunctions(
-          email
+          email,
+          limit,
+          page,
+          sort
         );
-      return { data: queryResult };
+      return {
+        data: {
+          totalcount,
+          conjunctions,
+        },
+      };
     }
-    return {
-      message: 'Sign in first',
-    };
+    throw new UnauthorizedException();
   }
 
   async addToInterestedSatellites(req, _res) {
@@ -88,13 +150,9 @@ class InterestedSatellitesController {
         };
       }
     } else {
-      return {
-        message: 'Put in only number',
-      };
+      throw new BadRequestException();
     }
-    return {
-      message: 'Sign in first',
-    };
+    throw new UnauthorizedException();
   }
 
   async removeFromInterestedSatellites(req, _res) {
@@ -111,13 +169,9 @@ class InterestedSatellitesController {
         };
       }
     } else {
-      return {
-        message: 'Put in only number',
-      };
+      throw new BadRequestException();
     }
-    return {
-      message: 'Sign in first',
-    };
+    throw new UnauthorizedException();
   }
 }
 
