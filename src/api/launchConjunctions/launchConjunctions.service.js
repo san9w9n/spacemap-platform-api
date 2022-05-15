@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable class-methods-use-this */
 // const LaunchConjunctionsModel = require('./launchConjunctions.model');
+const { default: mongoose } = require('mongoose');
 const SshHandler = require('../../lib/ssh-handler');
 const SftpHandler = require('../../lib/sftp-handler');
 const EngineCommand = require('../../common/engineCommand');
@@ -40,7 +41,9 @@ class LaunchConjunctionsService {
   }
 
   async deleteLaunchConjunctions(placeId) {
-    await LaunchConjunctionsModel.deleteMany({ _id: placeId });
+    await LaunchConjunctionsModel.deleteMany({
+      _id: mongoose.Types.ObjectId(placeId),
+    });
     return LpdbModel.deleteMany({ placeId }).exec();
   }
 
