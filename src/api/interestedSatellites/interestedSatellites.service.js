@@ -97,7 +97,7 @@ class InterestedSatellitesService {
     return searchedSatellitesWithInterested;
   }
 
-  async readInterestedConjunctions(email, limit, page, sort) {
+  async readInterestedConjunctions(email, limit, page, sort, satelliteId) {
     const interestedSatellites = await InterestedSatellitesModel.findOne({
       email,
     }).exec();
@@ -107,12 +107,19 @@ class InterestedSatellitesService {
         conjunctions: {},
       };
     }
-    const { interestedArray } = interestedSatellites;
-    const satellitesIds = interestedArray.map((satellite) => satellite.id);
-    const queryOption = {
-      $or: [{ pid: { $in: satellitesIds } }, { sid: { $in: satellitesIds } }],
+    let queryOption = {
+      $or: [{ pid: satelliteId }, { sid: satelliteId }],
     };
-    const totalcount = await PpdbModel.countDocuments({ queryOption }).exec();
+    if (!satelliteId) {
+      const { interestedArray } = interestedSatellites;
+      const satellitesIds = interestedArray.map((satellite) => {
+        return satellite.id;
+      });
+      queryOption = {
+        $or: [{ pid: { $in: satellitesIds } }, { sid: { $in: satellitesIds } }],
+      };
+    }
+    const totalcount = await PpdbModel.countDocuments(queryOption).exec();
     const conjunctions = await PpdbModel.find(queryOption)
       .skip(limit * page)
       .limit(limit)

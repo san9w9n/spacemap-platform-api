@@ -57,13 +57,11 @@ class InterestedSatellitesController {
   }
 
   async readInterestedConjunctions(req, _res) {
-    let {
-      limit = 10,
-      page = 0,
-      sort = 'tcaTime',
-      dec = '',
-      satellite,
-    } = req.query;
+    let { limit = 10, page = 0, sort = 'tcaTime', dec = '' } = req.query;
+    const { satellite } = req.query;
+    if (satellite && !StringHandler.isNumeric(satellite)) {
+      throw BadRequestException('satellite id is not number.');
+    }
 
     if (page < 0) {
       page = 0;
@@ -78,28 +76,17 @@ class InterestedSatellitesController {
       dec = '';
     }
     sort = `${dec}${sort}`;
-    if (satellite) {
-      satellite = satellite.toUpperCase();
-    }
 
     const { email } = req.user;
     if (satellite) {
-      const { conjunctions, totalcount } = await (StringHandler.isNumeric(
-        satellite
-      )
-        ? this.interestedSatellitesService.readInterestedConjunctions(
-            email,
-            limit,
-            page,
-            sort,
-            satellite
-          )
-        : this.interestedSatellitesService.readInterestedConjunctions(
-            limit,
-            page,
-            sort,
-            satellite
-          ));
+      const { conjunctions, totalcount } =
+        await this.interestedSatellitesService.readInterestedConjunctions(
+          email,
+          limit,
+          page,
+          sort,
+          Number(satellite)
+        );
       return {
         data: {
           totalcount,
@@ -112,7 +99,8 @@ class InterestedSatellitesController {
         email,
         limit,
         page,
-        sort
+        sort,
+        undefined
       );
     return {
       data: {

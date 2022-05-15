@@ -24,7 +24,7 @@ class SshHandler {
       const exitCode = await this.ssh.exec(`${command} > /dev/null ; echo $?`);
       return exitCode;
     } catch (err) {
-      console.log(err.toString());
+      // console.log(err.toString());
       return -1;
     }
 
