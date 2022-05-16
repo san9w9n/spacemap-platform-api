@@ -11,33 +11,32 @@ class SshHandler {
     this.ssh = new Client(this.sshConfig);
   }
 
-  async connect() {
+  async #connect() {
     return this.ssh.connect();
   }
 
-  async end() {
+  async #end() {
     return this.ssh.close();
   }
 
   async exec(command) {
+    await this.#connect();
+    let result = -1;
+    let message = 'failed.';
     try {
       const exitCode = await this.ssh.exec(`${command} > /dev/null ; echo $?`);
-      return exitCode;
+      result = Number(exitCode);
+      message = result === 0 ? 'calculate success.' : 'calculate failed.';
     } catch (err) {
-      console.log(err.toString());
-      return -1;
+      result = -1;
+      message = err;
+    } finally {
+      await this.#end();
     }
-
-    // this.ssh.exec(command).then(
-    //   (data) => {
-    //     console.log(data); // ubuntu
-    //   },
-    //   (err) => {
-    //     throw new BadRequestException(
-    //       `Fail to execute command by SSH2. (${err})`
-    //     );
-    //   }
-    // );
+    return {
+      result,
+      message,
+    };
   }
 }
 

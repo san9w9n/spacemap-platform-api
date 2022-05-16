@@ -7,30 +7,9 @@ class EngineCommand {
     '/data/COOP/workingFolder/Prediction_Command_OLD.txt';
 
   static maximumCores = 96;
-  // cd /home/coop/COOP/ && ${coop_engine} ${prediction_command} PHANPROP 0 96 ${threshold} ${input_file_path} ${output_file_path}
 
-  static async predictLaunchConjunction(
-    inputFilePath,
-    outputFilePath,
-    threshold
-  ) {
-    let command = '';
-    command += this.engine;
-    command += ' ';
-    command += this.predictionCommand;
-    command += ' ';
-    command += 'PHANPROP';
-    command += ' ';
-    command += '0';
-    command += ' ';
-    command += this.maximumCores;
-    command += ' ';
-    command += threshold;
-    command += ' ';
-    command += inputFilePath;
-    command += ' ';
-    command += outputFilePath;
-    return command;
+  static predictLaunchConjunction(inputFilePath, outputFilePath, threshold) {
+    return `${this.engine} ${this.predictionCommand} PHANPROP 0 ${this.maximumCores} ${threshold} ${inputFilePath} ${outputFilePath}`;
   }
 }
 

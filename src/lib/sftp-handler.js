@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const Client = require('ssh2-sftp-client');
 
 class SftpHandler {
@@ -5,7 +6,7 @@ class SftpHandler {
     this.sftp = new Client();
   }
 
-  async connect() {
+  async #connect() {
     return this.sftp.connect({
       host: process.env.SSH2_HOST,
       port: process.env.SSH2_PORT,
@@ -14,20 +15,53 @@ class SftpHandler {
     });
   }
 
-  async end() {
+  async #end() {
     return this.sftp.end();
   }
 
   async getFile(fromPath, toPath) {
-    return this.sftp.fastGet(fromPath, toPath);
+    await this.#connect();
+    let flag = false;
+    try {
+      await this.sftp.fastGet(fromPath, toPath);
+      flag = true;
+    } catch (err) {
+      console.error(err);
+      flag = false;
+    } finally {
+      await this.#end();
+    }
+    return flag;
   }
 
   async putFile(fromPath, toPath) {
-    return this.sftp.fastPut(fromPath, toPath);
+    await this.#connect();
+    let flag = false;
+    try {
+      await this.sftp.fastPut(fromPath, toPath);
+      flag = true;
+    } catch (err) {
+      console.error(err);
+      flag = false;
+    } finally {
+      await this.#end();
+    }
+    return flag;
   }
 
   async mkdir(toDir) {
-    return this.sftp.mkdir(toDir);
+    await this.#connect();
+    let flag = false;
+    try {
+      await this.sftp.mkdir(toDir);
+      flag = true;
+    } catch (err) {
+      console.error(err);
+      flag = false;
+    } finally {
+      await this.#end();
+    }
+    return flag;
   }
 }
 
