@@ -28,16 +28,20 @@ class PpdbTask {
     const ppdbFileName = DateHandler.getFileNameByDateObject(dateObj);
     const ppdbPath = `./public/ppdb/${ppdbFileName}.txt`;
     try {
-      await this.sftpHandler.connect();
-      await this.sftpHandler.getFile(this.#FROM_PPDB_PATH, ppdbPath);
+      const getFileResult = await this.sftpHandler.getFile(
+        this.#FROM_PPDB_PATH,
+        ppdbPath
+      );
+      if (!getFileResult) {
+        throw new Error('getFile failed');
+      }
       const ppdbFile = await PpdbHandler.readPpdbFileFromLocal(ppdbPath);
       await this.ppdbService.clearPpdbDatabase();
       await this.ppdbService.savePpdbOnDatabase(dateObj, ppdbFile);
       console.log(`Save PPDB at: ${dateObj}`);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     } finally {
-      await this.sftpHandler.end();
       console.log('ppdb scheduler finish.');
       this.excuting = false;
     }

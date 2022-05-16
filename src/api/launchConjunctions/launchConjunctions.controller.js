@@ -73,14 +73,14 @@ class LaunchConjunctionsController {
     const email = 'shchoi.vdrc@gmail.com';
     const [launchEpochTime, predictionEpochTime] =
       await TrajectoryHandler.checkTrajectoryAndGetLaunchEpochTime(path);
-    const task = await this.launchConjunctionsService.enqueTask(
+    const taskId = await this.launchConjunctionsService.enqueTask(
       email,
       path,
       launchEpochTime,
       predictionEpochTime
     );
     this.launchConjunctionsService.executeToPredictLaunchConjunctions(
-      task,
+      taskId,
       email,
       file,
       threshold
