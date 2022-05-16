@@ -1,4 +1,5 @@
-const DateHandler = require('./date-handler');
+const moment = require('moment');
+// const DateHandler = require('./date-handler');
 const StringHandler = require('./string-handler');
 const { promiseReadFile } = require('./promise-io');
 
@@ -21,44 +22,60 @@ class PpdbHandler {
       probability,
     ] = splitPpdb;
 
-    const standardTime = DateHandler.getCertainUTCDate(
-      year,
-      month,
-      date,
-      hours,
-      min,
-      sec
+    // console.log(`${year}-${month}-${date}T${hours}:${min}:${sec}Z`);
+    let standardTime = moment(
+      `${year}-${month}-${date}T${hours}:${min}:${
+        sec >= 60.0 ? sec - 0.001 : sec
+      }Z`,
+      'YYYY-MM-DDTHH:mm:ss.SSSSZ'
     );
-    const tcaTime = DateHandler.getRelativeUTCDate(
-      Number(tca),
-      year,
-      month,
-      date,
-      hours,
-      min,
-      sec,
-      DateHandler.getMilliSecondFromSecond(tca)
-    );
-    const tcaStartTime = DateHandler.getRelativeUTCDate(
-      Number(tcaStart),
-      year,
-      month,
-      date,
-      hours,
-      min,
-      sec,
-      DateHandler.getMilliSecondFromSecond(tcaStart)
-    );
-    const tcaEndTime = DateHandler.getRelativeUTCDate(
-      Number(tcaEnd),
-      year,
-      month,
-      date,
-      hours,
-      min,
-      sec,
-      DateHandler.getMilliSecondFromSecond(tcaEnd)
-    );
+    const diffTcaStart = tcaStart > tca ? tcaStart - tcaStart : tcaStart - tca;
+    const diffTcaEnd = tcaEnd < tca ? tcaEnd - tcaEnd : tcaEnd - tca;
+    let tcaStartTime = standardTime.clone().add(diffTcaStart, 'seconds');
+    let tcaTime = standardTime.clone().add(0, 'seconds');
+    let tcaEndTime = standardTime.clone().add(diffTcaEnd, 'seconds');
+    standardTime = new Date(standardTime.toISOString());
+    tcaStartTime = new Date(tcaStartTime.toISOString());
+    tcaTime = new Date(tcaTime.toISOString());
+    tcaEndTime = new Date(tcaEndTime.toISOString());
+    // const standardTime = DateHandler.getCertainUTCDate(
+    //   year,
+    //   month,
+    //   date,
+    //   hours,
+    //   min,
+    //   sec
+    // );
+    // const tcaTime = DateHandler.getRelativeUTCDate(
+    //   Number(0),
+    //   year,
+    //   month,
+    //   date,
+    //   hours,
+    //   min,
+    //   sec,
+    //   DateHandler.getMilliSecondFromSecond(0)
+    // );
+    // const tcaStartTime = DateHandler.getRelativeUTCDate(
+    //   Number(tcaStart - tca),
+    //   year,
+    //   month,
+    //   date,
+    //   hours,
+    //   min,
+    //   sec,
+    //   DateHandler.getMilliSecondFromSecond(tcaStart - tca)
+    // );
+    // const tcaEndTime = DateHandler.getRelativeUTCDate(
+    //   Number(tcaEnd - tca),
+    //   year,
+    //   month,
+    //   date,
+    //   hours,
+    //   min,
+    //   sec,
+    //   DateHandler.getMilliSecondFromSecond(tcaEnd - tca)
+    // );
     return {
       createdAt,
       pid,
