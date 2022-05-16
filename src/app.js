@@ -37,7 +37,7 @@ class App {
           const isTrue = domains.indexOf(origin) !== -1;
           callback(null, isTrue);
         },
-        allowHeaders: 'Content-Type',
+        allowHeaders: 'Origin, Content-Type, X-Requested-With, Accept',
         methods: 'GET, HEAD, PUT, PATCH, POST, DELETE',
         preflightContinue: false,
         credentials: true,
