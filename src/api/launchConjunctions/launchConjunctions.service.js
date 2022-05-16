@@ -32,7 +32,8 @@ class LaunchConjunctionsService {
     }
     const lpdbResult = await LpdbModel.find({});
     const launchConjunctionsResult = {
-      trajectoryFilePath: taskResult.trajectoryPath,
+      trajectoryPath: taskResult.trajectoryPath,
+      lpdbFilePath: taskResult.lpdbFilePath,
       predictionEpochTime: taskResult.predictionEpochTime,
       launchEpochTime: taskResult.launchEpochTime,
       lpdb: lpdbResult,

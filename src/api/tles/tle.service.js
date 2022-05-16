@@ -92,7 +92,15 @@ class TleService {
       throw new BadRequestException('Empty tle table.');
     }
     const { date } = tleModel[0];
-    return TleModel.find({ date }).exec();
+    const tleModels = await TleModel.find({ date }).exec();
+    const tles = tleModels.map((currTleModel) => {
+      return {
+        name: currTleModel.name,
+        firstLine: currTleModel.firstline,
+        secondLine: currTleModel.secondline,
+      };
+    });
+    return tles;
   }
 }
 
