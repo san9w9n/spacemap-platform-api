@@ -16,7 +16,7 @@ class RsoParamsTask {
   /** @param {RsoService} rsoService */
   constructor(rsoService) {
     this.name = 'RSO-PARAMS TASK';
-    this.period = '0 30 1 * * *';
+    this.period = '* * * * * *';
     this.excuting = false;
     this.rsoService = rsoService;
     this.handler = this.#rsoScheduleHandler.bind(this);
