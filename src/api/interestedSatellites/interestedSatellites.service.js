@@ -72,10 +72,17 @@ class InterestedSatellitesService {
       await InterestedSatellitesModel.create(interestedSatellites);
     }
     const { interestedArray } = interestedSatellites;
-    const searchedArray = await TleModel.find({
-      name: { $regex: satelliteName, $options: 'i' },
-    }).exec();
 
+    const tleModel = await TleModel.findOne({ id: 11 }).exec();
+    if (!tleModel) {
+      throw new Error('Something is wrong. (at getIdNamePairs)');
+    }
+    const { date } = tleModel;
+
+    const queryOption = {
+      $and: [{ date }, { name: { $regex: satelliteName, $options: 'i' } }],
+    };
+    const searchedArray = await TleModel.find(queryOption).exec();
     const searchedSatellitesWithInterested = searchedArray.map(
       (searchedElement) => {
         const { id, name } = searchedElement;
@@ -94,6 +101,7 @@ class InterestedSatellitesService {
         };
       }
     );
+
     return searchedSatellitesWithInterested;
   }
 
