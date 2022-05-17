@@ -2,7 +2,6 @@
 const InterestedSatellitesModel = require('./interestedSatellites.model');
 const TleModel = require('../tles/tle.model');
 const PpdbModel = require('../ppdbs/ppdb.model');
-const RsoModel = require('../rso/rso.model');
 const { BadRequestException } = require('../../common/exceptions');
 
 class InterestedSatellitesService {
@@ -73,13 +72,20 @@ class InterestedSatellitesService {
       await InterestedSatellitesModel.create(interestedSatellites);
     }
     const { interestedArray } = interestedSatellites;
-    const searchedArray = await RsoModel.find({
-      objectname: { $regex: satelliteName, $options: 'i' },
-    }).exec();
-    console.log(searchedArray);
+
+    const tleModel = await TleModel.findOne({ id: 11 }).exec();
+    if (!tleModel) {
+      throw new Error('Something is wrong. (at getIdNamePairs)');
+    }
+    const { date } = tleModel;
+
+    const queryOption = {
+      $and: [{ date }, { name: { $regex: satelliteName, $options: 'i' } }],
+    };
+    const searchedArray = await TleModel.find(queryOption).exec();
     const searchedSatellitesWithInterested = searchedArray.map(
       (searchedElement) => {
-        const { id, objectname } = searchedElement;
+        const { id, name } = searchedElement;
         const interestedLength = interestedArray.length;
         let flag = false;
         for (let i = 0; i < interestedLength; i += 1) {
@@ -90,18 +96,13 @@ class InterestedSatellitesService {
         }
         return {
           id,
-          name: objectname,
+          name,
           isInterested: flag,
         };
       }
     );
-    console.log(searchedSatellitesWithInterested);
-    console.log(typeof searchedSatellitesWithInterested);
-    const setSearchedSatellitesWithInterested = new Set(
-      searchedSatellitesWithInterested
-    );
-    console.log(setSearchedSatellitesWithInterested);
-    return setSearchedSatellitesWithInterested;
+
+    return searchedSatellitesWithInterested;
   }
 
   async readInterestedConjunctions(email, limit, page, sort, satelliteId) {
