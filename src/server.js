@@ -51,16 +51,6 @@ const main = async () => {
     lpdbService,
     rsoService,
   } = getServices();
-  const app = new App([
-    new TleController(tleService),
-    new PpdbController(ppdbService),
-    new InterestedSatellitesController(interestedSatellitesService),
-    new LaunchConjunctionsController(launchConjunctionsService),
-    new OauthController(),
-    new RsoController(rsoService),
-  ]);
-
-  app.listen();
 
   if (instanceName === 'spacemap-platform-api-launch-conjunction') {
     const schedulers = new CronScheduler([
@@ -74,6 +64,16 @@ const main = async () => {
       new RsoParamsTask(rsoService),
     ]);
     schedulers.startAllSchedule();
+  } else {
+    const app = new App([
+      new TleController(tleService),
+      new PpdbController(ppdbService),
+      new InterestedSatellitesController(interestedSatellitesService),
+      new LaunchConjunctionsController(launchConjunctionsService),
+      new OauthController(),
+      new RsoController(rsoService),
+    ]);
+    app.listen();
   }
 };
 

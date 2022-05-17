@@ -69,7 +69,7 @@ class LaunchConjunctionsService {
       threshold,
       localOutputPath,
     };
-    await LaunchTaskModel.create(task);
+    console.log(await LaunchTaskModel.create(task));
   }
 
   async popTaskFromDb() {
@@ -113,7 +113,7 @@ class LaunchConjunctionsService {
       localOutputPath,
     } = LaunchConjunctionsHandler.makeFilePath(email, filename);
 
-    this.mutex.runExclusive(async () => {
+    await this.mutex.runExclusive(async () => {
       await LaunchConjunctionsHandler.putTrajectoryFileOnRemoteServer(
         remoteFolder,
         path,
@@ -121,7 +121,7 @@ class LaunchConjunctionsService {
       );
     });
 
-    this.enqueTaskOnDb(
+    await this.enqueTaskOnDb(
       taskId,
       remoteInputFilePath,
       remoteOutputFilePath,
