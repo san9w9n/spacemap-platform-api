@@ -19,6 +19,7 @@ const CronScheduler = require('./lib/cron-scheduler');
 const TleTask = require('./api/tles/tle.task');
 const PpdbTask = require('./api/ppdbs/ppdb.task');
 const RsoParamsTask = require('./api/rso/rso.task');
+const LaunchConjunctionTask = require('./api/launchConjunctions/launchConjunctions.task');
 
 const schedulerEnabled = process.env.SCHEDULER_ENABLE || false;
 
@@ -47,6 +48,7 @@ const main = async () => {
     ppdbService,
     interestedSatellitesService,
     launchConjunctionsService,
+    lpdbService,
     rsoService,
   } = getServices();
   const app = new App([
@@ -62,6 +64,7 @@ const main = async () => {
     new TleTask(tleService),
     new PpdbTask(ppdbService),
     new RsoParamsTask(rsoService),
+    new LaunchConjunctionTask(launchConjunctionsService, lpdbService),
   ]);
 
   app.listen();

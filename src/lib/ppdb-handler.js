@@ -34,48 +34,12 @@ class PpdbHandler {
     let tcaStartTime = standardTime.clone().add(diffTcaStart, 'seconds');
     let tcaTime = standardTime.clone().add(0, 'seconds');
     let tcaEndTime = standardTime.clone().add(diffTcaEnd, 'seconds');
+
     standardTime = new Date(standardTime.toISOString());
     tcaStartTime = new Date(tcaStartTime.toISOString());
     tcaTime = new Date(tcaTime.toISOString());
     tcaEndTime = new Date(tcaEndTime.toISOString());
-    // const standardTime = DateHandler.getCertainUTCDate(
-    //   year,
-    //   month,
-    //   date,
-    //   hours,
-    //   min,
-    //   sec
-    // );
-    // const tcaTime = DateHandler.getRelativeUTCDate(
-    //   Number(0),
-    //   year,
-    //   month,
-    //   date,
-    //   hours,
-    //   min,
-    //   sec,
-    //   DateHandler.getMilliSecondFromSecond(0)
-    // );
-    // const tcaStartTime = DateHandler.getRelativeUTCDate(
-    //   Number(tcaStart - tca),
-    //   year,
-    //   month,
-    //   date,
-    //   hours,
-    //   min,
-    //   sec,
-    //   DateHandler.getMilliSecondFromSecond(tcaStart - tca)
-    // );
-    // const tcaEndTime = DateHandler.getRelativeUTCDate(
-    //   Number(tcaEnd - tca),
-    //   year,
-    //   month,
-    //   date,
-    //   hours,
-    //   min,
-    //   sec,
-    //   DateHandler.getMilliSecondFromSecond(tcaEnd - tca)
-    // );
+
     return {
       createdAt,
       pid,
