@@ -24,4 +24,4 @@ const TleScheme = new Schema({
   },
 });
 
-module.exports = mongoose.model('test_tle', TleScheme);
+module.exports = mongoose.model('tle', TleScheme);

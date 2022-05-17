@@ -2,6 +2,7 @@
 const InterestedSatellitesModel = require('./interestedSatellites.model');
 const TleModel = require('../tles/tle.model');
 const PpdbModel = require('../ppdbs/ppdb.model');
+const RsoModel = require('../rso/rso.model');
 const { BadRequestException } = require('../../common/exceptions');
 
 class InterestedSatellitesService {
@@ -72,13 +73,13 @@ class InterestedSatellitesService {
       await InterestedSatellitesModel.create(interestedSatellites);
     }
     const { interestedArray } = interestedSatellites;
-    const searchedArray = await TleModel.find({
-      name: { $regex: satelliteName, $options: 'i' },
+    const searchedArray = await RsoModel.find({
+      objectname: { $regex: satelliteName, $options: 'i' },
     }).exec();
     console.log(searchedArray);
     const searchedSatellitesWithInterested = searchedArray.map(
       (searchedElement) => {
-        const { id, name } = searchedElement;
+        const { id, objectname } = searchedElement;
         const interestedLength = interestedArray.length;
         let flag = false;
         for (let i = 0; i < interestedLength; i += 1) {
@@ -89,7 +90,7 @@ class InterestedSatellitesService {
         }
         return {
           id,
-          name,
+          name: objectname,
           isInterested: flag,
         };
       }
