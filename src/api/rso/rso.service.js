@@ -9,13 +9,13 @@ class RsoService {
   async updateRsoParams(rsoParams) {
     const options = { upsert: true, setDefaultsOnInsert: true };
     const updateResult = rsoParams.map(async (rsoParam) => {
-      const { id, objtype, rcssize, country } = rsoParam;
+      const { id, objtype, objectname, rcssize, country } = rsoParam;
       if (!id) {
         return;
       }
       await RsoModel.findOneAndUpdate(
         { id },
-        { id, objtype, rcssize, country },
+        { id, objtype, objectname, rcssize, country },
         options
       );
     });

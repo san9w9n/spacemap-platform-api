@@ -10,8 +10,12 @@ class RsoHandler {
       .filter((element) => {
         const { tleParameters, userDefinedParameters } =
           element.body.segment.data;
+        const { OBJECT_NAME } = element.body.segment.metadata;
         return (
-          userDefinedParameters && tleParameters && tleParameters.NORAD_CAT_ID
+          userDefinedParameters &&
+          tleParameters &&
+          tleParameters.NORAD_CAT_ID &&
+          OBJECT_NAME
         );
       })
       .filter((element) => {
@@ -23,12 +27,17 @@ class RsoHandler {
         const { NORAD_CAT_ID } = element.body.segment.data.tleParameters;
         const { USER_DEFINED } =
           element.body.segment.data.userDefinedParameters;
+
         const OBJECT_TYPE = USER_DEFINED[4];
         const RCS_SIZE = USER_DEFINED[5];
         const COUNTRY_CODE = USER_DEFINED[6];
+
+        const { OBJECT_NAME } = element.body.segment.metadata;
+
         return {
           id: NORAD_CAT_ID,
           objtype: OBJECT_TYPE,
+          objectname: OBJECT_NAME,
           rcssize: RCS_SIZE === '' ? 'UNKNOWN' : RCS_SIZE,
           country: COUNTRY_CODE === '' ? 'UNKNOWN' : COUNTRY_CODE,
         };

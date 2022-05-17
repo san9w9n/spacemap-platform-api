@@ -12,7 +12,7 @@ class PpdbTask {
   /** @param { PpdbService } ppdbService */
   constructor(ppdbService) {
     this.name = 'PPDB TASK';
-    this.period = '0 0 3 * * *';
+    this.period = '0 0 0 * * *';
     this.excuting = false;
     this.handler = this.#ppdbScheduleHandler.bind(this);
     this.sftpHandler = new SftpHandler();

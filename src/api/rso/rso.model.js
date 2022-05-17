@@ -10,6 +10,10 @@ const RsoScheme = new Schema({
     type: String,
     default: 'UNKNOWN',
   },
+  objectname: {
+    type: String,
+    default: 'UNKNOWN',
+  },
   rcssize: {
     type: String,
     default: 'UNKNOWN',
