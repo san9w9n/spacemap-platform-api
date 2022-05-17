@@ -27,30 +27,31 @@ class TleTask {
    * @param {Date} dateObj
    */
   async #tleScheduleHandler(dateObj) {
-    if (!this.excuting) {
-      console.log('tle scheduler start.');
-      this.excuting = true;
-      try {
-        if (DateHandler.isTleDatabaseCleanDay()) {
-          await this.tleService.deleteTles();
-        }
-        const loginCookie = await SendRequestHandler.getLoginCookie(
-          `${this.#SPACETRACK_URL}/${this.#AUTH_URL}`,
-          process.env.SPACETRACK
-        );
-        const tlePlainTexts = await SendRequestHandler.getContentsRequest(
-          `${this.#SPACETRACK_URL}/${this.#QUERY_URL}`,
-          loginCookie
-        );
-        await TleHandler.saveTlesOnFile(dateObj, tlePlainTexts);
-        await this.tleService.saveTlesOnDatabase(dateObj, tlePlainTexts);
-        console.log(`Save satellite TLE at : ${dateObj}`);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        this.excuting = false;
-        console.log('tle scheduler finish.');
+    if (this.excuting) {
+      return;
+    }
+    console.log('tle scheduler start.');
+    this.excuting = true;
+    try {
+      if (DateHandler.isTleDatabaseCleanDay()) {
+        await this.tleService.deleteTles();
       }
+      const loginCookie = await SendRequestHandler.getLoginCookie(
+        `${this.#SPACETRACK_URL}/${this.#AUTH_URL}`,
+        process.env.SPACETRACK
+      );
+      const tlePlainTexts = await SendRequestHandler.getContentsRequest(
+        `${this.#SPACETRACK_URL}/${this.#QUERY_URL}`,
+        loginCookie
+      );
+      await TleHandler.saveTlesOnFile(dateObj, tlePlainTexts);
+      await this.tleService.saveTlesOnDatabase(dateObj, tlePlainTexts);
+      console.log(`Save satellite TLE at : ${dateObj}`);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      this.excuting = false;
+      console.log('tle scheduler finish.');
     }
   }
 }

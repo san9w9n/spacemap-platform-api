@@ -1,4 +1,5 @@
 const Client = require('ssh2-promise');
+const StringHandler = require('./string-handler');
 
 class SshHandler {
   constructor() {
@@ -19,7 +20,7 @@ class SshHandler {
     return this.ssh.close();
   }
 
-  async exec(command) {
+  async execCalculate(command) {
     await this.#connect();
     let result = -1;
     let message = 'failed.';
@@ -37,6 +38,22 @@ class SshHandler {
       result,
       message,
     };
+  }
+
+  async execTop() {
+    await this.#connect();
+    let cpuUsagePercent = 100;
+    try {
+      const data = await this.ssh.exec(
+        "mpstat | tail -1 | awk '{print 100-$NF}'"
+      );
+      if (data && StringHandler.isNumeric(data)) {
+        cpuUsagePercent = Number(data);
+      }
+    } finally {
+      await this.#end();
+    }
+    return cpuUsagePercent;
   }
 }
 

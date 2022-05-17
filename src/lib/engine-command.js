@@ -7,7 +7,7 @@ class EngineCommand {
 
   static maximumCores = 256;
 
-  static predictLaunchConjunction(inputFilePath, outputFilePath, threshold) {
+  static getCalculateCommand(inputFilePath, outputFilePath, threshold) {
     return `${this.engine} ${this.predictionCommand} PHANPROP 0 ${this.maximumCores} ${threshold} ${inputFilePath} ${outputFilePath}`;
   }
 }
