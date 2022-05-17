@@ -75,7 +75,7 @@ class InterestedSatellitesService {
     const searchedArray = await TleModel.find({
       name: { $regex: satelliteName, $options: 'i' },
     }).exec();
-
+    console.log(searchedArray);
     const searchedSatellitesWithInterested = searchedArray.map(
       (searchedElement) => {
         const { id, name } = searchedElement;
@@ -94,7 +94,13 @@ class InterestedSatellitesService {
         };
       }
     );
-    return searchedSatellitesWithInterested;
+    console.log(searchedSatellitesWithInterested);
+    console.log(typeof searchedSatellitesWithInterested);
+    const setSearchedSatellitesWithInterested = new Set(
+      searchedSatellitesWithInterested
+    );
+    console.log(setSearchedSatellitesWithInterested);
+    return setSearchedSatellitesWithInterested;
   }
 
   async readInterestedConjunctions(email, limit, page, sort, satelliteId) {

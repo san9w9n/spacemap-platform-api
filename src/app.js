@@ -55,7 +55,7 @@ class App {
         secret: 'SECRET_CODE',
         resave: true,
         saveUninitialized: false,
-        cookie: { maxAge: 60000 },
+        cookie: { maxAge: 3600000 },
       })
     );
     this.app.use(passport.initialize());

@@ -33,7 +33,7 @@ class LaunchConjunctionsService {
     if (status !== 'DONE') {
       throw new BadRequestException('Job has not finished.');
     }
-    const lpdbResult = await LpdbModel.find({});
+    const lpdbResult = await LpdbModel.find({ placeId });
     const launchConjunctionsResult = {
       trajectoryPath: taskResult.trajectoryPath,
       lpdbFilePath: taskResult.lpdbFilePath,
