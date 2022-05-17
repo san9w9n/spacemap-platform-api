@@ -21,7 +21,7 @@ const PpdbTask = require('./api/ppdbs/ppdb.task');
 const RsoParamsTask = require('./api/rso/rso.task');
 const LaunchConjunctionTask = require('./api/launchConjunctions/launchConjunctions.task');
 
-const schedulerEnabled = process.env.SCHEDULER_ENABLE || false;
+const instanceName = process.env.name || 'UNKNOWN';
 
 const getServices = () => {
   const tleService = new TleService();
@@ -60,16 +60,19 @@ const main = async () => {
     new RsoController(rsoService),
   ]);
 
-  const schedulers = new CronScheduler([
-    new TleTask(tleService),
-    new PpdbTask(ppdbService),
-    new RsoParamsTask(rsoService),
-    new LaunchConjunctionTask(launchConjunctionsService, lpdbService),
-  ]);
-
   app.listen();
 
-  if (schedulerEnabled) {
+  if (instanceName === 'spacemap-platform-api-launch-conjunction') {
+    const schedulers = new CronScheduler([
+      new LaunchConjunctionTask(launchConjunctionsService, lpdbService),
+    ]);
+    schedulers.startAllSchedule();
+  } else if (instanceName === 'spacemap-platform-api-daily-tasks') {
+    const schedulers = new CronScheduler([
+      new TleTask(tleService),
+      new PpdbTask(ppdbService),
+      new RsoParamsTask(rsoService),
+    ]);
     schedulers.startAllSchedule();
   }
 };
