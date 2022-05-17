@@ -26,28 +26,29 @@ class RsoParamsTask {
    * @param {Date} dateObj
    */
   async #rsoScheduleHandler(dateObj) {
-    if (!this.excuting) {
-      console.log('rso scheduler start.');
-      this.excuting = true;
-      try {
-        const loginCookie = await SendRequestHandler.getLoginCookie(
-          `${this.#SPACETRACK_URL}/${this.#AUTH_URL}`,
-          process.env.SPACETRACK
-        );
-        const rsoParamsPlainText = await SendRequestHandler.getContentsRequest(
-          `${this.#SPACETRACK_URL}/${this.#QUERY_URL}`,
-          loginCookie
-        );
-        const rsoJson = RsoHandler.parseRsoXml(rsoParamsPlainText);
-        const rsoParamsArray = RsoHandler.getRsoParamArrays(rsoJson);
-        await this.rsoService.updateRsoParams(rsoParamsArray);
-        console.log(`Rso params updated at ${dateObj}`);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        this.excuting = false;
-        console.log('rso scheduler finish.');
-      }
+    if (this.excuting) {
+      return;
+    }
+    console.log('rso scheduler start.');
+    this.excuting = true;
+    try {
+      const loginCookie = await SendRequestHandler.getLoginCookie(
+        `${this.#SPACETRACK_URL}/${this.#AUTH_URL}`,
+        process.env.SPACETRACK
+      );
+      const rsoParamsPlainText = await SendRequestHandler.getContentsRequest(
+        `${this.#SPACETRACK_URL}/${this.#QUERY_URL}`,
+        loginCookie
+      );
+      const rsoJson = RsoHandler.parseRsoXml(rsoParamsPlainText);
+      const rsoParamsArray = RsoHandler.getRsoParamArrays(rsoJson);
+      await this.rsoService.updateRsoParams(rsoParamsArray);
+      console.log(`Rso params updated at ${dateObj}`);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      this.excuting = false;
+      console.log('rso scheduler finish.');
     }
   }
 }
