@@ -31,7 +31,7 @@ class LaunchConjunctionsController {
 
   async readLaunchConjunctions(req, _res) {
     // TODO: 로그인 한 유저의 이메일 -> req.user.email
-    const email = 'sw994812@gmail.com';
+    const email = 'sangwon@test.com';
     const data = await this.launchConjunctionsService.readLaunchConjunctions(
       email
     );
@@ -70,7 +70,7 @@ class LaunchConjunctionsController {
     if (!path || !threshold) {
       throw new BadRequestException('Empty Trajectory field.');
     }
-    const email = 'sw994812@gmail.com';
+    const email = 'sangwon@test.com';
     const [launchEpochTime, predictionEpochTime] =
       await TrajectoryHandler.checkTrajectoryAndGetLaunchEpochTime(path);
     const taskId = await this.launchConjunctionsService.enqueTask(
