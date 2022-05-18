@@ -131,6 +131,12 @@ class DateHandler {
   static getMomentOfString(stringDate) {
     return moment(stringDate);
   }
+
+  static isCalculatableDate() {
+    const currentDate = this.getCurrentUTCDate();
+    const hours = currentDate.getHours();
+    return hours < 15 || hours >= 20;
+  }
 }
 
 module.exports = DateHandler;

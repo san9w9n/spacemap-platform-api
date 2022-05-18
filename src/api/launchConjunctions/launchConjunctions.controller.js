@@ -4,9 +4,13 @@
 const { Router } = require('express');
 const wrapper = require('../../lib/request-handler');
 const TrajectoryHandler = require('../../lib/trajectory-handler');
+const DateHandler = require('../../lib/date-handler');
 const LaunchConjunctionsService = require('./launchConjunctions.service');
 const upload = require('../../lib/file-upload');
-const { BadRequestException } = require('../../common/exceptions');
+const {
+  BadRequestException,
+  ForbiddenException,
+} = require('../../common/exceptions');
 
 class LaunchConjunctionsController {
   /** @param { LaunchConjunctionsService } launchConjunctionsService */
@@ -61,6 +65,9 @@ class LaunchConjunctionsController {
   }
 
   async predictLaunchConjunctions(req, _res) {
+    if (!DateHandler.isCalculatableDate()) {
+      throw new ForbiddenException('Not available time.');
+    }
     const { file } = req;
     if (!file) {
       throw new BadRequestException('No File.');
