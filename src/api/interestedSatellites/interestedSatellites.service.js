@@ -193,8 +193,14 @@ class InterestedSatellitesService {
     const index = interestedArray.findIndex((object) => {
       return object.id === interestedSatelliteId;
     });
-    if (index > 0) {
+    if (index >= 0) {
       interestedArray.splice(index, 1);
+      await InterestedSatellitesModel.findOneAndUpdate(
+        {
+          email,
+        },
+        { interestedArray }
+      ).exec();
     }
     return {
       email,

@@ -3,7 +3,7 @@ module.exports = {
     {
       name: 'spacemap-platform-api',
       script: './src/server.js',
-      instances: 2,
+      instances: 1,
       exec_mode: 'cluster',
       env: {
         NODE_ENV: 'development',

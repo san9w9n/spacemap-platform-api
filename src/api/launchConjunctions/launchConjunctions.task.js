@@ -17,7 +17,7 @@ class LaunchConjunctionTask {
    */
   constructor(launchConjunctionsService, lpdbService) {
     this.name = 'LCA TASK';
-    this.period = '*/10 * * * * *';
+    this.period = '*/30 * * * * *';
     this.launchConjunctionsService = launchConjunctionsService;
     this.lpdbService = lpdbService;
     this.handler = this.#launchConjunctionScheduleHandler.bind(this);

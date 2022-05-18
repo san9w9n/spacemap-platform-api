@@ -112,6 +112,7 @@ class InterestedSatellitesController {
 
   async addToInterestedSatellites(req, _res) {
     const { id } = req.params;
+    console.log(id);
     if (!id || !StringHandler.isNumeric(id)) {
       throw new BadRequestException('Wrong params');
     }
