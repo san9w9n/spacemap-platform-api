@@ -37,6 +37,7 @@ class LaunchConjunctionsHandler {
 
   static makeFilePath(email, filename) {
     const remoteFolder = `${EngineCommand.homeDirectory}${email}/`;
+    console.log(remoteFolder);
     return {
       remoteFolder,
       remoteInputFilePath: `${remoteFolder}${filename}`,
