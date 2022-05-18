@@ -1,5 +1,6 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
+const { Mutex } = require('async-mutex');
 // eslint-disable-next-line no-unused-vars
 const LaunchConjunctionsService = require('./launchConjunctions.service');
 // eslint-disable-next-line no-unused-vars
@@ -16,12 +17,12 @@ class LaunchConjunctionTask {
    */
   constructor(launchConjunctionsService, lpdbService) {
     this.name = 'LCA TASK';
-    this.period = '* * * * * *';
-    this.excuting = false;
+    this.period = '*/10 * * * * *';
     this.launchConjunctionsService = launchConjunctionsService;
     this.lpdbService = lpdbService;
     this.handler = this.#launchConjunctionScheduleHandler.bind(this);
     this.sshHandler = new SshHandler();
+    this.mutex = new Mutex();
   }
 
   async #taskStart(task) {
@@ -60,23 +61,18 @@ class LaunchConjunctionTask {
   }
 
   async #launchConjunctionScheduleHandler() {
-    if (this.excuting) {
-      return;
-    }
-    this.excuting = true;
-    const cpuUsagePercent = await this.sshHandler.execTop();
-    if (cpuUsagePercent >= 700) {
-      console.log(`cpuUsage: ${cpuUsagePercent}%`);
-      this.excuting = false;
-      return;
-    }
-    const task = await this.launchConjunctionsService.popTaskFromDb();
-    if (!task) {
-      this.excuting = false;
-      return;
-    }
-    this.#taskStart(task);
-    this.excuting = false;
+    await this.mutex.runExclusive(async () => {
+      const cpuUsagePercent = await this.sshHandler.execTop();
+      if (cpuUsagePercent >= 700) {
+        console.log(`cpuUsage: ${cpuUsagePercent}%`);
+        return;
+      }
+      const task = await this.launchConjunctionsService.popTaskFromDb();
+      if (!task) {
+        return;
+      }
+      await this.#taskStart(task);
+    });
   }
 }
 
