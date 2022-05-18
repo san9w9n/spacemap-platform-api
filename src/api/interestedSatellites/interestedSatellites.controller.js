@@ -5,7 +5,7 @@ const { Router } = require('express');
 const StringHandler = require('../../lib/string-handler');
 const wrapper = require('../../lib/request-handler');
 const InterestedSatellitesService = require('./interestedSatellites.service');
-const verifyUser = require('../../middlewares/auth.middleware');
+const { verifyUser } = require('../../middlewares/auth.middleware');
 const { BadRequestException } = require('../../common/exceptions');
 
 class InterestedSatellitesController {
@@ -112,7 +112,6 @@ class InterestedSatellitesController {
 
   async addToInterestedSatellites(req, _res) {
     const { id } = req.params;
-    console.log(id);
     if (!id || !StringHandler.isNumeric(id)) {
       throw new BadRequestException('Wrong params');
     }

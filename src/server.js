@@ -23,6 +23,8 @@ const LaunchConjunctionTask = require('./api/launchConjunctions/launchConjunctio
 
 const instanceName = process.env.name || 'UNKNOWN';
 
+const { initializePassport } = require('./middlewares/auth.middleware');
+
 const getServices = () => {
   const tleService = new TleService();
   const ppdbService = new PpdbService(tleService);
@@ -43,6 +45,7 @@ const getServices = () => {
 
 const main = async () => {
   await DataBase.initializeDatabase();
+  await initializePassport();
   const {
     tleService,
     ppdbService,

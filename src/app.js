@@ -4,8 +4,10 @@ const morgan = require('morgan');
 const passport = require('passport');
 const session = require('express-session');
 const path = require('path');
+const MongoStore = require('connect-mongo');
 const { NotFoundException } = require('./common/exceptions');
 const errorMiddleware = require('./middlewares/error.middleware');
+
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3003;
@@ -15,6 +17,7 @@ class App {
     this.app = express();
 
     this.#initializeCors();
+    this.#initializeSession();
     this.#initializeMiddlewares();
     this.#initializePublicRouter();
     this.#initialzeControllers(controllers);
@@ -46,20 +49,31 @@ class App {
     );
   }
 
-  #initializeMiddlewares() {
-    this.app.use(morgan('common'));
-    this.app.use(express.json({ extended: true, limit: '50mb' }));
-    this.app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+  #initializeSession() {
     this.app.use(
       session({
         secret: 'SECRET_CODE',
         resave: true,
         saveUninitialized: false,
-        cookie: { maxAge: 3600000 },
+        cookie: {
+          maxAge: 1 * 60 * 60 * 1000, // expires in 1 hour
+        },
+        store: MongoStore.create({
+          mongoUrl: process.env.MONGO_INFO,
+          autoRemove: 'interval',
+          autoRemoveInterval: 10,
+          dbName: 'SPACEMAP-PLATFORM',
+        }),
       })
     );
     this.app.use(passport.initialize());
     this.app.use(passport.session());
+  }
+
+  #initializeMiddlewares() {
+    this.app.use(morgan('common'));
+    this.app.use(express.json({ extended: true, limit: '50mb' }));
+    this.app.use(express.urlencoded({ extended: true, limit: '50mb' }));
   }
 
   #initializePublicRouter() {

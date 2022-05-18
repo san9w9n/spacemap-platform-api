@@ -5,14 +5,12 @@ const { Router } = require('express');
 const passport = require('passport');
 const { UnauthorizedException } = require('../../common/exceptions');
 const wrapper = require('../../lib/request-handler');
-const verifyUser = require('../../middlewares/auth.middleware');
-const initializePassport = require('../../modules/passport/index');
+const { verifyUser } = require('../../middlewares/auth.middleware');
 
 class OauthController {
   constructor() {
     this.path = '/oauth';
     this.router = Router();
-    initializePassport();
     this.initializeRoutes();
   }
 
@@ -32,20 +30,19 @@ class OauthController {
         passport.authenticate('google', {
           failureRedirect: '/',
         }),
-        (req, res, next) => {
+        (_req, res, _next) => {
           res.status(200).redirect(process.env.REDIRECT_URL);
         }
       );
   }
 
-  signOut(req, res) {
+  async signOut(req, _res) {
     req.logout();
-    req.session.save(() => {
-      return {};
-    });
+    await req.session.destroy();
+    return {};
   }
 
-  loginCheck(req, res) {
+  loginCheck(req, _res) {
     if (!req.isAuthenticated()) {
       throw new UnauthorizedException('Login failed.');
     }
