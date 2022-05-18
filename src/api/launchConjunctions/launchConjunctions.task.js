@@ -16,7 +16,7 @@ class LaunchConjunctionTask {
    */
   constructor(launchConjunctionsService, lpdbService) {
     this.name = 'LCA TASK';
-    this.period = '* * * * * *';
+    this.period = '*/10 * * * * *';
     this.excuting = false;
     this.launchConjunctionsService = launchConjunctionsService;
     this.lpdbService = lpdbService;
@@ -75,7 +75,7 @@ class LaunchConjunctionTask {
       this.excuting = false;
       return;
     }
-    this.#taskStart(task);
+    await this.#taskStart(task);
     this.excuting = false;
   }
 }
