@@ -53,6 +53,7 @@ class LaunchConjunctionsHandler {
       remoteOutputFilePath,
       threshold
     );
+    console.log(command);
     const { result, message } = await sshHandler.execCalculate(command);
     if (result !== 0) {
       throw new Error(message);

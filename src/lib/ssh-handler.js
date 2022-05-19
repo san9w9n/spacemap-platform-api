@@ -40,6 +40,26 @@ class SshHandler {
     };
   }
 
+  async writeTextToFile(text, filePath) {
+    await this.#connect();
+    let result = -1;
+    let message = 'failed.';
+    try {
+      const exitCode = await this.ssh.exec(`echo -n ${text} > ${filePath}`);
+      result = Number(exitCode);
+      message = result === 0 ? 'calculate success.' : 'calculate failed.';
+    } catch (err) {
+      result = -1;
+      message = err;
+    } finally {
+      await this.#end();
+    }
+    return {
+      result,
+      message,
+    };
+  }
+
   async execTop() {
     await this.#connect();
     let cpuUsagePercent = 100;

@@ -13,7 +13,7 @@ class PpdbTask {
   /** @param { PpdbService } ppdbService */
   constructor(ppdbService) {
     this.name = 'PPDB TASK';
-    // this.period = '*/10 * * * * *';
+    this.period = '0 14 15 * * *';
     // this.period = '0 0 15 * * *';
     this.excuting = false;
     this.handler = this.#ppdbScheduleHandler.bind(this);
@@ -29,19 +29,41 @@ class PpdbTask {
     console.log('ppdb scheduler start.');
     const currDateFileName = DateHandler.getFileNameByDateObject(dateObj);
     const ppdbPath = `./public/ppdb/${currDateFileName}.txt`;
-    const tlePath = `./public/tle/${currDateFileName}.tle`;
-    const today = DateHandler.getCurrentUTCDate();
-    const year = today.getFullYear();
-    const month = today.getUTCMonth();
-    const date = today.getDate();
-    const tleFile = `${currDateFileName}.tle`;
-    const predictionCommand = EngineCommand.makePredictionCommandContext(
-      tleFile,
-      year,
-      month,
-      date
-    );
-    console.log(predictionCommand);
+    const ppdbFileName = `${currDateFileName}.txt`;
+    const tlePath = `public/tle/${currDateFileName}.tle`;
+    const tleFileName = `${currDateFileName}.tle`;
+    // --------------------------calculate PPDB----------------------------//
+    try {
+      const tomorrow = DateHandler.getTomorrow();
+      const year = tomorrow.year();
+      const month = tomorrow.month() + 1;
+      const date = tomorrow.date();
+      // EngineCommand.startMomentOfPredictionWindow = tomorrow;
+      DateHandler.setStartMomentOfPredictionWindow(tomorrow);
+      DateHandler.setEndMomentOfPredictionWindow(tomorrow.clone().diff(2, 'd'));
+      const predictionCommand = EngineCommand.makePredictionCommandContext(
+        tleFileName,
+        year,
+        month,
+        date
+      );
+      await PpdbHandler.sshRemoveEventSeq();
+      await PpdbHandler.sshBackupTle(ppdbFileName, tleFileName);
+      await PpdbHandler.sshPutPredictionCommand(predictionCommand);
+      await this.sftpHandler.putFile(
+        tlePath,
+        `${EngineCommand.homeDirectory}${tleFileName}`
+      );
+      console.log(predictionCommand);
+      await PpdbHandler.sshExecEvetnSeqGen();
+      await PpdbHandler.sshExecCalculatePpdb();
+    } catch (err) {
+      console.log(err);
+    } finally {
+      console.log('making ppdb is finished.');
+    }
+    // --------------------------calculate PPDB----------------------------//
+    // -----------------------------get PPDB-------------------------------//
     try {
       const getFileResult = await this.sftpHandler.getFile(
         this.#FROM_PPDB_PATH,
@@ -60,6 +82,7 @@ class PpdbTask {
       console.log('ppdb scheduler finish.');
       this.excuting = false;
     }
+    // -----------------------------get PPDB-------------------------------//
   }
 }
 

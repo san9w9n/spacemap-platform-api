@@ -6,7 +6,10 @@ const StringHandler = require('../../lib/string-handler');
 const wrapper = require('../../lib/request-handler');
 const InterestedSatellitesService = require('./interestedSatellites.service');
 const { verifyUser } = require('../../middlewares/auth.middleware');
-const { BadRequestException } = require('../../common/exceptions');
+const {
+  BadRequestException,
+  UnauthorizedException,
+} = require('../../common/exceptions');
 
 class InterestedSatellitesController {
   /** @param { InterestedSatellitesService } interestedSatellitesService */
@@ -29,6 +32,9 @@ class InterestedSatellitesController {
 
   async readInterestedSatellites(req, _res) {
     const { email } = req.user;
+    if (!email) {
+      throw new UnauthorizedException('Login first.');
+    }
     const readInterestedSatellites =
       await this.interestedSatellitesService.readInterestedSatellites(email);
     return {

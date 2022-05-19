@@ -12,6 +12,14 @@ class DateHandler {
     .startOf('day')
     .toISOString();
 
+  static setStartMomentOfPredictionWindow(startMoment) {
+    this.#startMomentOfPredictionWindow = startMoment;
+  }
+
+  static setEndMomentOfPredictionWindow(endMoment) {
+    this.#endMomentOfPredictionWindow = endMoment;
+  }
+
   static getCertainUTCDate(
     year,
     month,
@@ -113,7 +121,7 @@ class DateHandler {
       )
     )
       return true;
-    return false;
+    return true;
   }
 
   static async diffSeconds(launchEpochTime) {
@@ -136,6 +144,10 @@ class DateHandler {
     const currentDate = this.getCurrentUTCDate();
     const hours = currentDate.getHours();
     return hours < 15 || hours >= 20;
+  }
+
+  static getTomorrow() {
+    return moment().add(1, 'd');
   }
 }
 
