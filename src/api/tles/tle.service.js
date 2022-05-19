@@ -10,7 +10,18 @@ const { BadRequestException } = require('../../common/exceptions');
 class TleService {
   async saveTlesOnDatabase(dateObj, tlePlainTexts) {
     const tles = TleHandler.parseTlePlainTexts(dateObj, tlePlainTexts);
-    return TleModel.insertMany(tles);
+    const newTlePlainTexts = await Promise.all(
+      tles.map(async (tle) => {
+        try {
+          const tleModel = await TleModel.create(tle);
+          const { name, firstline, secondline } = tleModel;
+          return `0 ${name}\r\n${firstline}\r\n${secondline}\r\n`;
+        } catch (err) {
+          return '';
+        }
+      })
+    );
+    return newTlePlainTexts.join('');
   }
 
   async findTlesByOnlyDate(dateObj, id) {
@@ -47,15 +58,32 @@ class TleService {
     }
   }
 
+  async findTlesByOnlyDateFromFile(dateObj, id) {
+    try {
+      const { tleFromFile, newDateObj } =
+        await TleHandler.readMostRecentTlePlainTextsFromFile(dateObj);
+      await this.saveTlesOnDatabase(newDateObj, tleFromFile);
+      const tleModels = await (id
+        ? TleModel.find({ id, date: newDateObj }).exec()
+        : TleModel.find({ date: newDateObj }).exec());
+      return tleModels;
+    } catch (err) {
+      return [];
+    }
+  }
+
   async findTlesByIdOrDate(dateObj, id) {
     let tleModels = await (id
       ? TleModel.find({ id, date: dateObj }).exec()
       : TleModel.find({ date: dateObj }).exec());
     if (!tleModels || tleModels.length === 0) {
+      tleModels = await this.findTlesFromFile(dateObj, id);
+    }
+    if (!tleModels || tleModels.length === 0) {
       tleModels = await this.findTlesByOnlyDate(dateObj, id);
     }
     if (!tleModels || tleModels.length === 0) {
-      tleModels = await this.findTlesFromFile(dateObj, id);
+      // tleModels = await this.findTlesByOnlyDateFromFile(dateObj, id);
     }
     if (!tleModels || tleModels.length === 0) {
       const mostRecentModel = await TleModel.findOne({})

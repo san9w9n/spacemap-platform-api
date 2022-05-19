@@ -44,11 +44,14 @@ class TleTask {
         `${this.#SPACETRACK_URL}/${this.#QUERY_URL}`,
         loginCookie
       );
-      await TleHandler.saveTlesOnFile(dateObj, tlePlainTexts);
-      await this.tleService.saveTlesOnDatabase(dateObj, tlePlainTexts);
+      const newTlePlainTexts = await this.tleService.saveTlesOnDatabase(
+        dateObj,
+        tlePlainTexts
+      );
+      await TleHandler.saveTlesOnFile(dateObj, newTlePlainTexts);
       console.log(`Save satellite TLE at : ${dateObj}`);
     } catch (err) {
-      console.error(err);
+      console.log('funking error');
     } finally {
       this.excuting = false;
       console.log('tle scheduler finish.');
