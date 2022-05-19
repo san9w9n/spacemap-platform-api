@@ -21,7 +21,9 @@ class TleService {
         $gte: new Date(year, month, date),
         $lt: new Date(year, month, date + 1),
       },
-    }).exec();
+    })
+      .sort({ date: -1 })
+      .exec();
     if (!tleModel) {
       return undefined;
     }
@@ -33,12 +35,16 @@ class TleService {
   }
 
   async findTlesFromFile(dateObj, id) {
-    const tleFromFile = await TleHandler.readTlePlainTextsFromFile(dateObj);
-    await this.saveTlesOnDatabase(dateObj, tleFromFile);
-    const tleModels = await (id
-      ? TleModel.find({ id, date: dateObj }).exec()
-      : TleModel.find({ date: dateObj }).exec());
-    return tleModels;
+    try {
+      const tleFromFile = await TleHandler.readTlePlainTextsFromFile(dateObj);
+      await this.saveTlesOnDatabase(dateObj, tleFromFile);
+      const tleModels = await (id
+        ? TleModel.find({ id, date: dateObj }).exec()
+        : TleModel.find({ date: dateObj }).exec());
+      return tleModels;
+    } catch (err) {
+      return [];
+    }
   }
 
   async findTlesByIdOrDate(dateObj, id) {
@@ -50,6 +56,15 @@ class TleService {
     }
     if (!tleModels || tleModels.length === 0) {
       tleModels = await this.findTlesFromFile(dateObj, id);
+    }
+    if (!tleModels || tleModels.length === 0) {
+      const mostRecentModel = await TleModel.findOne({})
+        .sort({ date: -1 })
+        .exec();
+      if (mostRecentModel) {
+        const { date } = mostRecentModel;
+        tleModels = await TleModel.find({ date }).exec();
+      }
     }
     const tles = tleModels.map((tleModel) => {
       return {
@@ -87,11 +102,11 @@ class TleService {
   }
 
   async findMostRecentTles() {
-    const tleModel = await TleModel.find().sort({ date: -1 }).limit(10).exec();
-    if (!tleModel || tleModel.length === 0) {
+    const tleModel = await TleModel.findOne().sort({ date: -1 }).exec();
+    if (!tleModel) {
       throw new BadRequestException('Empty tle table.');
     }
-    const { date } = tleModel[0];
+    const { date } = tleModel;
     const tleModels = await TleModel.find({ date }).exec();
     const tles = tleModels.map((currTleModel) => {
       return {
