@@ -24,4 +24,6 @@ const TleScheme = new Schema({
   },
 });
 
+TleScheme.index({ date: 1, id: 1 }, { unique: true });
+
 module.exports = mongoose.model('tle', TleScheme);
