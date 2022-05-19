@@ -17,7 +17,7 @@ class TleTask {
   /** @param { TleService } tleService */
   constructor(tleService) {
     this.name = 'TLE TASK';
-    this.period = '0 0 3 * * *';
+    this.period = '0 0 15 * * *';
     this.excuting = false;
     this.handler = this.#tleScheduleHandler.bind(this);
     this.tleService = tleService;
