@@ -74,19 +74,16 @@ class PpdbHandler {
 
   static async sshRemoveEventSeq() {
     const sshHandler = new SshHandler();
-    const { result, message } = await sshHandler.execCalculate(
-      `rm -rf ${EngineCommand.homeDirectory}EVENTSEQ/*; rm -rf ${EngineCommand.homeDirectory}Summary*`
-    );
-    if (result !== 0) {
-      throw new Error(message);
-    }
+    const command = `rm -rf ${EngineCommand.homeDirectory}EVENTSEQ && rm -rf ${EngineCommand.homeDirectory}Su* && mkdir ${EngineCommand.homeDirectory}EVENTSEQ`;
+    console.log(command);
+    const { result, message } = await sshHandler.execCalculate(`${command}`);
   }
 
   static async sshBackupTle(ppdbFile, tleFile) {
     const sshHandler = new SshHandler();
     const backupPath = `${EngineCommand.homeDirectory}2022/`;
     const { result, message } = await sshHandler.execCalculate(
-      `mv -v ${EngineCommand.homeDirectory}PPDB2.txt ${backupPath}${ppdbFile} ; mv -v ${EngineCommand.homeDirectory}*.tle ${backupPath}${tleFile}`
+      `mv -v ${EngineCommand.homeDirectory}PPDB2.txt ${backupPath}${ppdbFile} && mv -v ${EngineCommand.homeDirectory}*.tle ${backupPath}${tleFile}`
     );
     // if (result !== 0) {
     //   throw new Error(message);
@@ -106,9 +103,14 @@ class PpdbHandler {
 
   static async sshExecEvetnSeqGen() {
     const sshHandler = new SshHandler();
-    const command = EngineCommand.getEventSeqGenCommand();
+    const eventCommand = EngineCommand.getEventSeqGenCommand();
+    const ppdbCommand = EngineCommand.getCaculatePpdbCommand();
+    const command = `${eventCommand} && ${ppdbCommand}`;
+
+    console.log(command);
     const { result, message } = await sshHandler.execCalculate(command);
     if (result !== 0) {
+      console.log(message);
       throw new Error(message);
     }
   }
@@ -116,6 +118,7 @@ class PpdbHandler {
   static async sshExecCalculatePpdb() {
     const sshHandler = new SshHandler();
     const command = EngineCommand.getCaculatePpdbCommand();
+    console.log(command);
     const { result, message } = await sshHandler.execCalculate(command);
     if (result !== 0) {
       throw new Error(message);

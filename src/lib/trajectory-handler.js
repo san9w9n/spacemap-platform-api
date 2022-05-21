@@ -1,6 +1,7 @@
 /* eslint-disable no-continue */
 /* eslint-disable no-restricted-syntax */
 
+const moment = require('moment');
 const DateHandler = require('./date-handler');
 const StringHandler = require('./string-handler');
 const { BadRequestException } = require('../common/exceptions');
@@ -65,7 +66,9 @@ class TrajectoryHandler {
     const stringTimeAndPosition = timeAndPosition.join('');
     const stringCoordinate = `%coordinate system: ${coordinateSystem}\n`;
     const stringSite = `%site: ${site}\n`;
-    const stringLaunchEpochTime = `%epochtime: ${launchEpochTime}\n`;
+    const stringLaunchEpochTime = `%epochtime: ${moment(
+      launchEpochTime
+    ).toISOString()}\n`;
     return `${stringCoordinate}${stringSite}${stringLaunchEpochTime}${stringTimeAndPosition}`;
   }
 
@@ -77,6 +80,8 @@ class TrajectoryHandler {
     const { coordinateSystem, site, launchEpochTime, diffSeconds } =
       await this.#getMetaData(splitedLines);
 
+    let startMomentOfFlight;
+    let endMomentOfFlight;
     const timeAndPositionArray = splitedLines
       .filter((line) => StringHandler.isNotComment(line))
       .map((line) => {
@@ -85,14 +90,20 @@ class TrajectoryHandler {
         if (!this.#isAllValidParams(time, x, y, z)) {
           throw new BadRequestException('Invalid trajectory file.');
         }
+        if (startMomentOfFlight === undefined) {
+          startMomentOfFlight = Number(time);
+        }
+        endMomentOfFlight = Number(time);
         return `${Number(time) + diffSeconds}\t${x}\t${y}\t${z}\n`;
       });
 
+    const trajectoryLength = endMomentOfFlight - startMomentOfFlight;
     return {
       timeAndPositionArray,
       coordinateSystem,
       site,
       launchEpochTime,
+      trajectoryLength,
     };
   }
 
@@ -110,8 +121,13 @@ class TrajectoryHandler {
 
   static async checkTrajectoryAndGetLaunchEpochTime(filePath) {
     const trajectory = await this.#openTrajectory(filePath);
-    const { timeAndPositionArray, coordinateSystem, site, launchEpochTime } =
-      await this.#trajectoryParseAndChange(trajectory);
+    const {
+      timeAndPositionArray,
+      coordinateSystem,
+      site,
+      launchEpochTime,
+      trajectoryLength,
+    } = await this.#trajectoryParseAndChange(trajectory);
     const changedTrajectory = this.#getChangedTrajectory(
       timeAndPositionArray,
       coordinateSystem,
@@ -119,7 +135,9 @@ class TrajectoryHandler {
       launchEpochTime
     );
     await this.#writeTrajectory(filePath, changedTrajectory);
-    return [launchEpochTime, DateHandler.getStartMomentOfPredicWindow()];
+    const startMomentOfPredictionWindow =
+      await DateHandler.getStartMomentOfPredictionWindow();
+    return [launchEpochTime, startMomentOfPredictionWindow, trajectoryLength];
   }
 }
 

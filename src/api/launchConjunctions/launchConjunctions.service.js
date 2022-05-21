@@ -42,6 +42,7 @@ class LaunchConjunctionsService {
       trajectoryPath: taskResult.trajectoryPath,
       lpdbFilePath: taskResult.lpdbFilePath,
       predictionEpochTime: taskResult.predictionEpochTime,
+      trajectoryLength: taskResult.trajectoryLength,
       launchEpochTime: taskResult.launchEpochTime,
       lpdb: lpdbResult,
     };
@@ -84,6 +85,7 @@ class LaunchConjunctionsService {
     file,
     launchEpochTime,
     predictionEpochTime,
+    trajectoryLength,
     threshold
   ) {
     const { filename, path } = file;
@@ -96,6 +98,8 @@ class LaunchConjunctionsService {
       status: 'PENDING',
       launchEpochTime,
       predictionEpochTime,
+      trajectoryLength,
+      threshold,
     });
     if (!result) {
       throw new HttpException(

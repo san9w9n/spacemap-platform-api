@@ -15,7 +15,6 @@ const PORT = process.env.PORT || 3003;
 class App {
   constructor(controllers) {
     this.app = express();
-
     this.#initializeCors();
     this.#initializeSession();
     this.#initializeMiddlewares();

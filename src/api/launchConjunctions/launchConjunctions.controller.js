@@ -80,13 +80,14 @@ class LaunchConjunctionsController {
       throw new BadRequestException('Empty Trajectory field.');
     }
     const { email } = req.user;
-    const [launchEpochTime, predictionEpochTime] =
+    const [launchEpochTime, predictionEpochTime, trajectoryLength] =
       await TrajectoryHandler.checkTrajectoryAndGetLaunchEpochTime(path);
     const taskId = await this.launchConjunctionsService.enqueTask(
       email,
       file,
       launchEpochTime,
       predictionEpochTime,
+      trajectoryLength,
       threshold
     );
 
