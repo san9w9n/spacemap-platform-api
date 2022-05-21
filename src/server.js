@@ -17,6 +17,7 @@ const RsoController = require('./api/rso/rso.controller');
 
 const CronScheduler = require('./lib/cron-scheduler');
 const TleTask = require('./api/tles/tle.task');
+const EventseqTask = require('./api/ppdbs/eventseq.task');
 const PpdbTask = require('./api/ppdbs/ppdb.task');
 const RsoParamsTask = require('./api/rso/rso.task');
 const LaunchConjunctionTask = require('./api/launchConjunctions/launchConjunctions.task');
@@ -63,6 +64,7 @@ const main = async () => {
   } else if (instanceName === 'spacemap-platform-api-daily-tasks') {
     const schedulers = new CronScheduler([
       new TleTask(tleService),
+      new EventseqTask(),
       new PpdbTask(ppdbService),
       new RsoParamsTask(rsoService),
     ]);

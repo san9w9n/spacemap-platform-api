@@ -83,7 +83,7 @@ class PpdbHandler {
     const sshHandler = new SshHandler();
     const backupPath = `${EngineCommand.homeDirectory}2022/`;
     const { result, message } = await sshHandler.execCalculate(
-      `mv -v ${EngineCommand.homeDirectory}PPDB2.txt ${backupPath}${ppdbFile} && mv -v ${EngineCommand.homeDirectory}*.tle ${backupPath}${tleFile}`
+      `mv -v ${EngineCommand.homeDirectory}PPDB2.txt ${backupPath}PPDB${ppdbFile} && mv -v ${EngineCommand.homeDirectory}*.tle ${backupPath}`
     );
     // if (result !== 0) {
     //   throw new Error(message);
@@ -105,7 +105,7 @@ class PpdbHandler {
     const sshHandler = new SshHandler();
     const eventCommand = EngineCommand.getEventSeqGenCommand();
     const ppdbCommand = EngineCommand.getCaculatePpdbCommand();
-    const command = `${eventCommand} && ${ppdbCommand}`;
+    const command = `${eventCommand} > /dev/null  && ${ppdbCommand}`;
 
     console.log(command);
     const { result, message } = await sshHandler.execCalculate(command);
