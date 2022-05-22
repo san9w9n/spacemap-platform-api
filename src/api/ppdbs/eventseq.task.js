@@ -65,6 +65,7 @@ class EventseqTask {
       );
       console.log(`${new Date()}`);
       console.log('eventseq scheduler finish.');
+      this.excuting = false;
     }
     // --------------------------calculate PPDB----------------------------//
   }

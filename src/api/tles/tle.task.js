@@ -1,10 +1,12 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable no-unused-vars */
+
 const TleService = require('./tle.service');
 const DateHandler = require('../../lib/date-handler');
 const SendRequestHandler = require('../../lib/sendRequest-handler');
 const TleHandler = require('../../lib/tle-handler');
+const SendEmailHandler = require('../../lib/node-mailer');
 
 class TleTask {
   #SPACETRACK_URL = 'https://www.space-track.org';
@@ -22,6 +24,12 @@ class TleTask {
     this.excuting = false;
     this.handler = this.#tleScheduleHandler.bind(this);
     this.tleService = tleService;
+  }
+
+  async doTleTask(_req, res) {
+    const date = DateHandler.getCurrentUTCDate();
+    await this.#tleScheduleHandler(date);
+    return {};
   }
 
   /**
@@ -52,7 +60,10 @@ class TleTask {
       await TleHandler.saveTlesOnFile(dateObj, newTlePlainTexts);
       console.log(`Save satellite TLE at : ${dateObj}`);
     } catch (err) {
-      console.log('funking error');
+      await SendEmailHandler.sendMail(
+        '[SPACEMAP] tle task 에서 에러가 발생하였습니다.',
+        err
+      );
     } finally {
       this.excuting = false;
       console.log('tle scheduler finish.');
