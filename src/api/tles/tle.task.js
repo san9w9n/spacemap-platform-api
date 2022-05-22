@@ -1,6 +1,7 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable no-unused-vars */
+
 const TleService = require('./tle.service');
 const DateHandler = require('../../lib/date-handler');
 const SendRequestHandler = require('../../lib/sendRequest-handler');
@@ -21,6 +22,12 @@ class TleTask {
     this.excuting = false;
     this.handler = this.#tleScheduleHandler.bind(this);
     this.tleService = tleService;
+  }
+
+  async doTleTask(_req, res) {
+    const date = DateHandler.getCurrentUTCDate();
+    await this.#tleScheduleHandler(date);
+    return {};
   }
 
   /**

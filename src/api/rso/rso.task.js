@@ -1,8 +1,9 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable no-unused-vars */
 const RsoService = require('./rso.service');
 const RsoHandler = require('../../lib/rso-handler');
+const DateHandler = require('../../lib/date-handler');
 const SendRequestHandler = require('../../lib/sendRequest-handler');
 
 class RsoParamsTask {
@@ -20,6 +21,12 @@ class RsoParamsTask {
     this.excuting = false;
     this.rsoService = rsoService;
     this.handler = this.#rsoScheduleHandler.bind(this);
+  }
+
+  async doRsoTask(_req, res) {
+    const date = DateHandler.getCurrentUTCDate();
+    await this.#rsoScheduleHandler(date);
+    return {};
   }
 
   /**

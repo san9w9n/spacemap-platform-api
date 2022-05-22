@@ -1,6 +1,7 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable no-unused-vars */
+
 const PpdbService = require('./ppdb.service');
 const DateHandler = require('../../lib/date-handler');
 const PpdbHandler = require('../../lib/ppdb-handler');
@@ -17,6 +18,12 @@ class PpdbTask {
     this.handler = this.#ppdbScheduleHandler.bind(this);
     this.sftpHandler = new SftpHandler();
     this.ppdbService = ppdbService;
+  }
+
+  async doPpdbTask(_req, res) {
+    const date = DateHandler.getCurrentUTCDate();
+    await this.#ppdbScheduleHandler(date);
+    return {};
   }
 
   async #ppdbScheduleHandler(dateObj) {
