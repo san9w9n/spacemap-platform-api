@@ -6,6 +6,7 @@ const TleService = require('./tle.service');
 const DateHandler = require('../../lib/date-handler');
 const SendRequestHandler = require('../../lib/sendRequest-handler');
 const TleHandler = require('../../lib/tle-handler');
+const SendEmailHandler = require('../../lib/node-mailer');
 
 class TleTask {
   #SPACETRACK_URL = 'https://www.space-track.org';
@@ -58,7 +59,10 @@ class TleTask {
       await TleHandler.saveTlesOnFile(dateObj, newTlePlainTexts);
       console.log(`Save satellite TLE at : ${dateObj}`);
     } catch (err) {
-      console.log('funking error');
+      await SendEmailHandler.sendMail(
+        '[SPACEMAP] tle task 에서 에러가 발생하였습니다.',
+        err
+      );
     } finally {
       this.excuting = false;
       console.log('tle scheduler finish.');

@@ -5,6 +5,7 @@ const RsoService = require('./rso.service');
 const RsoHandler = require('../../lib/rso-handler');
 const DateHandler = require('../../lib/date-handler');
 const SendRequestHandler = require('../../lib/sendRequest-handler');
+const SendEmailHandler = require('../../lib/node-mailer');
 
 class RsoParamsTask {
   #SPACETRACK_URL = 'https://www.space-track.org';
@@ -52,7 +53,10 @@ class RsoParamsTask {
       await this.rsoService.updateRsoParams(rsoParamsArray);
       console.log(`Rso params updated at ${dateObj}`);
     } catch (err) {
-      console.error(err);
+      await SendEmailHandler.sendMail(
+        '[SPACEMAP] rso-params task 에서 에러가 발생하였습니다.',
+        err
+      );
     } finally {
       this.excuting = false;
       console.log('rso scheduler finish.');

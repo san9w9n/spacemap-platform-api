@@ -6,6 +6,7 @@ const PpdbService = require('./ppdb.service');
 const DateHandler = require('../../lib/date-handler');
 const PpdbHandler = require('../../lib/ppdb-handler');
 const SftpHandler = require('../../lib/sftp-handler');
+const SendEmailHandler = require('../../lib/node-mailer');
 
 class PpdbTask {
   #FROM_PPDB_PATH = '/data/COOP/workingFolder/PPDB2.txt';
@@ -47,7 +48,10 @@ class PpdbTask {
       await this.ppdbService.savePpdbOnDatabase(dateObj, ppdbFile);
       console.log(`Save PPDB at: ${dateObj}`);
     } catch (err) {
-      console.error(err);
+      await SendEmailHandler.sendMail(
+        '[SPACEMAP] ppdb task 에서 에러가 발생하였습니다.',
+        err
+      );
     } finally {
       console.log('ppdb scheduler finish.');
       this.excuting = false;
