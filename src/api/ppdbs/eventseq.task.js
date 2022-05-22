@@ -12,7 +12,7 @@ class EventseqTask {
 
   constructor() {
     this.name = 'EVENT TASK';
-    this.period = '0 35 16 * * *';
+    this.period = '0 5 0 * * *';
     // this.period = '*/30 * * * * *';
     this.excuting = false;
     this.handler = this.#ppdbScheduleHandler.bind(this);
@@ -61,7 +61,7 @@ class EventseqTask {
       console.log('making ppdb is finished.');
       DateHandler.setStartMomentOfPredictionWindow(tomorrow.toISOString());
       DateHandler.setEndMomentOfPredictionWindow(
-        tomorrow.clone().diff(2, 'd').toISOString()
+        tomorrow.clone().add(2, 'd').toISOString()
       );
       console.log(`${new Date()}`);
       console.log('eventseq scheduler finish.');
