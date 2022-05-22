@@ -11,6 +11,7 @@ const {
   BadRequestException,
   ForbiddenException,
 } = require('../../common/exceptions');
+const { verifyUser } = require('../../middlewares/auth.middleware');
 
 class LaunchConjunctionsController {
   /** @param { LaunchConjunctionsService } launchConjunctionsService */
@@ -22,6 +23,7 @@ class LaunchConjunctionsController {
   }
 
   initializeRoutes() {
+    this.router.use(verifyUser);
     this.router
       .get('/', wrapper(this.readLaunchConjunctions.bind(this)))
       .get('/:dbId', wrapper(this.findLauncConjunctions.bind(this)))
@@ -34,8 +36,7 @@ class LaunchConjunctionsController {
   }
 
   async readLaunchConjunctions(req, _res) {
-    // TODO: 로그인 한 유저의 이메일 -> req.user.email
-    const email = 'sangwon@test.com';
+    const { email } = req.user;
     const data = await this.launchConjunctionsService.readLaunchConjunctions(
       email
     );
@@ -43,6 +44,7 @@ class LaunchConjunctionsController {
   }
 
   async findLauncConjunctions(req, _res) {
+    const { email } = req.user;
     const { dbId } = req.params;
     if (!dbId) {
       throw new BadRequestException('Param is empty.');
@@ -77,14 +79,15 @@ class LaunchConjunctionsController {
     if (!path || !threshold) {
       throw new BadRequestException('Empty Trajectory field.');
     }
-    const email = 'sangwon@test.com';
-    const [launchEpochTime, predictionEpochTime] =
+    const { email } = req.user;
+    const [launchEpochTime, predictionEpochTime, trajectoryLength] =
       await TrajectoryHandler.checkTrajectoryAndGetLaunchEpochTime(path);
     const taskId = await this.launchConjunctionsService.enqueTask(
       email,
       file,
       launchEpochTime,
       predictionEpochTime,
+      trajectoryLength,
       threshold
     );
 

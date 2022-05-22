@@ -18,6 +18,12 @@ const LaunchConjunctionsScheme = new Schema({
   launchEpochTime: {
     type: Date,
   },
+  trajectoryLength: {
+    type: Number,
+  },
+  threshold: {
+    type: Number,
+  },
   status: {
     type: String,
     enum: ['PENDING', 'ERROR', 'DONE'],

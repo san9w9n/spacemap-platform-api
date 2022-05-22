@@ -18,6 +18,7 @@ const TaskController = require('./api/tasks/task.controller');
 
 const CronScheduler = require('./lib/cron-scheduler');
 const TleTask = require('./api/tles/tle.task');
+const EventseqTask = require('./api/ppdbs/eventseq.task');
 const PpdbTask = require('./api/ppdbs/ppdb.task');
 const RsoParamsTask = require('./api/rso/rso.task');
 const LaunchConjunctionTask = require('./api/launchConjunctions/launchConjunctions.task');
@@ -63,12 +64,18 @@ const main = async () => {
     launchConjunctionsService,
     lpdbService
   );
+  const eventSeqTask = new EventseqTask();
 
   if (instanceName === 'spacemap-platform-api-launch-conjunction') {
     const schedulers = new CronScheduler([launchConjunctionTask]);
     schedulers.startAllSchedule();
   } else if (instanceName === 'spacemap-platform-api-daily-tasks') {
-    const schedulers = new CronScheduler([tleTask, ppdbTask, rsoParamsTask]);
+    const schedulers = new CronScheduler([
+      tleTask,
+      eventSeqTask,
+      ppdbTask,
+      rsoParamsTask,
+    ]);
     schedulers.startAllSchedule();
   } else {
     const app = new App([

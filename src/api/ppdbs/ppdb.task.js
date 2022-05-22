@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
 
+const moment = require('moment');
 const PpdbService = require('./ppdb.service');
 const DateHandler = require('../../lib/date-handler');
 const PpdbHandler = require('../../lib/ppdb-handler');
@@ -14,7 +15,8 @@ class PpdbTask {
   /** @param { PpdbService } ppdbService */
   constructor(ppdbService) {
     this.name = 'PPDB TASK';
-    this.period = '0 0 0 * * *';
+    this.period = '0 5 6 * * *';
+    // this.period = '*/30 * * * * *';
     this.excuting = false;
     this.handler = this.#ppdbScheduleHandler.bind(this);
     this.sftpHandler = new SftpHandler();
@@ -33,8 +35,9 @@ class PpdbTask {
     }
     this.excuting = true;
     console.log('ppdb scheduler start.');
-    const ppdbFileName = DateHandler.getFileNameByDateObject(dateObj);
-    const ppdbPath = `./public/ppdb/${ppdbFileName}.txt`;
+    const currDateFileName = DateHandler.getFileNameByDateObject(dateObj);
+    const ppdbPath = `./public/ppdb/${currDateFileName}.txt`;
+    // -----------------------------get PPDB-------------------------------//
     try {
       const getFileResult = await this.sftpHandler.getFile(
         this.#FROM_PPDB_PATH,
@@ -56,6 +59,8 @@ class PpdbTask {
       console.log('ppdb scheduler finish.');
       this.excuting = false;
     }
+
+    // -----------------------------get PPDB-------------------------------//
   }
 }
 

@@ -2,6 +2,8 @@ const moment = require('moment');
 // const DateHandler = require('./date-handler');
 const StringHandler = require('./string-handler');
 const { promiseReadFile } = require('./promise-io');
+const SshHandler = require('./ssh-handler');
+const EngineCommand = require('./engine-command');
 
 class PpdbHandler {
   static async #getPpdbObject(createdAt, rawPpdb) {
@@ -68,6 +70,59 @@ class PpdbHandler {
     return promiseReadFile(path, {
       encoding: 'utf-8',
     });
+  }
+
+  static async sshRemoveEventSeq() {
+    const sshHandler = new SshHandler();
+    const command = `rm -rf ${EngineCommand.homeDirectory}EVENTSEQ && rm -rf ${EngineCommand.homeDirectory}Su* && mkdir ${EngineCommand.homeDirectory}EVENTSEQ`;
+    console.log(command);
+    const { result, message } = await sshHandler.execCalculate(`${command}`);
+  }
+
+  static async sshBackupTle(ppdbFile, tleFile) {
+    const sshHandler = new SshHandler();
+    const backupPath = `${EngineCommand.homeDirectory}2022/`;
+    const { result, message } = await sshHandler.execCalculate(
+      `mv -v ${EngineCommand.homeDirectory}PPDB2.txt ${backupPath}PPDB${ppdbFile} && mv -v ${EngineCommand.homeDirectory}*.tle ${backupPath}`
+    );
+    // if (result !== 0) {
+    //   throw new Error(message);
+    // }
+  }
+
+  static async sshPutPredictionCommand(predictionCommand) {
+    const sshHandler = new SshHandler();
+    const { result, message } = await sshHandler.writeTextToFile(
+      predictionCommand,
+      EngineCommand.predictionCommand
+    );
+    // if (result !== 0) {
+    //   throw new Error(message);
+    // }
+  }
+
+  static async sshExecEvetnSeqGen() {
+    const sshHandler = new SshHandler();
+    const eventCommand = EngineCommand.getEventSeqGenCommand();
+    const ppdbCommand = EngineCommand.getCaculatePpdbCommand();
+    const command = `${eventCommand} > /dev/null  && ${ppdbCommand}`;
+
+    console.log(command);
+    const { result, message } = await sshHandler.execCalculate(command);
+    if (result !== 0) {
+      console.log(message);
+      throw new Error(message);
+    }
+  }
+
+  static async sshExecCalculatePpdb() {
+    const sshHandler = new SshHandler();
+    const command = EngineCommand.getCaculatePpdbCommand();
+    console.log(command);
+    const { result, message } = await sshHandler.execCalculate(command);
+    if (result !== 0) {
+      throw new Error(message);
+    }
   }
 }
 

@@ -1,16 +1,38 @@
 const moment = require('moment');
+const PredictionWindow = require('./predictionwindow.model');
 
 class DateHandler {
-  static #startMomentOfPredictionWindow = moment()
-    .utc()
-    .startOf('day')
-    .toISOString();
+  // static #startMomentOfPredictionWindow;
 
-  static #endMomentOfPredictionWindow = moment()
-    .utc()
-    .add(2, 'd')
-    .startOf('day')
-    .toISOString();
+  // static #endMomentOfPredictionWindow;
+
+  static async setStartMomentOfPredictionWindow(startMoment) {
+    const options = { upsert: true, new: true, setDefaultsOnInsert: true };
+    await PredictionWindow.findByIdAndUpdate(
+      '6287a167652f57b94bcb2977',
+      { startMoment },
+      options
+    );
+  }
+
+  static async setEndMomentOfPredictionWindow(endMoment) {
+    const options = { upsert: true, new: true, setDefaultsOnInsert: true };
+    await PredictionWindow.findByIdAndUpdate(
+      '6287a167652f57b94bcb2977',
+      { endMoment },
+      options
+    );
+  }
+
+  static async getStartMomentOfPredictionWindow() {
+    const result = await PredictionWindow.findOne().exec();
+    return result.startMoment;
+  }
+
+  static async getEndMomentOfPredictionWindow() {
+    const result = await PredictionWindow.findOne().exec();
+    return result.endMoment;
+  }
 
   static getCertainUTCDate(
     year,
@@ -104,28 +126,23 @@ class DateHandler {
   }
 
   static async isValidDate(launchEpochTime) {
+    const startMoment = await this.getStartMomentOfPredictionWindow();
+    const endMoment = await this.getEndMomentOfPredictionWindow();
     if (
-      moment(launchEpochTime).isSameOrAfter(
-        moment(this.#startMomentOfPredictionWindow)
-      ) &&
-      moment(launchEpochTime).isSameOrBefore(
-        moment(this.#endMomentOfPredictionWindow)
-      )
+      moment(launchEpochTime).isSameOrAfter(moment(startMoment)) &&
+      moment(launchEpochTime).isSameOrBefore(moment(endMoment))
     )
       return true;
-    return false;
+    return true;
   }
 
   static async diffSeconds(launchEpochTime) {
+    const startMoment = await this.getStartMomentOfPredictionWindow();
     const diffSeconds = moment(launchEpochTime).diff(
-      moment(this.#startMomentOfPredictionWindow),
+      moment(startMoment),
       'seconds'
     );
     return diffSeconds;
-  }
-
-  static getStartMomentOfPredicWindow() {
-    return moment(this.#startMomentOfPredictionWindow);
   }
 
   static getMomentOfString(stringDate) {
@@ -135,7 +152,11 @@ class DateHandler {
   static isCalculatableDate() {
     const currentDate = this.getCurrentUTCDate();
     const hours = currentDate.getHours();
-    return hours < 15 || hours >= 20;
+    return hours < 4 || hours >= 10;
+  }
+
+  static getTomorrow() {
+    return moment().add(1, 'd').startOf('day');
   }
 }
 
