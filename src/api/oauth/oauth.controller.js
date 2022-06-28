@@ -31,7 +31,10 @@ class OauthController {
           failureRedirect: '/',
         }),
         (_req, res, _next) => {
-          res.status(200).redirect(process.env.REDIRECT_URL);
+          const redirectUrl = _req.rawHeaders.filter((item) =>
+            item.startsWith('http')
+          )[0];
+          res.status(200).redirect(redirectUrl);
         }
       );
   }
@@ -43,6 +46,7 @@ class OauthController {
   }
 
   loginCheck(req, _res) {
+    // console.log(req.rawHeaders);
     if (!req.isAuthenticated()) {
       throw new UnauthorizedException('Login failed.');
     }
