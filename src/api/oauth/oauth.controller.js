@@ -47,6 +47,7 @@ class OauthController {
   }
 
   loginCheck(req, _res) {
+    // console.log(req.rawHeaders);
     if (!req.isAuthenticated()) {
       throw new UnauthorizedException('Login failed.');
     }
