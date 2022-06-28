@@ -85,7 +85,7 @@ const main = async () => {
       new LaunchConjunctionsController(launchConjunctionsService),
       new OauthController(),
       new RsoController(rsoService),
-      new TaskController(tleTask, rsoParamsTask, ppdbTask),
+      new TaskController(tleTask, rsoParamsTask, ppdbTask, eventSeqTask),
     ]);
     app.listen();
   }

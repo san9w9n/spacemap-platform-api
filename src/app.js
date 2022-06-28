@@ -55,7 +55,7 @@ class App {
         resave: true,
         saveUninitialized: false,
         cookie: {
-          maxAge: 1 * 60 * 60 * 1000, // expires in 1 hour
+          maxAge: 6 * 60 * 60 * 1000, // expires in 6 hours
         },
         store: MongoStore.create({
           mongoUrl: process.env.MONGO_INFO,
@@ -79,6 +79,10 @@ class App {
     this.app.use(
       '/public/uploads',
       express.static(path.join(__dirname, '../public/uploads'))
+    );
+    this.app.use(
+      '/public/samples',
+      express.static(path.join(__dirname, '../public/samples'))
     );
   }
 
