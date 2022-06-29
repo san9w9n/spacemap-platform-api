@@ -25,7 +25,7 @@ class SshHandler {
     let result = -1;
     let message = 'failed.';
     try {
-      const exitCode = await this.ssh.exec(`${command} > /dev/null & echo $?`);
+      const exitCode = await this.ssh.exec(`${command} > /dev/null && echo $?`);
       result = Number(exitCode);
       message = result === 0 ? 'calculate success.' : 'calculate failed.';
     } catch (err) {
@@ -44,7 +44,9 @@ class SshHandler {
     await this.#connect();
     let result = -1;
     let message = 'failed.';
-    const exitCode = await this.ssh.exec(`${command} > /dev/null & echo $?`);
+    const exitCode = await this.ssh.exec(`${command} > /dev/null 2>&1  && echo $?`);
+    result = Number(exitCode);
+    message = result === 0 ? 'calculate success.' : 'calculate failed.';
     this.#end();
     return {
       result,
