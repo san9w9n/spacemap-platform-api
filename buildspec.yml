@@ -34,7 +34,7 @@ phases:
       # - command
   build:
     commands:
-      - sh build.sh
+      # - sh build.sh
       # - command
   post_build:
     commands:
