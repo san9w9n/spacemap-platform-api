@@ -19,8 +19,6 @@ class OauthController {
       .get('/', wrapper(this.loginCheck.bind(this)))
       .get('/logout', verifyUser, wrapper(this.signOut.bind(this)))
       .get('/google', (req, res, next) => {
-        console.log('called google');
-        console.log(req.originalUrl);
         passport.authenticate('google', { scope: ['profile', 'email'] })(
           req,
           res,
@@ -33,9 +31,7 @@ class OauthController {
           failureRedirect: '/',
         }),
         (req, res, next) => {
-          console.log('called redirected google');
-          console.log(req.originalUrl);
-          res.status(200).redirect(process.env.REDIRECT_URL);
+          res.status(200).redirect(req.session.currentUrl);
         }
       );
   }
@@ -47,7 +43,8 @@ class OauthController {
   }
 
   loginCheck(req, _res) {
-    // console.log(req.rawHeaders);
+    req.session.currentUrl = req.headers.origin;
+    console.log(req.session);
     if (!req.isAuthenticated()) {
       throw new UnauthorizedException('Login failed.');
     }
