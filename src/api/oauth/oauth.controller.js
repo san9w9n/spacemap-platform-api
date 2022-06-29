@@ -30,11 +30,8 @@ class OauthController {
         passport.authenticate('google', {
           failureRedirect: '/',
         }),
-        (_req, res, _next) => {
-          const redirectUrl = _req.rawHeaders.filter((item) =>
-            item.startsWith('http')
-          )[0];
-          res.status(200).redirect(redirectUrl);
+        (req, res, next) => {
+          res.status(200).redirect(req.session.currentUrl);
         }
       );
   }
@@ -46,7 +43,8 @@ class OauthController {
   }
 
   loginCheck(req, _res) {
-    // console.log(req.rawHeaders);
+    req.session.currentUrl = req.headers.origin;
+    console.log(req.session);
     if (!req.isAuthenticated()) {
       throw new UnauthorizedException('Login failed.');
     }

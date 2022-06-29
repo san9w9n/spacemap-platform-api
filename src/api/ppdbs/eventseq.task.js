@@ -1,6 +1,7 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable no-unused-vars */
+
 const moment = require('moment');
 const DateHandler = require('../../lib/date-handler');
 const PpdbHandler = require('../../lib/ppdb-handler');
@@ -12,17 +13,24 @@ class EventseqTask {
 
   constructor() {
     this.name = 'EVENT TASK';
-    this.period = '0 5 0 * * *';
+    this.period = '0 5 12 * * *';
     // this.period = '*/30 * * * * *';
     this.excuting = false;
     this.handler = this.#ppdbScheduleHandler.bind(this);
     this.sftpHandler = new SftpHandler();
   }
 
+  async doEventSeqTask(_req, _res) {
+    const date = DateHandler.getCurrentUTCDate();
+    await this.#ppdbScheduleHandler(date);
+    return {};
+  }
+
   async #ppdbScheduleHandler(dateObj) {
-    if (this.excuting) {
-      return;
-    }
+    // if (this.excuting) {
+    //   console.log('excuting');
+    //   return;
+    // }
     this.excuting = true;
     console.log('eventseq scheduler start.');
     console.log(`${new Date()}`);
@@ -44,6 +52,10 @@ class EventseqTask {
         month,
         date,
         hour
+      );
+      DateHandler.setStartMomentOfPredictionWindow(tomorrow.toISOString());
+      DateHandler.setEndMomentOfPredictionWindow(
+        tomorrow.clone().add(2, 'd').toISOString()
       );
       await PpdbHandler.sshRemoveEventSeq();
       await PpdbHandler.sshBackupTle(ppdbFileName, tleFileName);

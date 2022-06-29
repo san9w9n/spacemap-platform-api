@@ -76,15 +76,15 @@ class PpdbHandler {
     const sshHandler = new SshHandler();
     const command = `rm -rf ${EngineCommand.homeDirectory}EVENTSEQ && rm -rf ${EngineCommand.homeDirectory}Su* && mkdir ${EngineCommand.homeDirectory}EVENTSEQ`;
     console.log(command);
-    const { result, message } = await sshHandler.execCalculate(`${command}`);
+    const { result, message } = await sshHandler.execCalculate(command);
   }
 
   static async sshBackupTle(ppdbFile, tleFile) {
     const sshHandler = new SshHandler();
     const backupPath = `${EngineCommand.homeDirectory}2022/`;
-    const { result, message } = await sshHandler.execCalculate(
-      `mv -v ${EngineCommand.homeDirectory}PPDB2.txt ${backupPath}PPDB${ppdbFile} && mv -v ${EngineCommand.homeDirectory}*.tle ${backupPath}`
-    );
+    const command = `mv -v ${EngineCommand.homeDirectory}PPDB2.txt ${backupPath}PPDB${ppdbFile} && mv -v ${EngineCommand.homeDirectory}*.tle ${backupPath}`;
+    console.log(command);
+    const { result, message } = await sshHandler.execCalculate(command);
     // if (result !== 0) {
     //   throw new Error(message);
     // }
@@ -113,6 +113,7 @@ class PpdbHandler {
       console.log(message);
       throw new Error(message);
     }
+    console.log(`here sshexec result ${message}`);
   }
 
   static async sshExecCalculatePpdb() {

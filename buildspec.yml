@@ -1,0 +1,62 @@
+version: 0.2
+
+#env:
+#variables:
+#CASHDOC_NODE_ENV: "development"
+#NODE_ENV: "development"
+#parameter-app.store:
+# key: "value"
+# key: "value"
+#secrets-manager:
+# key: secret-id:json-key:version-stage:version-id
+# key: secret-id:json-key:version-stage:version-id
+#exported-variables:
+# - variable
+# - variable
+#git-credential-helper: yes
+
+phases:
+  install:
+    #Ubuntu 표준 이미지 2.0 이상을 사용하는 경우 런타임 버전을 지정해야 합니다.
+    #런타임 버전을 지정하는 경우 Ubuntu 표준 이미지 2.0 이외의 이미지를 사용하면 빌드에 실패합니다.
+    runtime-versions:
+      # name: version
+      nodejs: 14
+      # name: version
+    commands:
+      - npm install
+      # - command
+  pre_build:
+    commands:
+      # - cp -r ./src/public ./
+      # - command
+      # - command
+  build:
+    commands:
+      - sh build.sh
+      # - command
+  post_build:
+    commands:
+      - ls -al
+#reports:
+#report-name-or-arn:
+#files:
+# - location
+# - location
+#base-directory: location
+#discard-paths: yes
+#file-format: JunitXml | CucumberJson
+artifacts:
+  files:
+    - 'package*.json'
+    - 'public/**/*'
+    - '.next/**/*'
+    - '.ebextensions/**/*'
+    - '.npmrc'
+    #- 'node_modules/**/*'
+  #name: $(date +%Y-%m-%d)
+  #discard-paths: yes
+  #base-directory: './'
+cache:
+  paths:
+    - 'node_modules/**/*'
