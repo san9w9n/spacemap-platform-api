@@ -24,6 +24,7 @@ phases:
       nodejs: 14
       # name: version
     commands:
+      - n 16
       - npm install
       # - command
   pre_build:
@@ -48,6 +49,7 @@ phases:
 #file-format: JunitXml | CucumberJson
 artifacts:
   files:
+    - 'src/**/*'
     - 'package*.json'
     - 'public/**/*'
     - '.next/**/*'
