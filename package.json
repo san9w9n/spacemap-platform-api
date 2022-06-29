@@ -9,6 +9,8 @@
   "dependencies": {
     "async-mutex": "^0.3.2",
     "bcrypt": "^5.0.1",
+    "cesium": "^1.94.3",
+    "cesiumjs": "^1.10.0",
     "connect-mongo": "^4.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",

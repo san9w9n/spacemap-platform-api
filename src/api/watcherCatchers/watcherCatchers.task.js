@@ -2,25 +2,25 @@
 /* eslint-disable no-console */
 const { Mutex } = require('async-mutex');
 // eslint-disable-next-line no-unused-vars
-const LaunchConjunctionsService = require('./launchConjunctions.service');
+const WatcherCatchersService = require('./watcherCatchers.service');
 // eslint-disable-next-line no-unused-vars
-const LpdbService = require('../lpdb/lpdb.service');
-const LaunchConjunctionsHandler = require('../../lib/launchConjunction-handler');
+const WcdbService = require('../wcdb/wcdb.service');
+const WatcherCatchersHandler = require('../../lib/watcherCatcher-handler');
 const SshHandler = require('../../lib/ssh-handler');
 
-class LaunchConjunctionTask {
+class WatcherCatchersTask {
   #FROM_PPDB_PATH = '/data/COOP/workingFolder/PPDB2.txt';
 
   /**
-   * @param { LaunchConjunctionsService } launchConjunctionsService
-   * @param { LpdbService } lpdbService
+   * @param { WatcherCatchersService } watcherCatchersService
+   * @param { WcdbService } wcdbService
    */
-  constructor(launchConjunctionsService, lpdbService) {
-    this.name = 'LCA TASK';
+  constructor(watcherCatchersService, wcdbService) {
+    this.name = 'WC TASK';
     this.period = '*/30 * * * * *';
-    this.launchConjunctionsService = launchConjunctionsService;
-    this.lpdbService = lpdbService;
-    this.handler = this.#launchConjunctionScheduleHandler.bind(this);
+    this.watcherCatchersService = watcherCatchersService;
+    this.wcdbService = wcdbService;
+    this.handler = this.#watcherCatcherScheduleHandler.bind(this);
     this.sshHandler = new SshHandler();
     this.mutex = new Mutex();
   }
@@ -35,24 +35,24 @@ class LaunchConjunctionTask {
     } = task;
     console.log(`Task ${taskId} Start!`);
     try {
-      await LaunchConjunctionsHandler.sshExec(
+      await WatcherCatchersHandler.sshExec(
         remoteInputFilePath,
         remoteOutputFilePath,
         threshold
       );
-      await LaunchConjunctionsHandler.getFileFromRemoteServer(
+      await WatcherCatchersHandler.getFileFromRemoteServer(
         remoteOutputFilePath,
         localOutputPath
       );
-      await this.lpdbService.saveLpdbOnDatabase(localOutputPath, taskId);
-      await this.launchConjunctionsService.updateTaskStatusSuceess(
+      await this.wcdbService.saveWcdbOnDatabase(localOutputPath, taskId);
+      await this.watcherCatchersService.updateTaskStatusSuceess(
         taskId,
         localOutputPath
       );
       console.log(`Task ${taskId} has Successfully Done.`);
     } catch (err) {
       console.log(`Task ${taskId} has not done : ${err}`);
-      await this.launchConjunctionsService.updateTaskStatusFailed(
+      await this.watcherCatchersService.updateTaskStatusFailed(
         taskId,
         localOutputPath,
         err
@@ -60,14 +60,14 @@ class LaunchConjunctionTask {
     }
   }
 
-  async #launchConjunctionScheduleHandler() {
+  async #watcherCatcherScheduleHandler() {
     await this.mutex.runExclusive(async () => {
       const cpuUsagePercent = await this.sshHandler.execTop();
       if (cpuUsagePercent >= 700) {
         console.log(`cpuUsage: ${cpuUsagePercent}%`);
         return;
       }
-      const task = await this.launchConjunctionsService.popTaskFromDb();
+      const task = await this.watcherCatchersService.popTaskFromDb();
       if (!task) {
         return;
       }
@@ -76,4 +76,4 @@ class LaunchConjunctionTask {
   }
 }
 
-module.exports = LaunchConjunctionTask;
+module.exports = WatcherCatchersTask;

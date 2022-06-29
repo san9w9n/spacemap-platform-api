@@ -2,24 +2,37 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const LaunchConjunctionsScheme = new Schema({
+const WatcherCatchersScheme = new Schema({
   createdAt: { type: Date, default: Date.now },
   email: {
     type: String,
     required: true,
   },
-  trajectoryPath: {
-    type: String,
+  latitude: {
+    type: Number,
     required: true,
+  },
+  longitude: {
+    type: Number,
+    required: true,
+  },
+  localX: {
+    type: Number,
+    required: true,
+  },
+  localY: {
+    type: Number,
+    required: true,
+  },
+  localZ: {
+    type: Number,
+    required: true,
+  },
+  epochTime: {
+    type: Date,
   },
   predictionEpochTime: {
     type: Date,
-  },
-  launchEpochTime: {
-    type: Date,
-  },
-  trajectoryLength: {
-    type: Number,
   },
   threshold: {
     type: Number,
@@ -34,12 +47,12 @@ const LaunchConjunctionsScheme = new Schema({
     type: String,
     default: undefined,
   },
-  lpdbFilePath: {
+  wcdbFilePath: {
     type: String,
   },
 });
 
-const LaunchTaskScheme = new Schema({
+const WatcherCatchersTaskScheme = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
@@ -65,12 +78,15 @@ const LaunchTaskScheme = new Schema({
     required: true,
   },
 });
-LaunchTaskScheme.index({ createdAt: -1 });
+WatcherCatchersTaskScheme.index({ createdAt: -1 });
 
 module.exports = {
-  LaunchConjunctionsModel: mongoose.model(
-    'launchConjunctions',
-    LaunchConjunctionsScheme
+  WatcherCatchersModel: mongoose.model(
+    'watcherCatchers',
+    WatcherCatchersScheme
   ),
-  LaunchTaskModel: mongoose.model('launchTasks', LaunchTaskScheme),
+  WatcherCatchersTaskModel: mongoose.model(
+    'watcherCatchersTask',
+    WatcherCatchersTaskScheme
+  ),
 };
