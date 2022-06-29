@@ -26,7 +26,7 @@ class LaunchConjunctionsController {
     this.router.use(verifyUser);
     this.router
       .get('/', wrapper(this.readLaunchConjunctions.bind(this)))
-      .get('/:dbId', wrapper(this.findLauncConjunctions.bind(this)))
+      .get('/:dbId', wrapper(this.findLaunchConjunctions.bind(this)))
       .delete('/:dbId', wrapper(this.deleteLaunchConjunctions.bind(this)))
       .post(
         '/',
@@ -43,13 +43,13 @@ class LaunchConjunctionsController {
     return { data };
   }
 
-  async findLauncConjunctions(req, _res) {
+  async findLaunchConjunctions(req, _res) {
     const { email } = req.user;
     const { dbId } = req.params;
     if (!dbId) {
       throw new BadRequestException('Param is empty.');
     }
-    const data = await this.launchConjunctionsService.findLauncConjunctions(
+    const data = await this.launchConjunctionsService.findLaunchConjunctions(
       dbId
     );
     return { data };

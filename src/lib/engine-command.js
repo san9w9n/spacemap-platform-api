@@ -29,8 +29,16 @@ class EngineCommand {
     return `${this.engine} ${this.predictionCommand} PROXDBGEN2 0 ${this.maximumCores} ${threshold} -1`;
   }
 
-  static getCalculateCommand(inputFilePath, outputFilePath, threshold) {
+  static getLaunchCojunctionsAssessmentCommand(
+    inputFilePath,
+    outputFilePath,
+    threshold
+  ) {
     return `${this.engine} ${this.predictionCommand} PHANPROP 0 ${this.maximumCores} ${threshold} ${inputFilePath} ${outputFilePath}`;
+  }
+
+  static getWatcherCatchersCommand(paramFilePath) {
+    return `${this.engine} ${this.predictionCommand} INTERFERENCE 0 ${this.maximumCores} ${paramFilePath}`;
   }
 }
 

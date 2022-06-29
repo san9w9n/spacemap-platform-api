@@ -48,7 +48,7 @@ class LaunchConjunctionsHandler {
 
   static async sshExec(remoteInputFilePath, remoteOutputFilePath, threshold) {
     const sshHandler = new SshHandler();
-    const command = EngineCommand.getCalculateCommand(
+    const command = EngineCommand.getLaunchCojunctionsAssessmentCommand(
       remoteInputFilePath,
       remoteOutputFilePath,
       threshold

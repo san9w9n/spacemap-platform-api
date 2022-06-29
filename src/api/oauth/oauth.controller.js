@@ -21,6 +21,7 @@ class OauthController {
       .get('/google', (req, res, next) => {
         console.log('called google');
         console.log(req.originalUrl);
+        console.log(req.session);
         passport.authenticate('google', { scope: ['profile', 'email'] })(
           req,
           res,

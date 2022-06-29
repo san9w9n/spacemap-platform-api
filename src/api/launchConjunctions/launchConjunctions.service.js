@@ -28,7 +28,7 @@ class LaunchConjunctionsService {
     return result;
   }
 
-  async findLauncConjunctions(placeId) {
+  async findLaunchConjunctions(placeId) {
     const taskResult = await LaunchConjunctionsModel.findById(placeId);
     if (!taskResult) {
       throw new BadRequestException('No such task.');
