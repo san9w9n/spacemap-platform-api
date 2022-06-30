@@ -13,7 +13,7 @@ class EventseqTask {
 
   constructor() {
     this.name = 'EVENT TASK';
-    this.period = '0 5 12 * * *';
+    this.period = '0 5 15 * * *';
     // this.period = '*/30 * * * * *';
     this.excuting = false;
     this.handler = this.#ppdbScheduleHandler.bind(this);

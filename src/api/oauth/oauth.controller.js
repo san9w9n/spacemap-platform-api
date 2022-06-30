@@ -29,9 +29,10 @@ class OauthController {
         '/google/redirect',
         passport.authenticate('google', {
           failureRedirect: '/',
+          session: true,
         }),
         (req, res, next) => {
-          res.status(200).redirect(req.session.currentUrl);
+          res.status(200).redirect('https://platform.spacemap42.com');
         }
       );
   }
@@ -44,6 +45,7 @@ class OauthController {
 
   loginCheck(req, _res) {
     req.session.currentUrl = req.headers.origin;
+    console.log(req.sessionID);
     console.log(req.session);
     if (!req.isAuthenticated()) {
       throw new UnauthorizedException('Login failed.');
