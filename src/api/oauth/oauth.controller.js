@@ -1,7 +1,8 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-unused-vars */
-
 const { Router } = require('express');
+const MongoStore = require('connect-mongo');
+const session = require('express-session');
 const passport = require('passport');
 const { UnauthorizedException } = require('../../common/exceptions');
 const wrapper = require('../../lib/request-handler');
@@ -19,6 +20,7 @@ class OauthController {
       .get('/', wrapper(this.loginCheck.bind(this)))
       .get('/logout', verifyUser, wrapper(this.signOut.bind(this)))
       .get('/google', (req, res, next) => {
+        console.log('dlsds');
         passport.authenticate('google', { scope: ['profile', 'email'] })(
           req,
           res,
@@ -31,18 +33,36 @@ class OauthController {
           failureRedirect: '/',
         }),
         (req, res, next) => {
-          res.status(200).redirect('http://localhost:4012');
+          console.log('login');
+          res.status(200).redirect(req.session.currentUrl);
         }
       );
   }
 
   async signOut(req, _res) {
     req.logout();
+    const { currentUrl } = req.session;
     await req.session.destroy();
     return {};
   }
 
-  loginCheck(req, _res) {
+  async loginCheck(req, _res) {
+    if (!req.session.currentUrl) {
+      await session({
+        secret: 'SECRET_CODE',
+        resave: true,
+        saveUninitialized: false,
+        cookie: {
+          maxAge: 6 * 60 * 60 * 1000, // expires in 6 hours
+        },
+        store: MongoStore.create({
+          mongoUrl: process.env.MONGO_INFO,
+          autoRemove: 'interval',
+          autoRemoveInterval: 10,
+          dbName: 'SPACEMAP-PLATFORM',
+        }),
+      });
+    }
     req.session.currentUrl = req.headers.origin;
     console.log(req.session);
     if (!req.isAuthenticated()) {

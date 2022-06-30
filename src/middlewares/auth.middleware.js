@@ -34,6 +34,8 @@ const initializePassport = async () => {
         clientID: GOOGLE_CLIENT_ID,
         clientSecret: GOOGLE_CLIENT_SECRET,
         callbackURL: '/oauth/google/redirect',
+        proxy: true,
+        passReqToCallback: true,
       },
       async (accessToken, refreshToken, profile, done) => {
         const exUser = await UserModel.findOne({
