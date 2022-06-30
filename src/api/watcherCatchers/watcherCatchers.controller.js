@@ -73,8 +73,8 @@ class WatcherCatchersController {
     console.log(req.body);
     const taskId = await this.watcherCatchersService.enqueTask(
       email,
-      longitude,
       latitude,
+      longitude,
       epochTime,
       startMomentOfPredictionWindow,
       threshold

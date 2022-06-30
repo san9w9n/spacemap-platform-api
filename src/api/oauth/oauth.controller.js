@@ -31,7 +31,7 @@ class OauthController {
           failureRedirect: '/',
         }),
         (req, res, next) => {
-          res.status(200).redirect(req.session.currentUrl);
+          res.status(200).redirect('http://localhost:4012');
         }
       );
   }

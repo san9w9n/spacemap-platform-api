@@ -33,11 +33,9 @@ const initializePassport = async () => {
       {
         clientID: GOOGLE_CLIENT_ID,
         clientSecret: GOOGLE_CLIENT_SECRET,
-        callbackURL: 'https://platformapi.spacemap42.com/oauth/google/redirect',
-        proxy: true,
-        passReqToCallback: true,
+        callbackURL: '/oauth/google/redirect',
       },
-      async (req, accessToken, refreshToken, profile, done) => {
+      async (accessToken, refreshToken, profile, done) => {
         const exUser = await UserModel.findOne({
           $and: [{ email: profile.emails[0].value }, { provider: 'google' }],
         });
