@@ -46,7 +46,23 @@ class OauthController {
     return {};
   }
 
-  loginCheck(req, _res) {
+  async loginCheck(req, _res) {
+    if (!req.session.currentUrl) {
+      await session({
+        secret: 'SECRET_CODE',
+        resave: true,
+        saveUninitialized: false,
+        cookie: {
+          maxAge: 6 * 60 * 60 * 1000, // expires in 6 hours
+        },
+        store: MongoStore.create({
+          mongoUrl: process.env.MONGO_INFO,
+          autoRemove: 'interval',
+          autoRemoveInterval: 10,
+          dbName: 'SPACEMAP-PLATFORM',
+        }),
+      });
+    }
     req.session.currentUrl = req.headers.origin;
     console.log(req.session);
     if (!req.isAuthenticated()) {
