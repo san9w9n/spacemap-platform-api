@@ -37,7 +37,7 @@ const initializePassport = async () => {
         proxy: true,
         passReqToCallback: true,
       },
-      async (req, accessToken, refreshToken, profile, done) => {
+      async (accessToken, refreshToken, profile, done) => {
         const exUser = await UserModel.findOne({
           $and: [{ email: profile.emails[0].value }, { provider: 'google' }],
         });

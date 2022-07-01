@@ -91,10 +91,11 @@ class WatcherCatchersService {
   ) {
     const position = await this.degreesToCartesian3(longitude, latitude);
     console.log(position);
+    epochTime = new Date(epochTime);
     const result = await WatcherCatchersModel.create({
       email,
-      longitude,
       latitude,
+      longitude,
       localX: position.x,
       localY: position.y,
       localZ: position.z,
