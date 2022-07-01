@@ -39,7 +39,9 @@ class OauthController {
         }),
         (req, res, next) => {
           const { currentUrl } = req.session;
-          res.status(200).redirect(currentUrl);
+          req.session.save(() => {
+            res.status(200).redirect(currentUrl);
+          });
         }
       );
   }
