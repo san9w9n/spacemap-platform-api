@@ -23,7 +23,7 @@ class OauthController {
       .get('/', wrapper(this.loginCheck.bind(this)))
       .get('/logout', verifyUser, wrapper(this.signOut.bind(this)))
       .get('/google', (req, res, next) => {
-        req.session.currentUrl=req.query.host
+        req.session.currentUrl = req.query.host;
         passport.authenticate('google', { scope: ['profile', 'email'] })(
           req,
           res,
