@@ -52,8 +52,8 @@ class App {
     this.app.use(
       session({
         secret: 'SECRET_CODE',
-        resave: true,
-        saveUninitialized: false,
+        resave: false,
+        saveUninitialized: true,
         cookie: {
           maxAge: 6 * 60 * 60 * 1000, // expires in 6 hours
         },
