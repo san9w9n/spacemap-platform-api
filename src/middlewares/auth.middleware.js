@@ -38,7 +38,6 @@ const initializePassport = async () => {
         passReqToCallback: true,
       },
       async (req, accessToken, refreshToken, profile, done) => {
-        console.log(profile);
         const exUser = await UserModel.findOne({
           $and: [{ email: profile?.emails[0].value }, { provider: 'google' }],
         });

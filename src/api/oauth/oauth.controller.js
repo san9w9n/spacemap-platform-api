@@ -23,6 +23,8 @@ class OauthController {
       .get('/', wrapper(this.loginCheck.bind(this)))
       .get('/logout', verifyUser, wrapper(this.signOut.bind(this)))
       .get('/google', (req, res, next) => {
+        console.log('google');
+        console.log(req.sessionID);
         req.session.currentUrl = req.query.host;
         passport.authenticate('google', { scope: ['profile', 'email'] })(
           req,
@@ -50,6 +52,8 @@ class OauthController {
   }
 
   async loginCheck(req, _res) {
+    console.log('check');
+    console.log(req.sessionID);
     if (!req.isAuthenticated()) {
       throw new UnauthorizedException('Login failed.');
     }
