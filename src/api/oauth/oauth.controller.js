@@ -41,6 +41,7 @@ class OauthController {
         (req, res, next) => {
           const { currentUrl } = req.session;
           req.session.save(() => {
+            console.log(currentUrl);
             res.status(200).redirect(currentUrl);
           });
         }
@@ -55,30 +56,8 @@ class OauthController {
   }
 
   async loginCheck(req, _res) {
-<<<<<<< HEAD
-    if (!req.session.currentUrl) {
-      await session({
-        secret: 'SECRET_CODE',
-        resave: true,
-        saveUninitialized: false,
-        cookie: {
-          maxAge: 6 * 60 * 60 * 1000, // expires in 6 hours
-        },
-        store: MongoStore.create({
-          mongoUrl: process.env.MONGO_INFO,
-          autoRemove: 'interval',
-          autoRemoveInterval: 10,
-          dbName: 'SPACEMAP-PLATFORM',
-        }),
-      });
-    }
-    req.session.currentUrl = req.headers.origin;
-    console.log(req.sessionID);
-    console.log(req.session);
-=======
     console.log('check');
     console.log(req.sessionID);
->>>>>>> develop
     if (!req.isAuthenticated()) {
       throw new UnauthorizedException('Login failed.');
     }
