@@ -6,7 +6,10 @@ const session = require('express-session');
 const passport = require('passport');
 const { UnauthorizedException } = require('../../common/exceptions');
 const wrapper = require('../../lib/request-handler');
-const { verifyUser } = require('../../middlewares/auth.middleware');
+const {
+  verifyUser,
+  storeRedirectToInSession,
+} = require('../../middlewares/auth.middleware');
 
 class OauthController {
   constructor() {
@@ -20,7 +23,9 @@ class OauthController {
       .get('/', wrapper(this.loginCheck.bind(this)))
       .get('/logout', verifyUser, wrapper(this.signOut.bind(this)))
       .get('/google', (req, res, next) => {
-        console.log('dlsds');
+        console.log('google');
+        console.log(req.sessionID);
+        req.session.currentUrl = req.query.host;
         passport.authenticate('google', { scope: ['profile', 'email'] })(
           req,
           res,
@@ -34,7 +39,10 @@ class OauthController {
           session: true,
         }),
         (req, res, next) => {
-          res.status(200).redirect('https://platform.spacemap42.com');
+          const { currentUrl } = req.session;
+          req.session.save(() => {
+            res.status(200).redirect(currentUrl);
+          });
         }
       );
   }
@@ -47,6 +55,7 @@ class OauthController {
   }
 
   async loginCheck(req, _res) {
+<<<<<<< HEAD
     if (!req.session.currentUrl) {
       await session({
         secret: 'SECRET_CODE',
@@ -66,6 +75,10 @@ class OauthController {
     req.session.currentUrl = req.headers.origin;
     console.log(req.sessionID);
     console.log(req.session);
+=======
+    console.log('check');
+    console.log(req.sessionID);
+>>>>>>> develop
     if (!req.isAuthenticated()) {
       throw new UnauthorizedException('Login failed.');
     }

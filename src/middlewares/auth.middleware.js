@@ -37,16 +37,16 @@ const initializePassport = async () => {
         proxy: true,
         passReqToCallback: true,
       },
-      async (accessToken, refreshToken, profile, done) => {
+      async (req, accessToken, refreshToken, profile, done) => {
         const exUser = await UserModel.findOne({
-          $and: [{ email: profile.emails[0].value }, { provider: 'google' }],
+          $and: [{ email: profile?.emails[0].value }, { provider: 'google' }],
         });
 
         if (exUser) {
           return done(null, exUser);
         }
 
-        const hashedPassword = await bcrypt.hash(profile.displayName, 11);
+        const hashedPassword = await bcrypt.hash(profile?.displayName, 11);
         const newUser = await UserModel.create({
           email: profile.emails[0].value,
           password: hashedPassword,
