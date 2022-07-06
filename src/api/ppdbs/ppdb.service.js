@@ -33,7 +33,10 @@ class PpdbService {
   }
 
   async findConjunctionsService(limit, page, sort) {
-    const totalcount = await PpdbModel.count().exec();
+    const queryOption = {
+      tcaTime: { $gte: new Date() },
+    };
+    const totalcount = await PpdbModel.countDocuments(queryOption).exec();
     const conjunctions = await PpdbModel.find()
       .skip(limit * page)
       .limit(limit)
@@ -47,7 +50,10 @@ class PpdbService {
 
   async findConjunctionsByIdService(limit, page, sort, id) {
     const queryOption = {
-      $or: [{ pid: id }, { sid: id }],
+      $and: [
+        { $or: [{ pid: id }, { sid: id }] },
+        { tcaTime: { $gte: new Date() } },
+      ],
     };
     const totalcount = await PpdbModel.countDocuments(queryOption).exec();
     const conjunctions = await PpdbModel.find(queryOption)
@@ -63,9 +69,14 @@ class PpdbService {
 
   async findConjunctionsByNameService(limit, page, sort, name) {
     const queryOption = {
-      $or: [
-        { pName: { $regex: name, $options: 'i' } },
-        { sName: { $regex: name, $options: 'i' } },
+      $and: [
+        {
+          $or: [
+            { pName: { $regex: name, $options: 'i' } },
+            { sName: { $regex: name, $options: 'i' } },
+          ],
+        },
+        { tcaTime: { $gte: new Date() } },
       ],
     };
     const totalcount = await PpdbModel.countDocuments(queryOption).exec();
