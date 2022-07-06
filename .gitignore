@@ -3,3 +3,6 @@
 *.tle
 *.txt
 /node_modules
+
+#AWS
+Procfile

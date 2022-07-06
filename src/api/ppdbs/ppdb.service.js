@@ -19,7 +19,7 @@ class PpdbService {
       createdDateObj,
       ppdbTexts
     );
-    ppdbs.forEach(ppdb => {
+    ppdbs.forEach((ppdb) => {
       const { pid, sid } = ppdb;
       ppdb.pName = idNamePairs[pid] || 'UNKNOWN';
       ppdb.sName = idNamePairs[sid] || 'UNKNOWN';
@@ -34,26 +34,7 @@ class PpdbService {
 
   async findConjunctionsService(limit, page, sort) {
     const queryOption = {
-      tcaTime: { $gte: new Date() }
-    };
-    const totalcount = await PpdbModel.countDocuments(queryOption).exec();
-    const conjunctions = await PpdbModel.find()
-      .skip(limit * page)
-      .limit(limit)
-      .sort(sort)
-      .exec();
-    return {
-      totalcount,
-      conjunctions
-    };
-  }
-
-  async findConjunctionsByIdService(limit, page, sort, id) {
-    const queryOption = {
-      $and: [
-        { $or: [{ pid: id }, { sid: id }] },
-        { tcaTime: { $gte: new Date() } }
-      ]
+      tcaTime: { $gte: new Date() },
     };
     const totalcount = await PpdbModel.countDocuments(queryOption).exec();
     const conjunctions = await PpdbModel.find(queryOption)
@@ -63,7 +44,26 @@ class PpdbService {
       .exec();
     return {
       totalcount,
-      conjunctions
+      conjunctions,
+    };
+  }
+
+  async findConjunctionsByIdService(limit, page, sort, id) {
+    const queryOption = {
+      $and: [
+        { $or: [{ pid: id }, { sid: id }] },
+        { tcaTime: { $gte: new Date() } },
+      ],
+    };
+    const totalcount = await PpdbModel.countDocuments(queryOption).exec();
+    const conjunctions = await PpdbModel.find(queryOption)
+      .skip(limit * page)
+      .limit(limit)
+      .sort(sort)
+      .exec();
+    return {
+      totalcount,
+      conjunctions,
     };
   }
 
@@ -73,11 +73,11 @@ class PpdbService {
         {
           $or: [
             { pName: { $regex: name, $options: 'i' } },
-            { sName: { $regex: name, $options: 'i' } }
-          ]
+            { sName: { $regex: name, $options: 'i' } },
+          ],
         },
-        { tcaTime: { $gte: new Date() } }
-      ]
+        { tcaTime: { $gte: new Date() } },
+      ],
     };
     const totalcount = await PpdbModel.countDocuments(queryOption).exec();
     const conjunctions = await PpdbModel.find(queryOption)
@@ -87,7 +87,7 @@ class PpdbService {
       .exec();
     return {
       totalcount,
-      conjunctions
+      conjunctions,
     };
   }
 }
