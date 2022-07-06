@@ -1,7 +1,8 @@
 {
   "scripts": {
-    "start": "node ./src/server.js",
-    "start:dev": "PORT=8082 nodemon ./src/server.js "
+    "start": "SPACEMAP_NODE_ENV=deployment node ./src/server.js",
+    "start:dev": "SPACEMAP_NODE_ENV=development node ./src/server.js ",
+    "start:local": "PORT=8082 SPACEMAP_NODE_ENV=local nodemon ./src/server.js "
   },
   "engines": {
     "node": "16.13.1"
