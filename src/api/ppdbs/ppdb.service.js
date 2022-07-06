@@ -3,9 +3,9 @@
 /* eslint-disable no-console */
 
 // eslint-disable-next-line no-unused-vars
-const TleService = require("../tles/tle.service");
-const PpdbHandler = require("../../lib/ppdb-handler");
-const PpdbModel = require("./ppdb.model");
+const TleService = require('../tles/tle.service');
+const PpdbHandler = require('../../lib/ppdb-handler');
+const PpdbModel = require('./ppdb.model');
 
 class PpdbService {
   /** @param { TleService } tleService */
@@ -21,8 +21,8 @@ class PpdbService {
     );
     ppdbs.forEach(ppdb => {
       const { pid, sid } = ppdb;
-      ppdb.pName = idNamePairs[pid] || "UNKNOWN";
-      ppdb.sName = idNamePairs[sid] || "UNKNOWN";
+      ppdb.pName = idNamePairs[pid] || 'UNKNOWN';
+      ppdb.sName = idNamePairs[sid] || 'UNKNOWN';
     });
     await PpdbModel.insertMany(ppdbs);
     return PpdbModel.createIndexes({ tcaTime: 1, probability: 1, dca: 1 });
@@ -72,8 +72,8 @@ class PpdbService {
       $and: [
         {
           $or: [
-            { pName: { $regex: name, $options: "i" } },
-            { sName: { $regex: name, $options: "i" } }
+            { pName: { $regex: name, $options: 'i' } },
+            { sName: { $regex: name, $options: 'i' } }
           ]
         },
         { tcaTime: { $gte: new Date() } }
