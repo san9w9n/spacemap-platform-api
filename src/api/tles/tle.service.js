@@ -91,7 +91,9 @@ class TleService {
         .exec();
       if (mostRecentModel) {
         const { date } = mostRecentModel;
-        tleModels = await TleModel.find({ date }).exec();
+        tleModels = await (id
+          ? TleModel.find({ id, date }).exec()
+          : TleModel.find({ date }).exec());
       }
     }
     const tles = tleModels.map((tleModel) => {
