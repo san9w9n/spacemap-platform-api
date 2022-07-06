@@ -37,7 +37,7 @@ class PpdbService {
       tcaTime: { $gte: new Date() },
     };
     const totalcount = await PpdbModel.countDocuments(queryOption).exec();
-    const conjunctions = await PpdbModel.find()
+    const conjunctions = await PpdbModel.find(queryOption)
       .skip(limit * page)
       .limit(limit)
       .sort(sort)
