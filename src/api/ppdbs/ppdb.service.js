@@ -19,7 +19,7 @@ class PpdbService {
       createdDateObj,
       ppdbTexts
     );
-    ppdbs.forEach((ppdb) => {
+    ppdbs.forEach(ppdb => {
       const { pid, sid } = ppdb;
       ppdb.pName = idNamePairs[pid] || 'UNKNOWN';
       ppdb.sName = idNamePairs[sid] || 'UNKNOWN';
@@ -33,7 +33,10 @@ class PpdbService {
   }
 
   async findConjunctionsService(limit, page, sort) {
-    const totalcount = await PpdbModel.count().exec();
+    const queryOption = {
+      tcaTime: { $gte: new Date() }
+    };
+    const totalcount = await PpdbModel.countDocuments(queryOption).exec();
     const conjunctions = await PpdbModel.find()
       .skip(limit * page)
       .limit(limit)
@@ -41,13 +44,16 @@ class PpdbService {
       .exec();
     return {
       totalcount,
-      conjunctions,
+      conjunctions
     };
   }
 
   async findConjunctionsByIdService(limit, page, sort, id) {
     const queryOption = {
-      $or: [{ pid: id }, { sid: id }],
+      $and: [
+        { $or: [{ pid: id }, { sid: id }] },
+        { tcaTime: { $gte: new Date() } }
+      ]
     };
     const totalcount = await PpdbModel.countDocuments(queryOption).exec();
     const conjunctions = await PpdbModel.find(queryOption)
@@ -57,16 +63,21 @@ class PpdbService {
       .exec();
     return {
       totalcount,
-      conjunctions,
+      conjunctions
     };
   }
 
   async findConjunctionsByNameService(limit, page, sort, name) {
     const queryOption = {
-      $or: [
-        { pName: { $regex: name, $options: 'i' } },
-        { sName: { $regex: name, $options: 'i' } },
-      ],
+      $and: [
+        {
+          $or: [
+            { pName: { $regex: name, $options: 'i' } },
+            { sName: { $regex: name, $options: 'i' } }
+          ]
+        },
+        { tcaTime: { $gte: new Date() } }
+      ]
     };
     const totalcount = await PpdbModel.countDocuments(queryOption).exec();
     const conjunctions = await PpdbModel.find(queryOption)
@@ -76,7 +87,7 @@ class PpdbService {
       .exec();
     return {
       totalcount,
-      conjunctions,
+      conjunctions
     };
   }
 }
