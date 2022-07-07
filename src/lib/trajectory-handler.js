@@ -21,8 +21,8 @@ class TrajectoryHandler {
     const metaData = {};
     await Promise.all(
       splitedLines
-        .filter((line) => !StringHandler.isNotComment(line))
-        .map(async (line) => {
+        .filter(line => !StringHandler.isNotComment(line))
+        .map(async line => {
           const splitedLine = line.split(':');
           if (!splitedLine || splitedLine.length < 2) {
             return 1;
@@ -48,7 +48,7 @@ class TrajectoryHandler {
             default:
           }
           return 0;
-        })
+        }),
     );
     const { coordinateSystem, site, launchEpochTime } = metaData;
     if (!coordinateSystem || !site || !launchEpochTime) {
@@ -61,13 +61,13 @@ class TrajectoryHandler {
     timeAndPosition,
     coordinateSystem,
     site,
-    launchEpochTime
+    launchEpochTime,
   ) {
     const stringTimeAndPosition = timeAndPosition.join('');
     const stringCoordinate = `%coordinate system: ${coordinateSystem}\n`;
     const stringSite = `%site: ${site}\n`;
     const stringLaunchEpochTime = `%epochtime: ${moment(
-      launchEpochTime
+      launchEpochTime,
     ).toISOString()}\n`;
     return `${stringCoordinate}${stringSite}${stringLaunchEpochTime}${stringTimeAndPosition}`;
   }
@@ -83,8 +83,8 @@ class TrajectoryHandler {
     let startMomentOfFlight;
     let endMomentOfFlight;
     const timeAndPositionArray = splitedLines
-      .filter((line) => StringHandler.isNotComment(line))
-      .map((line) => {
+      .filter(line => StringHandler.isNotComment(line))
+      .map(line => {
         const words = line.split(/[\t\s,]+/);
         const [time, x, y, z] = words;
         if (!this.#isAllValidParams(time, x, y, z)) {
@@ -132,7 +132,7 @@ class TrajectoryHandler {
       timeAndPositionArray,
       coordinateSystem,
       site,
-      launchEpochTime
+      launchEpochTime,
     );
     await this.#writeTrajectory(filePath, changedTrajectory);
     const startMomentOfPredictionWindow =

@@ -61,7 +61,7 @@ class LaunchConjunctionsService {
     remoteInputFilePath,
     remoteOutputFilePath,
     threshold,
-    localOutputPath
+    localOutputPath,
   ) {
     const task = {
       taskId,
@@ -86,7 +86,7 @@ class LaunchConjunctionsService {
     launchEpochTime,
     predictionEpochTime,
     trajectoryLength,
-    threshold
+    threshold,
   ) {
     const { filename, path } = file;
     if (!filename || !path) {
@@ -104,7 +104,7 @@ class LaunchConjunctionsService {
     if (!result) {
       throw new HttpException(
         500,
-        'Internal server error. (cannot enque task into db.)'
+        'Internal server error. (cannot enque task into db.)',
       );
     }
     // eslint-disable-next-line no-underscore-dangle
@@ -121,7 +121,7 @@ class LaunchConjunctionsService {
       await LaunchConjunctionsHandler.putTrajectoryFileOnRemoteServer(
         remoteFolder,
         path,
-        remoteInputFilePath
+        remoteInputFilePath,
       );
     });
 
@@ -130,7 +130,7 @@ class LaunchConjunctionsService {
       remoteInputFilePath,
       remoteOutputFilePath,
       threshold,
-      localOutputPath
+      localOutputPath,
     );
 
     return taskId;
@@ -139,14 +139,14 @@ class LaunchConjunctionsService {
   async updateTaskStatusSuceess(taskId, lpdbFilePath) {
     return LaunchConjunctionsModel.findOneAndUpdate(
       { _id: mongoose.Types.ObjectId(taskId) },
-      { status: 'DONE', lpdbFilePath }
+      { status: 'DONE', lpdbFilePath },
     );
   }
 
   async updateTaskStatusFailed(taskId, lpdbFilePath, errorMessage) {
     const result = await LaunchConjunctionsModel.findOneAndUpdate(
       { _id: mongoose.Types.ObjectId(taskId) },
-      { status: 'ERROR', errorMessage, lpdbFilePath }
+      { status: 'ERROR', errorMessage, lpdbFilePath },
     );
   }
 }

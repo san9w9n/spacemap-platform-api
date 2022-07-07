@@ -33,10 +33,10 @@ class InterestedSatellitesService {
     }
     const { interestedArray } = interestedSatellites;
     const searchedSatellitesWithInterested = interestedArray
-      .filter((interesterItem) => {
+      .filter(interesterItem => {
         return interesterItem.id === satelliteId;
       })
-      .map((interestedItem) => {
+      .map(interestedItem => {
         const { id, name } = interestedItem;
         return {
           id,
@@ -84,7 +84,7 @@ class InterestedSatellitesService {
     };
     const searchedArray = await TleModel.find(queryOption).exec();
     const searchedSatellitesWithInterested = searchedArray.map(
-      (searchedElement) => {
+      searchedElement => {
         const { id, name } = searchedElement;
         const interestedLength = interestedArray.length;
         let flag = false;
@@ -99,7 +99,7 @@ class InterestedSatellitesService {
           name,
           isInterested: flag,
         };
-      }
+      },
     );
 
     return searchedSatellitesWithInterested;
@@ -120,7 +120,7 @@ class InterestedSatellitesService {
     };
     if (!satelliteId) {
       const { interestedArray } = interestedSatellites;
-      const satellitesIds = interestedArray.map((satellite) => {
+      const satellitesIds = interestedArray.map(satellite => {
         return satellite.id;
       });
       queryOption = {
@@ -164,7 +164,7 @@ class InterestedSatellitesService {
       interestedArray.push({ id, name });
       await InterestedSatellitesModel.findOneAndUpdate(
         { email },
-        { interestedArray }
+        { interestedArray },
       ).exec();
       return {
         email,
@@ -190,7 +190,7 @@ class InterestedSatellitesService {
       email,
     }).exec();
     const { interestedArray } = interestedSatellite;
-    const index = interestedArray.findIndex((object) => {
+    const index = interestedArray.findIndex(object => {
       return object.id === interestedSatelliteId;
     });
     if (index >= 0) {
@@ -199,7 +199,7 @@ class InterestedSatellitesService {
         {
           email,
         },
-        { interestedArray }
+        { interestedArray },
       ).exec();
     }
     return {

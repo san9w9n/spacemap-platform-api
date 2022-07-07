@@ -51,11 +51,11 @@ class InterestedSatellitesController {
     const searchedSatellites = await (StringHandler.isNumeric(option)
       ? this.interestedSatellitesService.findSatellitesByIdService(
           email,
-          option
+          option,
         )
       : this.interestedSatellitesService.findSatellitesByNameService(
           email,
-          option
+          option,
         ));
     return {
       data: searchedSatellites,
@@ -91,7 +91,7 @@ class InterestedSatellitesController {
           limit,
           page,
           sort,
-          Number(satellite)
+          Number(satellite),
         );
       return {
         data: {
@@ -106,7 +106,7 @@ class InterestedSatellitesController {
         limit,
         page,
         sort,
-        undefined
+        undefined,
       );
     return {
       data: {
@@ -125,7 +125,7 @@ class InterestedSatellitesController {
     const queryResult =
       await this.interestedSatellitesService.createOrUpdateInterestedSatelliteId(
         email,
-        id
+        id,
       );
     return {
       data: queryResult,
@@ -142,7 +142,7 @@ class InterestedSatellitesController {
     const queryResult =
       await this.interestedSatellitesService.deleteInterestedSatelliteId(
         email,
-        req.params.id
+        req.params.id,
       );
     return {
       data: queryResult,

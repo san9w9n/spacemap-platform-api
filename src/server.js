@@ -72,12 +72,12 @@ const main = async () => {
   const rsoParamsTask = new RsoParamsTask(rsoService);
   const launchConjunctionTask = new LaunchConjunctionTask(
     launchConjunctionsService,
-    lpdbService
+    lpdbService,
   );
 
   const watcherCatchersTask = new WatcherCatchersTask(
     watcherCatchersService,
-    wcdbService
+    wcdbService,
   );
 
   const eventSeqTask = new EventseqTask();

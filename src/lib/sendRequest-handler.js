@@ -23,10 +23,10 @@ class SendRequestHandler {
     }
 
     const parsedCookies = await Promise.all(
-      rawCookies.map((rawCookie) => {
+      rawCookies.map(rawCookie => {
         const parsedCookie = new Cookie(rawCookie);
         return `${parsedCookie.key}=${parsedCookie.value}`;
-      })
+      }),
     );
     return parsedCookies.join('; ');
   }

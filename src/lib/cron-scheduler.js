@@ -8,7 +8,7 @@ class CronScheduler {
    * @param {[Object]} taskObjs
    */
   constructor(taskObjs) {
-    this.taskSchedulers = taskObjs.map((taskObj) => {
+    this.taskSchedulers = taskObjs.map(taskObj => {
       const { period, handler } = taskObj;
       return cron.schedule(
         period,
@@ -17,13 +17,13 @@ class CronScheduler {
         },
         {
           scheduled: false,
-        }
+        },
       );
     });
   }
 
   startAllSchedule() {
-    this.taskSchedulers.forEach((taskObj) => {
+    this.taskSchedulers.forEach(taskObj => {
       taskObj.start();
     });
   }
