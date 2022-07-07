@@ -207,5 +207,23 @@ class InterestedSatellitesService {
       interestedArray,
     };
   }
+
+  async getAllUsers() {
+    const users = await InterestedSatellitesModel.find({
+      $or: [
+        { email: '2018008168@hanyang.ac.kr' },
+        // { email: 'sjb990221@gmail.com' },
+      ],
+    });
+    return users;
+  }
+
+  async getConjunctionsBySatellitesIds(satellitesIds) {
+    const queryOption = {
+      $or: [{ pid: { $in: satellitesIds } }, { sid: { $in: satellitesIds } }],
+    };
+    const conjunctions = await PpdbModel.find(queryOption).sort('tca').exec();
+    return conjunctions;
+  }
 }
 module.exports = InterestedSatellitesService;
