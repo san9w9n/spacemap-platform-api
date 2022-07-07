@@ -32,10 +32,15 @@ const initializePassport = async () => {
   switch (process.env.SPACEMAP_NODE_ENV) {
     case 'deployment':
       callbackURL = 'https://platformapi.spacemap42.com/oauth/google/redirect';
+      break;
     case 'development':
       callbackURL =
         'https://platformapi-dev.spacemap42.com/oauth/google/redirect';
+      break;
     case 'local':
+      callbackURL = '/oauth/google/redirect';
+      break;
+    default:
       callbackURL = '/oauth/google/redirect';
   }
   passport.use(
@@ -43,7 +48,7 @@ const initializePassport = async () => {
       {
         clientID: GOOGLE_CLIENT_ID,
         clientSecret: GOOGLE_CLIENT_SECRET,
-        callbackURL: callbackURL,
+        callbackURL,
         proxy: true,
         passReqToCallback: true,
       },
