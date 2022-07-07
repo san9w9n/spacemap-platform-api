@@ -58,12 +58,11 @@ class WatcherCatchersController {
 
   async predictWatcherCatchers(req, _res) {
     // console.log('?');
-    
+
     if (!DateHandler.isCalculatableDate()) {
       throw new ForbiddenException('Not available time.');
     }
-    const { email } = req.user || {email: 'contact@spacemap42.com'};
-    
+    const { email } = req.user || { email: 'contact@spacemap42.com' };
 
     const startMomentOfPredictionWindow =
       await DateHandler.getStartMomentOfPredictionWindow();
@@ -77,7 +76,7 @@ class WatcherCatchersController {
       longitude,
       epochTime,
       startMomentOfPredictionWindow,
-      threshold
+      threshold,
     );
 
     return {

@@ -44,7 +44,9 @@ class SshHandler {
     await this.#connect();
     let result = -1;
     let message = 'failed.';
-    const exitCode = await this.ssh.exec(`${command} > /dev/null 2>&1  && echo $?`);
+    const exitCode = await this.ssh.exec(
+      `${command} > /dev/null 2>&1  && echo $?`,
+    );
     result = Number(exitCode);
     message = result === 0 ? 'calculate success.' : 'calculate failed.';
     this.#end();
@@ -79,7 +81,7 @@ class SshHandler {
     let cpuUsagePercent = 100;
     try {
       const data = await this.ssh.exec(
-        "mpstat | tail -1 | awk '{print 100-$NF}'"
+        "mpstat | tail -1 | awk '{print 100-$NF}'",
       );
       if (data && StringHandler.isNumeric(data)) {
         cpuUsagePercent = Number(data);

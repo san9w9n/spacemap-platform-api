@@ -35,7 +35,7 @@ class TleController {
     const requestDate = DateHandler.getCertainUTCDate(year, month, date, hours);
     const requestTles = await this.tleService.findTlesByIdOrDate(
       requestDate,
-      id
+      id,
     );
     return {
       data: {

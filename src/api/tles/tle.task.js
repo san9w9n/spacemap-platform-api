@@ -47,22 +47,22 @@ class TleTask {
       }
       const loginCookie = await SendRequestHandler.getLoginCookie(
         `${this.#SPACETRACK_URL}/${this.#AUTH_URL}`,
-        process.env.SPACETRACK
+        process.env.SPACETRACK,
       );
       const tlePlainTexts = await SendRequestHandler.getContentsRequest(
         `${this.#SPACETRACK_URL}/${this.#QUERY_URL}`,
-        loginCookie
+        loginCookie,
       );
       const newTlePlainTexts = await this.tleService.saveTlesOnDatabase(
         dateObj,
-        tlePlainTexts
+        tlePlainTexts,
       );
       await TleHandler.saveTlesOnFile(dateObj, newTlePlainTexts);
       console.log(`Save satellite TLE at : ${dateObj}`);
     } catch (err) {
       await SendEmailHandler.sendMail(
         '[SPACEMAP] tle task 에서 에러가 발생하였습니다.',
-        err
+        err,
       );
     } finally {
       this.excuting = false;

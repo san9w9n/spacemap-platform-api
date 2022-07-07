@@ -11,7 +11,7 @@ class DateHandler {
     await PredictionWindow.findByIdAndUpdate(
       '6287a167652f57b94bcb2977',
       { startMoment },
-      options
+      options,
     );
   }
 
@@ -20,7 +20,7 @@ class DateHandler {
     await PredictionWindow.findByIdAndUpdate(
       '6287a167652f57b94bcb2977',
       { endMoment },
-      options
+      options,
     );
   }
 
@@ -41,7 +41,7 @@ class DateHandler {
     hours = 0,
     min = 0,
     sec = 0,
-    ms = 0
+    ms = 0,
   ) {
     return new Date(Date.UTC(year, month - 1, date, hours, min, sec, ms));
   }
@@ -54,7 +54,7 @@ class DateHandler {
       hours,
       min,
       sec,
-      ms
+      ms,
     );
     dateObj.setSeconds(dateObj.getSeconds() + sec);
     return dateObj;
@@ -140,7 +140,7 @@ class DateHandler {
     const startMoment = await this.getStartMomentOfPredictionWindow();
     const diffSeconds = moment(launchEpochTime).diff(
       moment(startMoment),
-      'seconds'
+      'seconds',
     );
     return diffSeconds;
   }

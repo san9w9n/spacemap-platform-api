@@ -51,18 +51,18 @@ class EventseqTask {
         year,
         month,
         date,
-        hour
+        hour,
       );
       DateHandler.setStartMomentOfPredictionWindow(tomorrow.toISOString());
       DateHandler.setEndMomentOfPredictionWindow(
-        tomorrow.clone().add(2, 'd').toISOString()
+        tomorrow.clone().add(2, 'd').toISOString(),
       );
       await PpdbHandler.sshRemoveEventSeq();
       await PpdbHandler.sshBackupTle(ppdbFileName, tleFileName);
       await PpdbHandler.sshPutPredictionCommand(predictionCommand);
       await this.sftpHandler.putFile(
         tlePath,
-        `${EngineCommand.homeDirectory}${tleFileName}`
+        `${EngineCommand.homeDirectory}${tleFileName}`,
       );
       console.log(predictionCommand);
       await PpdbHandler.sshExecEvetnSeqGen();
@@ -73,7 +73,7 @@ class EventseqTask {
       console.log('making ppdb is finished.');
       DateHandler.setStartMomentOfPredictionWindow(tomorrow.toISOString());
       DateHandler.setEndMomentOfPredictionWindow(
-        tomorrow.clone().add(2, 'd').toISOString()
+        tomorrow.clone().add(2, 'd').toISOString(),
       );
       console.log(`${new Date()}`);
       console.log('eventseq scheduler finish.');

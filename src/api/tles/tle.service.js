@@ -11,7 +11,7 @@ class TleService {
   async saveTlesOnDatabase(dateObj, tlePlainTexts) {
     const tles = TleHandler.parseTlePlainTexts(dateObj, tlePlainTexts);
     const newTlePlainTexts = await Promise.all(
-      tles.map(async (tle) => {
+      tles.map(async tle => {
         try {
           const tleModel = await TleModel.create(tle);
           const { name, firstline, secondline } = tleModel;
@@ -19,7 +19,7 @@ class TleService {
         } catch (err) {
           return '';
         }
-      })
+      }),
     );
     return newTlePlainTexts.join('');
   }
@@ -96,7 +96,7 @@ class TleService {
           : TleModel.find({ date }).exec());
       }
     }
-    const tles = tleModels.map((tleModel) => {
+    const tles = tleModels.map(tleModel => {
       return {
         name: tleModel.name,
         firstLine: tleModel.firstline,
@@ -124,7 +124,7 @@ class TleService {
       throw new Error('Something is wrong. (at getIdNamePairs)');
     }
     const idNamePairs = {};
-    tleModels.forEach((model) => {
+    tleModels.forEach(model => {
       const { id, name } = model;
       idNamePairs[id] = name;
     });
@@ -138,7 +138,7 @@ class TleService {
     }
     const { date } = tleModel;
     const tleModels = await TleModel.find({ date }).exec();
-    const tles = tleModels.map((currTleModel) => {
+    const tles = tleModels.map(currTleModel => {
       return {
         name: currTleModel.name,
         firstLine: currTleModel.firstline,

@@ -70,8 +70,8 @@ const initializePassport = async () => {
           provider: 'google',
         });
         return done(null, newUser);
-      }
-    )
+      },
+    ),
   );
 };
 

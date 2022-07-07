@@ -45,7 +45,7 @@ class RsoController {
   async getAllRsoParams(req, _res) {
     const rsoParams = {};
     const rawRsoParams = await this.rsoService.getRsoParams();
-    rawRsoParams.forEach((rawRsoParam) => {
+    rawRsoParams.forEach(rawRsoParam => {
       rsoParams[rawRsoParam.id] = {
         objtype: rawRsoParam.objtype,
         rcssize: rawRsoParam.rcssize,

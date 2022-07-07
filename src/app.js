@@ -44,7 +44,7 @@ class App {
         preflightContinue: false,
         credentials: true,
         optionsSuccessStatus: 200,
-      })
+      }),
     );
   }
 
@@ -63,7 +63,7 @@ class App {
           autoRemoveInterval: 10,
           dbName: 'SPACEMAP-PLATFORM',
         }),
-      })
+      }),
     );
     this.app.use(passport.initialize());
     this.app.use(passport.session());
@@ -78,16 +78,16 @@ class App {
   #initializePublicRouter() {
     this.app.use(
       '/public/uploads',
-      express.static(path.join(__dirname, '../public/uploads'))
+      express.static(path.join(__dirname, '../public/uploads')),
     );
     this.app.use(
       '/public/samples',
-      express.static(path.join(__dirname, '../public/samples'))
+      express.static(path.join(__dirname, '../public/samples')),
     );
   }
 
   #initialzeControllers(controllers) {
-    controllers.forEach((controller) => {
+    controllers.forEach(controller => {
       this.app.use(controller.path, controller.router);
     });
   }

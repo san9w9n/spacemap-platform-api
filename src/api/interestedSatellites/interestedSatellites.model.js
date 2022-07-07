@@ -24,5 +24,5 @@ const InterestedSatellitesScheme = new Schema({
 
 module.exports = mongoose.model(
   'interestedSatellite',
-  InterestedSatellitesScheme
+  InterestedSatellitesScheme,
 );
