@@ -1,4 +1,4 @@
-const wrapper = handler => async (req, res, next) => {
+const wrapper = (handler) => async (req, res, next) => {
   try {
     const { data = {}, message = 'success.' } = await handler(req, res, next);
     res.status(200).json({

@@ -15,7 +15,7 @@ class LpdbService {
     const lpdbFile = await PpdbHandler.readPpdbFileFromLocal(lpdbPath);
     const createdAt = new Date();
     const lpdbs = await PpdbHandler.getPpdbObjectsArray(createdAt, lpdbFile);
-    lpdbs.forEach(lpdb => {
+    lpdbs.forEach((lpdb) => {
       const { pid, sid } = lpdb;
       lpdb.createdAt = createdAt;
       lpdb.placeId = placeId;
