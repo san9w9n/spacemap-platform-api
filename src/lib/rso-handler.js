@@ -6,8 +6,8 @@ class RsoHandler {
   static getRsoParamArrays(rsoJson) {
     const { omm } = rsoJson?.ndm;
     const rsoParams = omm
-      .filter((element) => element?.body?.segment?.data)
-      .filter((element) => {
+      .filter(element => element?.body?.segment?.data)
+      .filter(element => {
         const { tleParameters, userDefinedParameters } =
           element.body.segment.data;
         const { OBJECT_NAME } = element.body.segment.metadata;
@@ -18,12 +18,12 @@ class RsoHandler {
           OBJECT_NAME
         );
       })
-      .filter((element) => {
+      .filter(element => {
         const { USER_DEFINED } =
           element.body.segment.data.userDefinedParameters;
         return USER_DEFINED && USER_DEFINED.length === 12;
       })
-      .map((element) => {
+      .map(element => {
         const { NORAD_CAT_ID } = element.body.segment.data.tleParameters;
         const { USER_DEFINED } =
           element.body.segment.data.userDefinedParameters;
@@ -61,8 +61,8 @@ class RsoHandler {
       cdataPositionChar: '\\c',
       parseTrueNumberOnly: false,
       arrayMode: false,
-      attrValueProcessor: (val) => he.decode(val, { isAttributeValue: true }),
-      tagValueProcessor: (val) => he.decode(val),
+      attrValueProcessor: val => he.decode(val, { isAttributeValue: true }),
+      tagValueProcessor: val => he.decode(val),
       stopNodes: ['parse-me-as-string'],
     };
 

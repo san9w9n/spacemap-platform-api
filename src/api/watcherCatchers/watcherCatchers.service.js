@@ -62,7 +62,7 @@ class WatcherCatchersService {
     remoteInputFilePath,
     remoteOutputFilePath,
     threshold,
-    localOutputPath
+    localOutputPath,
   ) {
     const task = {
       taskId,
@@ -87,7 +87,7 @@ class WatcherCatchersService {
     longitude,
     epochTime,
     predictionEpochTime,
-    threshold
+    threshold,
   ) {
     const position = await this.degreesToCartesian3(longitude, latitude);
     console.log(position);
@@ -107,7 +107,7 @@ class WatcherCatchersService {
     if (!result) {
       throw new HttpException(
         500,
-        'Internal server error. (cannot enque task into db.)'
+        'Internal server error. (cannot enque task into db.)',
       );
     }
     // eslint-disable-next-line no-underscore-dangle
@@ -130,7 +130,7 @@ class WatcherCatchersService {
         epochTime,
         position.x,
         position.y,
-        position.z
+        position.z,
       );
     });
 
@@ -139,7 +139,7 @@ class WatcherCatchersService {
       remoteInputFilePath,
       remoteOutputFilePath,
       threshold,
-      localOutputPath
+      localOutputPath,
     );
 
     return taskId;
@@ -148,14 +148,14 @@ class WatcherCatchersService {
   async updateTaskStatusSuceess(taskId, wcdbFilePath) {
     return WatcherCatchersModel.findOneAndUpdate(
       { _id: mongoose.Types.ObjectId(taskId) },
-      { status: 'DONE', wcdbFilePath }
+      { status: 'DONE', wcdbFilePath },
     );
   }
 
   async updateTaskStatusFailed(taskId, wcdbFilePath, errorMessage) {
     const result = await WatcherCatchersModel.findOneAndUpdate(
       { _id: mongoose.Types.ObjectId(taskId) },
-      { status: 'ERROR', errorMessage, wcdbFilePath }
+      { status: 'ERROR', errorMessage, wcdbFilePath },
     );
   }
 

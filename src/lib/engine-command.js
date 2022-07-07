@@ -32,7 +32,7 @@ class EngineCommand {
   static getLaunchCojunctionsAssessmentCommand(
     inputFilePath,
     outputFilePath,
-    threshold
+    threshold,
   ) {
     return `${this.engine} ${this.predictionCommand} PHANPROP 0 ${this.maximumCores} ${threshold} ${inputFilePath} ${outputFilePath}`;
   }

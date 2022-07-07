@@ -29,7 +29,7 @@ class OauthController {
         passport.authenticate('google', { scope: ['profile', 'email'] })(
           req,
           res,
-          next
+          next,
         );
       })
       .get(
@@ -44,7 +44,7 @@ class OauthController {
             console.log(currentUrl);
             res.status(200).redirect(currentUrl);
           });
-        }
+        },
       );
   }
 

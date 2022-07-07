@@ -41,7 +41,7 @@ class PpdbTask {
     try {
       const getFileResult = await this.sftpHandler.getFile(
         this.#FROM_PPDB_PATH,
-        ppdbPath
+        ppdbPath,
       );
       if (!getFileResult) {
         throw new Error('getFile failed');
@@ -53,7 +53,7 @@ class PpdbTask {
     } catch (err) {
       await SendEmailHandler.sendMail(
         '[SPACEMAP] ppdb task 에서 에러가 발생하였습니다.',
-        err
+        err,
       );
     } finally {
       console.log('ppdb scheduler finish.');
