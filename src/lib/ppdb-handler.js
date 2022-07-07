@@ -59,7 +59,7 @@ class PpdbHandler {
     const ppdbArray = ppdbTexts.split('\n');
     const filteredPpdbs = ppdbArray.filter(StringHandler.isNotComment);
     const ppdbs = await Promise.all(
-      filteredPpdbs.map(async rawPpdb => {
+      filteredPpdbs.map(async (rawPpdb) => {
         return this.#getPpdbObject(createdDateObj, rawPpdb);
       }),
     );

@@ -19,7 +19,7 @@ class PpdbService {
       createdDateObj,
       ppdbTexts,
     );
-    ppdbs.forEach(ppdb => {
+    ppdbs.forEach((ppdb) => {
       const { pid, sid } = ppdb;
       ppdb.pName = idNamePairs[pid] || 'UNKNOWN';
       ppdb.sName = idNamePairs[sid] || 'UNKNOWN';

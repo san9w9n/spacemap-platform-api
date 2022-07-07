@@ -87,7 +87,7 @@ class App {
   }
 
   #initialzeControllers(controllers) {
-    controllers.forEach(controller => {
+    controllers.forEach((controller) => {
       this.app.use(controller.path, controller.router);
     });
   }
