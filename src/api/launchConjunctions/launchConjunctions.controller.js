@@ -31,14 +31,14 @@ class LaunchConjunctionsController {
       .post(
         '/',
         upload.single('trajectory'),
-        wrapper(this.predictLaunchConjunctions.bind(this))
+        wrapper(this.predictLaunchConjunctions.bind(this)),
       );
   }
 
   async readLaunchConjunctions(req, _res) {
     const { email } = req.user;
     const data = await this.launchConjunctionsService.readLaunchConjunctions(
-      email
+      email,
     );
     return { data };
   }
@@ -50,7 +50,7 @@ class LaunchConjunctionsController {
       throw new BadRequestException('Param is empty.');
     }
     const data = await this.launchConjunctionsService.findLaunchConjunctions(
-      dbId
+      dbId,
     );
     return { data };
   }
@@ -61,7 +61,7 @@ class LaunchConjunctionsController {
       throw new BadRequestException('Wrong param.');
     }
     const data = await this.launchConjunctionsService.deleteLaunchConjunctions(
-      dbId
+      dbId,
     );
     return { data };
   }
@@ -88,7 +88,7 @@ class LaunchConjunctionsController {
       launchEpochTime,
       predictionEpochTime,
       trajectoryLength,
-      threshold
+      threshold,
     );
 
     return {

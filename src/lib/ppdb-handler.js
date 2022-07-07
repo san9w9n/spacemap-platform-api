@@ -29,7 +29,7 @@ class PpdbHandler {
       `${year}-${month}-${date}T${hours}:${min}:${
         sec >= 60.0 ? sec - 0.001 : sec
       }Z`,
-      'YYYY-MM-DDTHH:mm:ss.SSSSZ'
+      'YYYY-MM-DDTHH:mm:ss.SSSSZ',
     );
     const diffTcaStart = tcaStart > tca ? tcaStart - tcaStart : tcaStart - tca;
     const diffTcaEnd = tcaEnd < tca ? tcaEnd - tcaEnd : tcaEnd - tca;
@@ -59,9 +59,9 @@ class PpdbHandler {
     const ppdbArray = ppdbTexts.split('\n');
     const filteredPpdbs = ppdbArray.filter(StringHandler.isNotComment);
     const ppdbs = await Promise.all(
-      filteredPpdbs.map(async (rawPpdb) => {
+      filteredPpdbs.map(async rawPpdb => {
         return this.#getPpdbObject(createdDateObj, rawPpdb);
-      })
+      }),
     );
     return ppdbs;
   }
@@ -94,7 +94,7 @@ class PpdbHandler {
     const sshHandler = new SshHandler();
     const { result, message } = await sshHandler.writeTextToFile(
       predictionCommand,
-      EngineCommand.predictionCommand
+      EngineCommand.predictionCommand,
     );
     // if (result !== 0) {
     //   throw new Error(message);

@@ -47,19 +47,19 @@ class PpdbController {
 
     if (satellite) {
       const { conjunctions, totalcount } = await (StringHandler.isNumeric(
-        satellite
+        satellite,
       )
         ? this.ppdbService.findConjunctionsByIdService(
             limit,
             page,
             sort,
-            satellite
+            satellite,
           )
         : this.ppdbService.findConjunctionsByNameService(
             limit,
             page,
             sort,
-            satellite
+            satellite,
           ));
       return {
         data: {

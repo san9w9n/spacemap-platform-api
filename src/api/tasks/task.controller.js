@@ -15,7 +15,7 @@ class TaskController {
       .get('/ppdbs', wrapper(ppdbTask.doPpdbTask.bind(ppdbTask)))
       .get(
         '/event-seq',
-        wrapper(eventSeqTask.doEventSeqTask.bind(eventSeqTask))
+        wrapper(eventSeqTask.doEventSeqTask.bind(eventSeqTask)),
       );
   }
 }
