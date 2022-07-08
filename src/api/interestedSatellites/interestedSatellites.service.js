@@ -207,5 +207,31 @@ class InterestedSatellitesService {
       interestedArray,
     };
   }
+
+  async getSubscribingUsers() {
+    return InterestedSatellitesModel.find({
+      subscribe: true,
+    });
+  }
+
+  async getConjunctionsBySatellitesIds(satellitesIds) {
+    const queryOption = {
+      $or: [{ pid: { $in: satellitesIds } }, { sid: { $in: satellitesIds } }],
+    };
+    const conjunctions = await PpdbModel.find(queryOption).sort('tca').exec();
+    return conjunctions;
+  }
+
+  async updateSubscribe(email, subscribe) {
+    await InterestedSatellitesModel.findOneAndUpdate(
+      { email },
+      { subscribe },
+    ).exec();
+    return {
+      email,
+      subscribe,
+    };
+  }
 }
+
 module.exports = InterestedSatellitesService;

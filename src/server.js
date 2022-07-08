@@ -25,6 +25,7 @@ const EventseqTask = require('./api/ppdbs/eventseq.task');
 const PpdbTask = require('./api/ppdbs/ppdb.task');
 const RsoParamsTask = require('./api/rso/rso.task');
 const LaunchConjunctionTask = require('./api/launchConjunctions/launchConjunctions.task');
+const InterestedSatellitesTask = require('./api/interestedSatellites/interestedSatellites.task');
 const WatcherCatchersTask = require('./api/watcherCatchers/watcherCatchers.task');
 
 const instanceName = process.env.name || 'UNKNOWN';
@@ -74,6 +75,9 @@ const main = async () => {
     launchConjunctionsService,
     lpdbService,
   );
+  const interestedSatellitesTask = new InterestedSatellitesTask(
+    interestedSatellitesService,
+  );
 
   const watcherCatchersTask = new WatcherCatchersTask(
     watcherCatchersService,
@@ -94,6 +98,7 @@ const main = async () => {
       eventSeqTask,
       ppdbTask,
       rsoParamsTask,
+      interestedSatellitesTask,
     ]);
     schedulers.startAllSchedule();
   } else {
