@@ -17,7 +17,7 @@ class CronScheduler {
         },
         {
           scheduled: false,
-        }
+        },
       );
     });
   }

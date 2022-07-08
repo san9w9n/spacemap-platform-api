@@ -38,16 +38,16 @@ class WatcherCatchersTask {
       await WatcherCatchersHandler.sshExec(
         remoteInputFilePath,
         remoteOutputFilePath,
-        threshold
+        threshold,
       );
       await WatcherCatchersHandler.getFileFromRemoteServer(
         remoteOutputFilePath,
-        localOutputPath
+        localOutputPath,
       );
       await this.wcdbService.saveWcdbOnDatabase(localOutputPath, taskId);
       await this.watcherCatchersService.updateTaskStatusSuceess(
         taskId,
-        localOutputPath
+        localOutputPath,
       );
       console.log(`Task ${taskId} has Successfully Done.`);
     } catch (err) {
@@ -55,7 +55,7 @@ class WatcherCatchersTask {
       await this.watcherCatchersService.updateTaskStatusFailed(
         taskId,
         localOutputPath,
-        err
+        err,
       );
     }
   }

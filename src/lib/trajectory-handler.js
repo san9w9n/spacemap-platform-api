@@ -48,7 +48,7 @@ class TrajectoryHandler {
             default:
           }
           return 0;
-        })
+        }),
     );
     const { coordinateSystem, site, launchEpochTime } = metaData;
     if (!coordinateSystem || !site || !launchEpochTime) {
@@ -61,13 +61,13 @@ class TrajectoryHandler {
     timeAndPosition,
     coordinateSystem,
     site,
-    launchEpochTime
+    launchEpochTime,
   ) {
     const stringTimeAndPosition = timeAndPosition.join('');
     const stringCoordinate = `%coordinate system: ${coordinateSystem}\n`;
     const stringSite = `%site: ${site}\n`;
     const stringLaunchEpochTime = `%epochtime: ${moment(
-      launchEpochTime
+      launchEpochTime,
     ).toISOString()}\n`;
     return `${stringCoordinate}${stringSite}${stringLaunchEpochTime}${stringTimeAndPosition}`;
   }
@@ -132,7 +132,7 @@ class TrajectoryHandler {
       timeAndPositionArray,
       coordinateSystem,
       site,
-      launchEpochTime
+      launchEpochTime,
     );
     await this.#writeTrajectory(filePath, changedTrajectory);
     const startMomentOfPredictionWindow =

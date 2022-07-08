@@ -17,7 +17,7 @@ class PpdbService {
     const idNamePairs = await this.tleService.getIdNamePairs();
     const ppdbs = await PpdbHandler.getPpdbObjectsArray(
       createdDateObj,
-      ppdbTexts
+      ppdbTexts,
     );
     ppdbs.forEach((ppdb) => {
       const { pid, sid } = ppdb;

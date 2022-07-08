@@ -38,16 +38,16 @@ class LaunchConjunctionTask {
       await LaunchConjunctionsHandler.sshExec(
         remoteInputFilePath,
         remoteOutputFilePath,
-        threshold
+        threshold,
       );
       await LaunchConjunctionsHandler.getFileFromRemoteServer(
         remoteOutputFilePath,
-        localOutputPath
+        localOutputPath,
       );
       await this.lpdbService.saveLpdbOnDatabase(localOutputPath, taskId);
       await this.launchConjunctionsService.updateTaskStatusSuceess(
         taskId,
-        localOutputPath
+        localOutputPath,
       );
       console.log(`Task ${taskId} has Successfully Done.`);
     } catch (err) {
@@ -55,7 +55,7 @@ class LaunchConjunctionTask {
       await this.launchConjunctionsService.updateTaskStatusFailed(
         taskId,
         localOutputPath,
-        err
+        err,
       );
     }
   }

@@ -42,11 +42,11 @@ class RsoParamsTask {
     try {
       const loginCookie = await SendRequestHandler.getLoginCookie(
         `${this.#SPACETRACK_URL}/${this.#AUTH_URL}`,
-        process.env.SPACETRACK
+        process.env.SPACETRACK,
       );
       const rsoParamsPlainText = await SendRequestHandler.getContentsRequest(
         `${this.#SPACETRACK_URL}/${this.#QUERY_URL}`,
-        loginCookie
+        loginCookie,
       );
       const rsoJson = RsoHandler.parseRsoXml(rsoParamsPlainText);
       const rsoParamsArray = RsoHandler.getRsoParamArrays(rsoJson);
@@ -55,7 +55,7 @@ class RsoParamsTask {
     } catch (err) {
       await SendEmailHandler.sendMail(
         '[SPACEMAP] rso-params task 에서 에러가 발생하였습니다.',
-        err
+        err,
       );
     } finally {
       this.excuting = false;

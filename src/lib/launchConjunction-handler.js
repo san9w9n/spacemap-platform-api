@@ -6,18 +6,18 @@ class LaunchConjunctionsHandler {
   static async putTrajectoryFileOnRemoteServer(
     remoteFolder,
     localFilePath,
-    remoteFilePath
+    remoteFilePath,
   ) {
     const sftpHandler = new SftpHandler();
     const mkdirResult = await sftpHandler.mkdir(remoteFolder);
     if (!mkdirResult) {
       throw new Error(
-        `Mkdir for trajectory file failed. Path : ${remoteFolder}`
+        `Mkdir for trajectory file failed. Path : ${remoteFolder}`,
       );
     }
     const putFileResult = await sftpHandler.putFile(
       localFilePath,
-      remoteFilePath
+      remoteFilePath,
     );
     if (!putFileResult) {
       throw new Error(`Put Trajectory file failed. Path : ${remoteFilePath}`);
@@ -28,7 +28,7 @@ class LaunchConjunctionsHandler {
     const sftpHandler = new SftpHandler();
     const getFileResult = await sftpHandler.getFile(
       remoteOutputFilePath,
-      localOutputPath
+      localOutputPath,
     );
     if (!getFileResult) {
       throw new Error('get lpdb file from Remote server failed.');
@@ -51,7 +51,7 @@ class LaunchConjunctionsHandler {
     const command = EngineCommand.getLaunchCojunctionsAssessmentCommand(
       remoteInputFilePath,
       remoteOutputFilePath,
-      threshold
+      threshold,
     );
     console.log(command);
     const { result, message } = await sshHandler.execCalculate(command);

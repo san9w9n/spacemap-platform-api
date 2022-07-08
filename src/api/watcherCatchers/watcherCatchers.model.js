@@ -83,10 +83,10 @@ WatcherCatchersTaskScheme.index({ createdAt: -1 });
 module.exports = {
   WatcherCatchersModel: mongoose.model(
     'watcherCatchers',
-    WatcherCatchersScheme
+    WatcherCatchersScheme,
   ),
   WatcherCatchersTaskModel: mongoose.model(
     'watcherCatchersTask',
-    WatcherCatchersTaskScheme
+    WatcherCatchersTaskScheme,
   ),
 };

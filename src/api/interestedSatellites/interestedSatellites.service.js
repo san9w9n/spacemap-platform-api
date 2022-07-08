@@ -99,7 +99,7 @@ class InterestedSatellitesService {
           name,
           isInterested: flag,
         };
-      }
+      },
     );
 
     return searchedSatellitesWithInterested;
@@ -164,7 +164,7 @@ class InterestedSatellitesService {
       interestedArray.push({ id, name });
       await InterestedSatellitesModel.findOneAndUpdate(
         { email },
-        { interestedArray }
+        { interestedArray },
       ).exec();
       return {
         email,
@@ -199,7 +199,7 @@ class InterestedSatellitesService {
         {
           email,
         },
-        { interestedArray }
+        { interestedArray },
       ).exec();
     }
     return {

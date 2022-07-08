@@ -16,7 +16,7 @@ class RsoService {
       await RsoModel.findOneAndUpdate(
         { id },
         { id, objtype, objectname, rcssize, country },
-        options
+        options,
       );
     });
     await Promise.all(updateResult);

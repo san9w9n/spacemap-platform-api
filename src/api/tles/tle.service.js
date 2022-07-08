@@ -19,7 +19,7 @@ class TleService {
         } catch (err) {
           return '';
         }
-      })
+      }),
     );
     return newTlePlainTexts.join('');
   }

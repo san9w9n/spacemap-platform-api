@@ -11,14 +11,14 @@ class WatcherCatchersHandler {
     epochTime,
     x,
     y,
-    z
+    z,
   ) {
     const sshHandler = new SshHandler();
     const sftpHandler = new SftpHandler();
     const mkdirResult = await sftpHandler.mkdir(remoteFolder);
     if (!mkdirResult) {
       throw new Error(
-        `Mkdir for parameter file failed. Path : ${remoteFolder}`
+        `Mkdir for parameter file failed. Path : ${remoteFolder}`,
       );
     }
     const paramtersText = await this.makeParametersToText(
@@ -27,11 +27,11 @@ class WatcherCatchersHandler {
       x,
       y,
       z,
-      remoteOutputFilePath
+      remoteOutputFilePath,
     );
     const putFileResult = await sshHandler.writeTextToFile(
       paramtersText,
-      remoteInputFilePath
+      remoteInputFilePath,
     );
     // const putFileResult = await sftpHandler.putFile(
     //   localFilePath,
@@ -48,7 +48,7 @@ class WatcherCatchersHandler {
     x,
     y,
     z,
-    remoteOutputFilePath
+    remoteOutputFilePath,
   ) {
     const juliaPath =
       '/data/COOP/InterfaceForExternalLib/Julia/CoordinateConversion.jl';
@@ -85,7 +85,7 @@ class WatcherCatchersHandler {
         ${x}
         ${y}
         ${z}
-        ${remoteOutputFilePath}`
+        ${remoteOutputFilePath}`,
     );
     return `${remoteFilePath} ${juliaPath} ${year} ${month} ${date} ${hours} ${minutes} ${seconds} ${watchWindowLength} 0 ${altitude} ${inteferenceRadius} ${cameraAngle} ${timeIncrement} ${x} ${y} ${z} ${remoteOutputFilePath}`;
   }
@@ -94,7 +94,7 @@ class WatcherCatchersHandler {
     const sftpHandler = new SftpHandler();
     const getFileResult = await sftpHandler.getFile(
       remoteOutputFilePath,
-      localOutputPath
+      localOutputPath,
     );
     if (!getFileResult) {
       throw new Error('get lpdb file from Remote server failed.');
@@ -116,7 +116,8 @@ class WatcherCatchersHandler {
     const command =
       EngineCommand.getWatcherCatchersCommand(remoteInputFilePath);
     console.log(command);
-    const { result, message } = await sshHandler.execCalculateWithoutCheckingError(command);
+    const { result, message } =
+      await sshHandler.execCalculateWithoutCheckingError(command);
     if (result !== 0) {
       throw new Error(message);
     }
