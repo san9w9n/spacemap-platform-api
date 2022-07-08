@@ -27,7 +27,8 @@ class InterestedSatellitesController {
       .get('/conjunctions', wrapper(this.readInterestedConjunctions.bind(this)))
       .get('/find/:option', wrapper(this.findInterestedSatellites.bind(this)))
       .post('/:id', wrapper(this.addToInterestedSatellites.bind(this)))
-      .delete('/:id', wrapper(this.removeFromInterestedSatellites.bind(this)));
+      .delete('/:id', wrapper(this.removeFromInterestedSatellites.bind(this)))
+      .put('/settings', wrapper(this.updateSettings.bind(this)));
   }
 
   async readInterestedSatellites(req, _res) {
@@ -144,6 +145,22 @@ class InterestedSatellitesController {
         email,
         req.params.id,
       );
+    return {
+      data: queryResult,
+    };
+  }
+
+  async updateSettings(req, _res) {
+    let { subscribe } = req.query;
+    if (!subscribe || (subscribe !== 'true' && subscribe !== 'false')) {
+      subscribe = 'false';
+    }
+
+    const { email } = req.user;
+    const queryResult = await this.interestedSatellitesService.updateSubscribe(
+      email,
+      JSON.parse(subscribe),
+    );
     return {
       data: queryResult,
     };

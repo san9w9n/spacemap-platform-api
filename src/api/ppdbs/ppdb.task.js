@@ -52,6 +52,7 @@ class PpdbTask {
       console.log(`Save PPDB at: ${dateObj}`);
     } catch (err) {
       await SendEmailHandler.sendMail(
+        'shawn.choi@spacemap42.com',
         '[SPACEMAP] ppdb task 에서 에러가 발생하였습니다.',
         err,
       );

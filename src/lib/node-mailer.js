@@ -11,15 +11,15 @@ class SendEmailHandler {
     },
   };
 
-  static async sendMail(title, message) {
+  static async sendMail(email, title, message) {
     const transporter = nodemailer.createTransport(this.#mailConfig);
-    const email = {
+    const mailOptions = {
       from: process.env.EMAIL || 'please update .env',
-      to: 'shawn.choi@spacemap42.com',
+      to: email,
       subject: title,
       html: message,
     };
-    return transporter.sendMail(email);
+    return transporter.sendMail(mailOptions);
   }
 }
 
