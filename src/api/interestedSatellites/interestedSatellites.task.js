@@ -11,14 +11,14 @@ class InterestedSatellitesTask {
    */
   constructor(interestedSatellitesService) {
     this.name = 'IS TASK';
-    this.period = '*/10 * * * * *';
-    // this.period = '0 0 0 * * *';
+    // this.period = '*/10 * * * * *';
+    this.period = '0 0 0 * * *';
     this.interestedSatellitesService = interestedSatellitesService;
     this.handler = this.#sendInterestedConjunctions.bind(this);
   }
 
   async #sendInterestedConjunctions() {
-    const users = await this.interestedSatellitesService.getAllUsers();
+    const users = await this.interestedSatellitesService.getSubscribingUsers();
     Promise.all(
       users.map(async (user) => {
         const { email, interestedArray } = user;
@@ -33,10 +33,9 @@ class InterestedSatellitesTask {
           email,
           `[SPACEMAP] Daily Conjunctions Report : ${moment
             .utc()
-            .format('MM-DD')}`,
+            .format('MMM DD')}`,
           HtmlHandler.jsonToHtml(conjunctions),
         );
-        console.log(`send mail complete to : ${email}`);
       }),
     );
   }
@@ -50,8 +49,10 @@ module.exports = InterestedSatellitesTask;
  * period : utc 00:00   -> 완
  * html                 -> 완
  * sort: tca            -> 완
- * 메일 제목
- * inrested Satleitasdfasd : subscribe -> true/false
- * 스케줄러 이대로 commit해도 될까?
- * 발신인 (현재: contact@spacemap42.com)
+ * 메일 제목            -> 완
+ * subscribe rerquired  -> 완
+ * subscribe api        -> 완
+ * 스케줄러 commit      -> 완
+ * 발신인
+ * user email foriegn   -> foriegn
  */

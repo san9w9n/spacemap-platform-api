@@ -208,14 +208,10 @@ class InterestedSatellitesService {
     };
   }
 
-  async getAllUsers() {
-    const users = await InterestedSatellitesModel.find({
-      $or: [
-        { email: '2018008168@hanyang.ac.kr' },
-        // { email: 'sjb990221@gmail.com' },
-      ],
+  async getSubscribingUsers() {
+    return InterestedSatellitesModel.find({
+      subscribe: true,
     });
-    return users;
   }
 
   async getConjunctionsBySatellitesIds(satellitesIds) {
@@ -225,5 +221,17 @@ class InterestedSatellitesService {
     const conjunctions = await PpdbModel.find(queryOption).sort('tca').exec();
     return conjunctions;
   }
+
+  async updateSubscribe(email, subscribe) {
+    await InterestedSatellitesModel.findOneAndUpdate(
+      { email },
+      { subscribe },
+    ).exec();
+    return {
+      email,
+      subscribe,
+    };
+  }
 }
+
 module.exports = InterestedSatellitesService;

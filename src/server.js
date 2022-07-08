@@ -98,10 +98,8 @@ const main = async () => {
       eventSeqTask,
       ppdbTask,
       rsoParamsTask,
+      interestedSatellitesTask,
     ]);
-    schedulers.startAllSchedule();
-  } else if (instanceName === 'spacemap-platform-api-mailing-task') {
-    const schedulers = new CronScheduler([interestedSatellitesTask]);
     schedulers.startAllSchedule();
   } else {
     const app = new App([
