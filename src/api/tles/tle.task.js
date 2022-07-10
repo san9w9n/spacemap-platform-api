@@ -44,9 +44,6 @@ class TleTask {
     console.log(dateObj);
     this.excuting = true;
     try {
-      // if (DateHandler.isTleDatabaseCleanDay()) {
-      //   await this.tleService.deleteTles();
-      // }
       if (dateObj) {
         await this.tleService.deleteTles(dateObj);
       }

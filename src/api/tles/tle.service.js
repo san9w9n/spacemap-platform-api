@@ -114,7 +114,6 @@ class TleService {
   }
 
   async deleteTles(dateObj) {
-    console.log('deleteTles has called');
     let compareDate = new Date(dateObj);
     compareDate.setDate(compareDate.getDate() - 7);
     const queryOption = {
@@ -123,7 +122,6 @@ class TleService {
     return TleModel.deleteMany(queryOption).exec();
   }
 
-  // 여기가 좀 이상해
   async getIdNamePairs() {
     const tleModel = await TleModel.findOne({ id: 11 }).exec();
     if (!tleModel) {

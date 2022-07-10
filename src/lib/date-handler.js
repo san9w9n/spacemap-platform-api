@@ -110,13 +110,6 @@ class DateHandler {
     return this.#getFileName(dateObj);
   }
 
-  // static isTleDatabaseCleanDay = () => {
-  //   const currentDate = this.getCurrentUTCDate();
-  //   const day = currentDate.getUTCDay();
-  //   const hours = currentDate.getUTCHours();
-  //   return day === 0 && hours === 0;
-  // };
-
   static getElementsFromDateObject(dateObj) {
     return {
       year: dateObj.getFullYear(),
