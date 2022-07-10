@@ -4,9 +4,6 @@
     "start:dev": "SPACEMAP_NODE_ENV=development node ./src/server.js ",
     "start:local": "PORT=8082 SPACEMAP_NODE_ENV=local nodemon ./src/server.js "
   },
-  "engines": {
-    "node": "16.13.1"
-  },
   "dependencies": {
     "async-mutex": "^0.3.2",
     "bcrypt": "^5.0.1",
