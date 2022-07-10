@@ -6,7 +6,8 @@ module.exports = {
       instances: 2,
       exec_mode: 'cluster',
       env: {
-        NODE_ENV: 'development',
+        NODE_ENV: 'deployment',
+        SPACEMAP_NODE_ENV: 'deployment',
       },
       env_production: {
         NODE_ENV: 'production',
@@ -18,7 +19,8 @@ module.exports = {
       instances: 1,
       exec_mode: 'cluster',
       env: {
-        NODE_ENV: 'development',
+        NODE_ENV: 'deployment',
+        SPACEMAP_NODE_ENV: 'deployment',
       },
       env_production: {
         NODE_ENV: 'production',
@@ -30,7 +32,8 @@ module.exports = {
       instances: 1,
       exec_mode: 'cluster',
       env: {
-        NODE_ENV: 'development',
+        NODE_ENV: 'deployment',
+        SPACEMAP_NODE_ENV: 'deployment',
       },
       env_production: {
         NODE_ENV: 'production',
