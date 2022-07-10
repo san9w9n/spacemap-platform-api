@@ -24,6 +24,13 @@ class TleService {
     return newTlePlainTexts.join('');
   }
 
+  async saveTlesOnDatabaseVerJB(dateObj, tlePlainTexts) {
+    const tles = TleHandler.parseTlePlainTexts(dateObj, tlePlainTexts);
+    for (let i = 0; i < tles.length; i += 1) {
+      await TleModel.create(tles[i]);
+    }
+  }
+
   async findTlesByOnlyDate(dateObj, id) {
     const { year, month, date } =
       DateHandler.getElementsFromDateObject(dateObj);
@@ -106,13 +113,17 @@ class TleService {
     return tles;
   }
 
-  async deleteTles(dateObj = undefined) {
-    if (dateObj) {
-      return TleModel.deleteMany({ date: dateObj }).exec();
-    }
-    return TleModel.deleteMany({}).exec();
+  async deleteTles(dateObj) {
+    console.log('deleteTles has called');
+    let compareDate = new Date(dateObj);
+    compareDate.setDate(compareDate.getDate() - 7);
+    const queryOption = {
+      date: { $lt: compareDate },
+    };
+    return TleModel.deleteMany(queryOption).exec();
   }
 
+  // 여기가 좀 이상해
   async getIdNamePairs() {
     const tleModel = await TleModel.findOne({ id: 11 }).exec();
     if (!tleModel) {
