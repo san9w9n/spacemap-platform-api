@@ -41,28 +41,23 @@ class TleTask {
       return;
     }
     console.log('tle scheduler start.');
-    console.log(dateObj);
     this.excuting = true;
     try {
       if (dateObj) {
         await this.tleService.deleteTles(dateObj);
       }
-      console.log('login try');
       const loginCookie = await SendRequestHandler.getLoginCookie(
         `${this.#SPACETRACK_URL}/${this.#AUTH_URL}`,
         process.env.SPACETRACK,
       );
-      console.log('login sucess, get contents try');
       const tlePlainTexts = await SendRequestHandler.getContentsRequest(
         `${this.#SPACETRACK_URL}/${this.#QUERY_URL}`,
         loginCookie,
       );
-      console.log('get contents finish, save on db try');
       const newTlePlainTexts = await this.tleService.saveTlesOnDatabase(
         dateObj,
         tlePlainTexts,
       );
-      console.log('save on db finish, save on public local');
       await TleHandler.saveTlesOnFile(dateObj, newTlePlainTexts);
       console.log(`Save satellite TLE at : ${dateObj}`);
     } catch (err) {
