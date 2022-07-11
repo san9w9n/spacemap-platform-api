@@ -3,7 +3,7 @@
 const moment = require('moment');
 const InterestedSatellitesService = require('./interestedSatellites.service');
 const SendEmailHandler = require('../../lib/node-mailer');
-const HtmlHandler = require('../../lib/html-handler');
+const InterestedSatellitesHandler = require('../../lib/interestedSatellites-handler');
 
 class InterestedSatellitesTask {
   /**
@@ -11,10 +11,11 @@ class InterestedSatellitesTask {
    */
   constructor(interestedSatellitesService) {
     this.name = 'IS TASK';
-    // this.period = '*/10 * * * * *';
     this.period = '0 0 0 * * *';
     this.interestedSatellitesService = interestedSatellitesService;
     this.handler = this.#sendInterestedConjunctions.bind(this);
+    /* Debugging */
+    // this.#sendInterestedConjunctions();
   }
 
   async #sendInterestedConjunctions() {
@@ -34,7 +35,7 @@ class InterestedSatellitesTask {
           `[SPACEMAP] Daily Conjunctions Report : ${moment
             .utc()
             .format('MMM DD')}`,
-          HtmlHandler.jsonToHtml(conjunctions),
+          InterestedSatellitesHandler.conjunctionsToHtml(conjunctions),
         );
       }),
     );
@@ -44,15 +45,9 @@ class InterestedSatellitesTask {
 module.exports = InterestedSatellitesTask;
 
 /* ISSUES
- * prettier             -> 완
- * Promise.all          ->
- * period : utc 00:00   -> 완
- * html                 -> 완
- * sort: tca            -> 완
- * 메일 제목            -> 완
- * subscribe rerquired  -> 완
- * subscribe api        -> 완
- * 스케줄러 commit      -> 완
- * 발신인
- * user email foriegn   -> foriegn
+ * interested가 Primary로   ->InterestedSatellitesService.sortConjunctionBySatellitesIds()
+ * csv
+ * metadata
+ * table more (toggle)
+ * table 분할?
  */
