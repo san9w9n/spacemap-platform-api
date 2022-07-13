@@ -2,6 +2,7 @@
 const { promiseReadFile, promiseWriteFile } = require('./promise-io');
 const StringHandler = require('./string-handler');
 const DateHandler = require('./date-handler');
+const fs = require('fs');
 
 class TleHandler {
   static #getTleIdFromFirstLine(firstLine) {
@@ -58,6 +59,45 @@ class TleHandler {
     };
     const tlePlainTexts = await promiseReadFile(tleFilePath, readOptions);
     return tlePlainTexts;
+  }
+
+  static async readMostRecentTlePlainTextsFromFile(dateObj) {
+    const filesFromLocal = fs.readdirSync('./public/tle/');
+    const dateOfFiles = filesFromLocal.reduce((accumulator, fileFromLocal) => {
+      if (fileFromLocal.match(/.tle$/)) {
+        const dateOfFile = fileFromLocal.split(/.tle/)[0];
+        const dateObjFromFile = new Date(
+          dateOfFile.substring(0, 4),
+          dateOfFile.substring(5, 7) - 1,
+          dateOfFile.substring(8, 10),
+          dateOfFile.substring(11, 13),
+        );
+        dateObjFromFile.setHours(dateObjFromFile.getHours() + 9);
+        accumulator.push(dateObjFromFile);
+      }
+      return accumulator;
+    }, []);
+
+    const dateOfFilesForSearch = dateOfFiles
+      .filter((dateOfFile) => dateOfFile <= dateObj)
+      .sort((a, b) => b - a);
+
+    if (dateOfFilesForSearch[0] >= dateObj.setDate(dateObj.getDate() - 7)) {
+      const tleFileName = DateHandler.getFileNameByDateObject(
+        dateOfFilesForSearch[0],
+      );
+      const tleFilePath = `./public/tle/${tleFileName}.tle`;
+      const readOptions = {
+        encoding: 'utf-8',
+      };
+      const tlePlainTexts = await promiseReadFile(tleFilePath, readOptions);
+      return {
+        tleFromFile: tlePlainTexts,
+        newDateObj: dateOfFilesForSearch[0],
+      };
+    } else {
+      return null;
+    }
   }
 
   static async saveTlesOnFile(dateObj, tles) {
