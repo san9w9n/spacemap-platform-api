@@ -83,20 +83,16 @@ class TleService {
       ? TleModel.find({ id, date: dateObj }).exec()
       : TleModel.find({ date: dateObj }).exec());
     if (!tleModels || tleModels.length === 0) {
-      console.log(1);
       tleModels = await this.findTlesFromFile(dateObj, id);
     }
     if (!tleModels || tleModels.length === 0) {
-      console.log(2);
       tleModels = await this.findTlesByOnlyDate(dateObj, id);
     }
     if (!tleModels || tleModels.length === 0) {
-      console.log(3);
       tleModels = await this.findTlesByOnlyDateFromFile(dateObj, id);
     }
     if (!tleModels || tleModels.length === 0) {
-      console.log(4);
-      throw new BadRequestException('Wrong params');
+      throw new BadRequestException('Wrong params. Please write correct date.');
     }
     const tles = tleModels.map((tleModel) => {
       return {
