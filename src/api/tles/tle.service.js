@@ -10,13 +10,8 @@ const { BadRequestException } = require('../../common/exceptions');
 class TleService {
   async saveTlesOnDatabase(dateObj, tlePlainTexts) {
     const tles = TleHandler.parseTlePlainTexts(dateObj, tlePlainTexts);
-    console.log('db save start');
-    try {
-      await TleModel.create(tles, { ordered: false });
-    } catch (err) {
-      // pass
-    }
-    console.log('db save finish');
+    await TleModel.create(tles, { ordered: false });
+
     const newTlePlainTexts = await Promise.all(
       tles.map(async (tle) => {
         try {
