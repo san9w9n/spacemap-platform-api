@@ -39,11 +39,10 @@ class TleTask {
     if (this.excuting) {
       return;
     }
-    console.log('tle scheduler start.');
     this.excuting = true;
     try {
-      if (DateHandler.isTleDatabaseCleanDay()) {
-        await this.tleService.deleteTles();
+      if (dateObj) {
+        await this.tleService.deleteTles(dateObj);
       }
       const loginCookie = await SendRequestHandler.getLoginCookie(
         `${this.#SPACETRACK_URL}/${this.#AUTH_URL}`,
@@ -67,7 +66,6 @@ class TleTask {
       );
     } finally {
       this.excuting = false;
-      console.log('tle scheduler finish.');
     }
   }
 }

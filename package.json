@@ -2,7 +2,7 @@
   "scripts": {
     "start": "SPACEMAP_NODE_ENV=deployment node ./src/server.js",
     "start:dev": "SPACEMAP_NODE_ENV=development node ./src/server.js ",
-    "start:local": "PORT=8082 SPACEMAP_NODE_ENV=local nodemon ./src/server.js "
+    "start:local": "PORT=8083 SPACEMAP_NODE_ENV=local nodemon ./src/server.js "
   },
   "dependencies": {
     "adm-zip": "^0.5.9",
