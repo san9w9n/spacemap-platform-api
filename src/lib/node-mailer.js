@@ -11,13 +11,14 @@ class SendEmailHandler {
     },
   };
 
-  static async sendMail(email, title, message) {
+  static async sendMail(email, title, message, attachments = undefined) {
     const transporter = nodemailer.createTransport(this.#mailConfig);
     const mailOptions = {
       from: process.env.EMAIL || 'please update .env',
       to: email,
       subject: title,
       html: message,
+      attachments,
     };
     return transporter.sendMail(mailOptions);
   }
