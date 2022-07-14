@@ -28,7 +28,6 @@ class TleTask {
 
   async doTleTask(_req, res) {
     const date = DateHandler.getCurrentUTCDate();
-    console.log(date);
     await this.#tleScheduleHandler(date);
     return {};
   }
@@ -40,7 +39,6 @@ class TleTask {
     if (this.excuting) {
       return;
     }
-    console.log('tle scheduler start.');
     this.excuting = true;
     try {
       if (dateObj) {
@@ -68,7 +66,6 @@ class TleTask {
       );
     } finally {
       this.excuting = false;
-      console.log('tle scheduler finish.');
     }
   }
 }
