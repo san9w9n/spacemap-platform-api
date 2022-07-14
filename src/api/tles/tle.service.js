@@ -22,6 +22,7 @@ class TleService {
         }
       }),
     );
+
     return newTlePlainTexts.join('');
   }
 
@@ -54,7 +55,7 @@ class TleService {
 
   async findTlesByOnlyDate(dateObj, id) {
     const dateObjForCompare = new Date(dateObj);
-    dateObjForCompare.setDate(dateObjForCompare.getDate() - 7);
+    dateObjForCompare.setDate(dateObjForCompare.getUTCDate() - 7);
     const tleModel = await TleModel.findOne({
       date: {
         $gt: dateObjForCompare,
@@ -101,7 +102,7 @@ class TleService {
 
   async deleteTles(dateObj) {
     const compareDate = new Date(dateObj);
-    compareDate.setDate(compareDate.getDate() - 7);
+    compareDate.setDate(compareDate.getUTCDate() - 7);
     const queryOption = {
       date: { $lt: compareDate },
     };

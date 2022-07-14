@@ -72,7 +72,7 @@ class TleHandler {
           dateOfFile.substring(8, 10),
           dateOfFile.substring(11, 13),
         );
-        dateObjFromFile.setHours(dateObjFromFile.getHours() + 9);
+        dateObjFromFile.setHours(dateObjFromFile.getUTCHours());
         accumulator.push(dateObjFromFile);
       }
       return accumulator;
@@ -82,7 +82,7 @@ class TleHandler {
       .filter((dateOfFile) => dateOfFile <= dateObj)
       .sort((a, b) => b - a);
 
-    if (dateOfFilesForSearch[0] >= dateObj.setDate(dateObj.getDate() - 7)) {
+    if (dateOfFilesForSearch[0] >= dateObj.setDate(dateObj.getUTCDate() - 7)) {
       const tleFileName = DateHandler.getFileNameByDateObject(
         dateOfFilesForSearch[0],
       );
