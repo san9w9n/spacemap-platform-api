@@ -3,7 +3,7 @@
 const moment = require('moment');
 const InterestedSatellitesService = require('./interestedSatellites.service');
 const SendEmailHandler = require('../../lib/node-mailer');
-const HtmlHandler = require('../../lib/html-handler');
+const InterestedSatellitesHandler = require('../../lib/interestedSatellites-handler');
 
 class InterestedSatellitesTask {
   /**
@@ -11,7 +11,6 @@ class InterestedSatellitesTask {
    */
   constructor(interestedSatellitesService) {
     this.name = 'IS TASK';
-    // this.period = '*/10 * * * * *';
     this.period = '0 0 0 * * *';
     this.interestedSatellitesService = interestedSatellitesService;
     this.handler = this.#sendInterestedConjunctions.bind(this);
@@ -19,40 +18,53 @@ class InterestedSatellitesTask {
 
   async #sendInterestedConjunctions() {
     const users = await this.interestedSatellitesService.getSubscribingUsers();
-    Promise.all(
+    await Promise.all(
       users.map(async (user) => {
         const { email, interestedArray } = user;
-        const satellitesIds = interestedArray.map((satellite) => {
-          return satellite.id;
-        });
-        const conjunctions =
+        if (interestedArray.length == 0) return;
+        const satellitesIds = interestedArray.map((satellite) => satellite.id);
+        const conjunctionsByDca =
+          await this.interestedSatellitesService.getConjunctionsByDca(
+            satellitesIds,
+          );
+        const conjunctionsBySatellitesIds =
           await this.interestedSatellitesService.getConjunctionsBySatellitesIds(
             satellitesIds,
           );
+        const metadata = this.interestedSatellitesService.getMetadata(
+          conjunctionsBySatellitesIds,
+        );
+
         await SendEmailHandler.sendMail(
           email,
           `[SPACEMAP] Daily Conjunctions Report : ${moment
             .utc()
             .format('MMM DD')}`,
-          HtmlHandler.jsonToHtml(conjunctions),
+          InterestedSatellitesHandler.conjunctionsToHtml(
+            conjunctionsByDca,
+            metadata,
+          ),
+          await InterestedSatellitesHandler.conjunctionsToAttachment(
+            conjunctionsBySatellitesIds,
+            email,
+          ),
         );
       }),
     );
+
+    InterestedSatellitesHandler.removeAllZips();
   }
 }
 
 module.exports = InterestedSatellitesTask;
 
 /* ISSUES
- * prettier             -> 완
- * Promise.all          ->
- * period : utc 00:00   -> 완
- * html                 -> 완
- * sort: tca            -> 완
- * 메일 제목            -> 완
- * subscribe rerquired  -> 완
- * subscribe api        -> 완
- * 스케줄러 commit      -> 완
- * 발신인
- * user email foriegn   -> foriegn
+ * platform primary 정렬
+ * forEach, map ??
+ * insertMany가 바로 적용 안되는 현상?
+ * conjunctions[i][0]이 없는 경우 있을까?
+ * public/zips
+ * .exec()
+ * gitignore, package.json 수정됐음
+ * subscrive는 왜 __v 밑에?
  */

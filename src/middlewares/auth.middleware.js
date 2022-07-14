@@ -43,6 +43,7 @@ const initializePassport = async () => {
     default:
       callbackURL = 'https://platformapi.spacemap42.com/oauth/google/redirect';
   }
+  console.log(callbackURL);
   passport.use(
     new GoogleStrategy(
       {
