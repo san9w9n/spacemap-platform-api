@@ -2,6 +2,7 @@
 .env
 *.tle
 *.txt
+*.zip
 /node_modules
 
 #AWS

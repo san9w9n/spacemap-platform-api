@@ -52,9 +52,9 @@ artifacts:
     - 'src/**/*'
     - 'package*.json'
     - 'public/**/*'
-    - '.next/**/*'
     - '.ebextensions/**/*'
     - '.npmrc'
+    - 'Procfile'
     #- 'node_modules/**/*'
   #name: $(date +%Y-%m-%d)
   #discard-paths: yes

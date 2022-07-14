@@ -28,7 +28,7 @@ class InterestedSatellitesController {
       .get('/find/:option', wrapper(this.findInterestedSatellites.bind(this)))
       .post('/:id', wrapper(this.addToInterestedSatellites.bind(this)))
       .delete('/:id', wrapper(this.removeFromInterestedSatellites.bind(this)))
-      .put('/settings', wrapper(this.updateSettings.bind(this)));
+      .post('/settings/subscribe', wrapper(this.updateSettings.bind(this)));
   }
 
   async readInterestedSatellites(req, _res) {
