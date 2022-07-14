@@ -115,12 +115,13 @@ class InterestedSatellitesService {
         conjunctions: {},
       };
     }
+    let satellitesIds = [satelliteId];
     let queryOption = {
       $or: [{ pid: satelliteId }, { sid: satelliteId }],
     };
     if (!satelliteId) {
       const { interestedArray } = interestedSatellites;
-      const satellitesIds = interestedArray.map((satellite) => {
+      satellitesIds = interestedArray.map((satellite) => {
         return satellite.id;
       });
       queryOption = {
@@ -133,6 +134,17 @@ class InterestedSatellitesService {
       .limit(limit)
       .sort(sort)
       .exec();
+    conjunctions.map((conjunction) => {
+      if (
+        satellitesIds.some((satellitesId) => satellitesId == conjunction.sid)
+      ) {
+        [conjunction.pid, conjunction.sid] = [conjunction.sid, conjunction.pid];
+        [conjunction.pName, conjunction.sName] = [
+          conjunction.sName,
+          conjunction.pName,
+        ];
+      }
+    });
     return {
       totalcount,
       conjunctions,
