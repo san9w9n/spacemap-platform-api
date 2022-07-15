@@ -88,6 +88,9 @@ class LaunchConjunctionsService {
     trajectoryLength,
     threshold,
   ) {
+    console.log('enque task start');
+    console.log(file);
+    exit(0);
     const { filename, path } = file;
     if (!filename || !path) {
       throw new BadRequestException('No file info.');

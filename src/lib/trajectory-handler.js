@@ -120,7 +120,9 @@ class TrajectoryHandler {
   }
 
   static async checkTrajectoryAndGetLaunchEpochTime(filePath) {
+    console.log('check trrajectory start');
     const trajectory = await this.#openTrajectory(filePath);
+    console.log(trajectory);
     const {
       timeAndPositionArray,
       coordinateSystem,

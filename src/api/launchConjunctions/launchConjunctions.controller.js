@@ -6,7 +6,9 @@ const wrapper = require('../../lib/request-handler');
 const TrajectoryHandler = require('../../lib/trajectory-handler');
 const DateHandler = require('../../lib/date-handler');
 const LaunchConjunctionsService = require('./launchConjunctions.service');
-const upload = require('../../lib/file-upload');
+// const upload = require('../../lib/file-upload');
+const upload = require('../../lib/s3-handler');
+
 const {
   BadRequestException,
   ForbiddenException,
@@ -23,7 +25,7 @@ class LaunchConjunctionsController {
   }
 
   initializeRoutes() {
-    this.router.use(verifyUser);
+    // this.router.use(verifyUser);
     this.router
       .get('/', wrapper(this.readLaunchConjunctions.bind(this)))
       .get('/:dbId', wrapper(this.findLaunchConjunctions.bind(this)))
@@ -31,7 +33,7 @@ class LaunchConjunctionsController {
       .post(
         '/',
         upload.single('trajectory'),
-        wrapper(this.predictLaunchConjunctions.bind(this)),
+        wrapper(this.predictLaunchConjunctions.bind(this)), // 아직 동작 안함
       );
   }
 
@@ -71,17 +73,23 @@ class LaunchConjunctionsController {
       throw new ForbiddenException('Not available time.');
     }
     const { file } = req;
+    console.log('file');
+    console.log(file);
     if (!file) {
       throw new BadRequestException('No File.');
     }
-    const { path } = file;
+    const { location } = file;
+    console.log('location', location);
     const { threshold } = req.body;
-    if (!path || !threshold) {
+    if (!location || !threshold) {
       throw new BadRequestException('Empty Trajectory field.');
     }
-    const { email } = req.user;
+    // const { email } = req.user;
+    const email = 'sjb9902@hanyang.ac.kr';
+
+    // 여기서부터 다시 해야함
     const [launchEpochTime, predictionEpochTime, trajectoryLength] =
-      await TrajectoryHandler.checkTrajectoryAndGetLaunchEpochTime(path);
+      await TrajectoryHandler.checkTrajectoryAndGetLaunchEpochTime(location);
     const taskId = await this.launchConjunctionsService.enqueTask(
       email,
       file,
