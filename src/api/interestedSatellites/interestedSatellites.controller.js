@@ -98,7 +98,7 @@ class InterestedSatellitesController {
         );
       } else {
         interestedArray = interestedArray.filter((s) =>
-          new RegExp(satellite, 'i').test(s),
+          new RegExp(satellite, 'i').test(s.name),
         );
       }
     }
