@@ -39,6 +39,7 @@ phases:
   post_build:
     commands:
       - ls -al
+      - cat Procfile
 #reports:
 #report-name-or-arn:
 #files:

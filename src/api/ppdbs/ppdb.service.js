@@ -38,9 +38,9 @@ class PpdbService {
     };
     const totalcount = await PpdbModel.countDocuments(queryOption).exec();
     const conjunctions = await PpdbModel.find(queryOption)
+      .sort(sort)
       .skip(limit * page)
       .limit(limit)
-      .sort(sort)
       .exec();
     return {
       totalcount,
@@ -48,19 +48,28 @@ class PpdbService {
     };
   }
 
-  async findConjunctionsByIdService(limit, page, sort, id) {
+  async findConjunctionsByIdsService(limit, page, sort, ids, future = true) {
     const queryOption = {
       $and: [
-        { $or: [{ pid: id }, { sid: id }] },
-        { tcaTime: { $gte: new Date() } },
+        { $or: [{ pid: { $in: ids } }, { sid: { $in: ids } }] },
+        future ? { tcaTime: { $gte: new Date() } } : {},
       ],
     };
     const totalcount = await PpdbModel.countDocuments(queryOption).exec();
     const conjunctions = await PpdbModel.find(queryOption)
+      .sort(sort)
       .skip(limit * page)
       .limit(limit)
-      .sort(sort)
       .exec();
+    conjunctions.map((conjunction) => {
+      if (ids.some((id) => id == conjunction.sid)) {
+        [conjunction.pid, conjunction.sid] = [conjunction.sid, conjunction.pid];
+        [conjunction.pName, conjunction.sName] = [
+          conjunction.sName,
+          conjunction.pName,
+        ];
+      }
+    });
     return {
       totalcount,
       conjunctions,
@@ -81,10 +90,19 @@ class PpdbService {
     };
     const totalcount = await PpdbModel.countDocuments(queryOption).exec();
     const conjunctions = await PpdbModel.find(queryOption)
+      .sort(sort)
       .skip(limit * page)
       .limit(limit)
-      .sort(sort)
       .exec();
+    conjunctions.map((conjunction) => {
+      if (new RegExp(name, 'i').test(conjunction.sName)) {
+        [conjunction.pid, conjunction.sid] = [conjunction.sid, conjunction.pid];
+        [conjunction.pName, conjunction.sName] = [
+          conjunction.sName,
+          conjunction.pName,
+        ];
+      }
+    });
     return {
       totalcount,
       conjunctions,

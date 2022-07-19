@@ -1,7 +1,6 @@
 /* eslint-disable class-methods-use-this */
 const InterestedSatellitesModel = require('./interestedSatellites.model');
 const TleModel = require('../tles/tle.model');
-const PpdbModel = require('../ppdbs/ppdb.model');
 const { BadRequestException } = require('../../common/exceptions');
 
 class InterestedSatellitesService {
@@ -105,52 +104,6 @@ class InterestedSatellitesService {
     return searchedSatellitesWithInterested;
   }
 
-  async readInterestedConjunctions(email, limit, page, sort, satelliteId) {
-    const interestedSatellites = await InterestedSatellitesModel.findOne({
-      email,
-    }).exec();
-    if (!interestedSatellites) {
-      return {
-        totalcount: 0,
-        conjunctions: {},
-      };
-    }
-    let satellitesIds = [satelliteId];
-    let queryOption = {
-      $or: [{ pid: satelliteId }, { sid: satelliteId }],
-    };
-    if (!satelliteId) {
-      const { interestedArray } = interestedSatellites;
-      satellitesIds = interestedArray.map((satellite) => {
-        return satellite.id;
-      });
-      queryOption = {
-        $or: [{ pid: { $in: satellitesIds } }, { sid: { $in: satellitesIds } }],
-      };
-    }
-    const totalcount = await PpdbModel.countDocuments(queryOption).exec();
-    const conjunctions = await PpdbModel.find(queryOption)
-      .skip(limit * page)
-      .limit(limit)
-      .sort(sort)
-      .exec();
-    conjunctions.map((conjunction) => {
-      if (
-        satellitesIds.some((satellitesId) => satellitesId == conjunction.sid)
-      ) {
-        [conjunction.pid, conjunction.sid] = [conjunction.sid, conjunction.pid];
-        [conjunction.pName, conjunction.sName] = [
-          conjunction.sName,
-          conjunction.pName,
-        ];
-      }
-    });
-    return {
-      totalcount,
-      conjunctions,
-    };
-  }
-
   async createOrUpdateInterestedSatelliteId(email, interestedSatelliteId) {
     const interestedSatellite = await InterestedSatellitesModel.findOne({
       email,
@@ -220,94 +173,10 @@ class InterestedSatellitesService {
     };
   }
 
-  async getSubscribingUsers() {
+  async readSubscribingUsers() {
     return InterestedSatellitesModel.find({
       subscribe: true,
     });
-  }
-
-  async getConjunctionsByDca(satellitesIds) {
-    const queryOption = {
-      $or: [{ pid: { $in: satellitesIds } }, { sid: { $in: satellitesIds } }],
-    };
-    const conjunctions = await PpdbModel.find(queryOption)
-      .sort('dca')
-      .limit(10)
-      .exec();
-    /* favorite을 primary로 */
-    conjunctions.map((conjunction) => {
-      if (
-        satellitesIds.some((satellitesId) => satellitesId == conjunction.sid)
-      ) {
-        [conjunction.pid, conjunction.sid] = [conjunction.sid, conjunction.pid];
-        [conjunction.pName, conjunction.sName] = [
-          conjunction.sName,
-          conjunction.pName,
-        ];
-      }
-    });
-    return conjunctions;
-  }
-
-  async getConjunctionsBySatellitesIds(satellitesIds) {
-    const conjunctions = await Promise.all(
-      satellitesIds.map(async (satellitesId) => {
-        const forPid = await PpdbModel.find({ pid: satellitesId });
-        const forSid = await PpdbModel.find({ sid: satellitesId });
-        forSid.map((conjunction) => {
-          [conjunction.pid, conjunction.sid] = [
-            conjunction.sid,
-            conjunction.pid,
-          ];
-          [conjunction.pName, conjunction.sName] = [
-            conjunction.sName,
-            conjunction.pName,
-          ];
-        });
-        const sortedConjunctions = [...forPid, ...forSid];
-        sortedConjunctions.sort((a, b) => {
-          return +(a.tcaTime > b.tcaTime) || +(a.tcaTime === b.tcaTime) - 1;
-        });
-        return sortedConjunctions;
-      }),
-    );
-    return conjunctions;
-  }
-
-  getMetadata(conjunctions) {
-    const totalcount = conjunctions.reduce((acc, curr) => acc + curr.length, 0);
-
-    const header = `
-    <br>
-    <b>There are ${totalcount} conjunctions.</b><br/>
-    <br/>
-    <table>
-      <tr>
-        <th>id</th>
-        <th>name</th>
-        <th>#conjunctions</th>
-      </tr>
-    `;
-
-    const body = conjunctions.reduce((accBody, conjunction) => {
-      const newRow = `
-      <tr>
-        <td style="padding-right: 10px; text-align: center">${conjunction[0].pid}</td>
-        <td style="padding-right: 20px; text-align: center">${conjunction[0].pName}</td>
-        <td style="text-align: center">${conjunction.length}</td>
-      </tr>
-      `;
-      return accBody + newRow;
-    }, ``);
-
-    const footer = `
-    </table>
-    <br/>
-    <b>Please find below attachments for more information.</b><br/>
-    <br/>
-    `;
-
-    return `${header}${body}${footer}`;
   }
 
   async updateSubscribe(email, subscribe) {

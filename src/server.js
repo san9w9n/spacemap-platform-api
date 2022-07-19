@@ -77,6 +77,7 @@ const main = async () => {
   );
   const interestedSatellitesTask = new InterestedSatellitesTask(
     interestedSatellitesService,
+    ppdbService,
   );
 
   const watcherCatchersTask = new WatcherCatchersTask(
@@ -105,7 +106,10 @@ const main = async () => {
     const app = new App([
       new TleController(tleService),
       new PpdbController(ppdbService),
-      new InterestedSatellitesController(interestedSatellitesService),
+      new InterestedSatellitesController(
+        interestedSatellitesService,
+        ppdbService,
+      ),
       new LaunchConjunctionsController(launchConjunctionsService),
       new WatcherCatchersController(watcherCatchersService),
       new OauthController(),
