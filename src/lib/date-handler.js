@@ -144,7 +144,7 @@ class DateHandler {
 
   static isCalculatableDate() {
     const currentDate = this.getCurrentUTCDate();
-    const hours = currentDate.getHours();
+    const hours = currentDate.getUTCHours();
     return hours < 15 || hours >= 21;
   }
 
