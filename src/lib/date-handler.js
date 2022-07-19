@@ -121,12 +121,13 @@ class DateHandler {
   static async isValidDate(launchEpochTime) {
     const startMoment = await this.getStartMomentOfPredictionWindow();
     const endMoment = await this.getEndMomentOfPredictionWindow();
+
     if (
       moment(launchEpochTime).isSameOrAfter(moment(startMoment)) &&
       moment(launchEpochTime).isSameOrBefore(moment(endMoment))
     )
       return true;
-    return true;
+    return false; // 이게 true로 되어있었음
   }
 
   static async diffSeconds(launchEpochTime) {
