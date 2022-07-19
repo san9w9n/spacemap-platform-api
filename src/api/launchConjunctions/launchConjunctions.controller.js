@@ -5,23 +5,13 @@ const { Router } = require('express');
 const wrapper = require('../../lib/request-handler');
 const LaunchConjunctionsService = require('./launchConjunctions.service');
 const TrajectoryHandler = require('../../lib/trajectory-handler');
-const S3Handler = require('../../lib/s3-handler');
 const DateHandler = require('../../lib/date-handler');
 const { memoryUpload } = require('../../lib/file-upload');
-const {
-  isValidTrajectory,
-  uploadToS3,
-} = require('../../middlewares/trajectory.s3.middleware');
-
 const {
   BadRequestException,
   ForbiddenException,
 } = require('../../common/exceptions');
 const { verifyUser } = require('../../middlewares/auth.middleware');
-const {
-  putTrajectoryFileOnRemoteServer,
-} = require('../../lib/launchConjunction-handler');
-const { parseTrajectory } = require('../../lib/trajectory-handler');
 
 class LaunchConjunctionsController {
   /** @param { LaunchConjunctionsService } launchConjunctionsService */
@@ -82,10 +72,16 @@ class LaunchConjunctionsController {
     const { file } = req;
     const { threshold } = req.body;
 
-    // 1. validation -> trajectory handler로 변경
-    await isValidTrajectory(file, threshold);
+    if (!DateHandler.isCalculatableDate()) {
+      throw new ForbiddenException('Not available time.');
+    }
+    if (!file) {
+      throw new BadRequestException('No Trajectory File.');
+    }
+    if (!threshold) {
+      throw new BadRequestException('Empty Threshold field.');
+    }
 
-    // 2. parse and change
     const {
       timeAndPositionArray,
       coordinateSystem,
@@ -94,7 +90,6 @@ class LaunchConjunctionsController {
       trajectoryLength,
     } = await TrajectoryHandler.parseTrajectoryAndGetInfo(file);
 
-    // 3. update buffer
     file.buffer = await TrajectoryHandler.updateTrajectoryBuffer(
       timeAndPositionArray,
       coordinateSystem,
@@ -102,22 +97,18 @@ class LaunchConjunctionsController {
       launchEpochTime,
     );
 
-    // 4. s3 upload
-    const filename = await uploadToS3(email, file);
+    const { s3FileName, s3Path } = await TrajectoryHandler.uploadToS3AndGetUrl(
+      email,
+      file,
+    );
 
-    // 5. get s3 download link
-    const s3Handler = new S3Handler();
-    const path = await s3Handler.getS3ObjectUrl(email, filename);
-
-    // 6. get prediction time
     const predictionEpochTime =
       await DateHandler.getStartMomentOfPredictionWindow();
 
-    // 7. enque on db
     const taskId = await this.launchConjunctionsService.enqueTask(
       email,
-      filename,
-      path,
+      s3FileName,
+      s3Path,
       launchEpochTime,
       predictionEpochTime,
       trajectoryLength,

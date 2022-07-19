@@ -84,19 +84,19 @@ class LaunchConjunctionsService {
 
   async enqueTask(
     email,
-    filename,
-    path,
+    s3FileName,
+    s3FilePath,
     launchEpochTime,
     predictionEpochTime,
     trajectoryLength,
     threshold,
   ) {
-    if (!path) {
+    if (!s3FilePath) {
       throw new BadRequestException('No path info.');
     }
     const result = await LaunchConjunctionsModel.create({
       email,
-      trajectoryPath: path,
+      trajectoryPath: s3FilePath,
       status: 'PENDING',
       launchEpochTime,
       predictionEpochTime,
@@ -117,7 +117,7 @@ class LaunchConjunctionsService {
       remoteOutputFilePath,
       s3InputFileKey,
       s3OutputFileKey,
-    } = LaunchConjunctionsHandler.makeFilePath(email, filename);
+    } = LaunchConjunctionsHandler.makeFilePath(email, s3FileName);
 
     await this.enqueTaskOnDb(
       taskId,

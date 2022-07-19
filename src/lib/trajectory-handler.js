@@ -6,8 +6,10 @@ const path = require('path');
 const S3Handler = require('./s3-handler');
 const DateHandler = require('./date-handler');
 const StringHandler = require('./string-handler');
-const { BadRequestException } = require('../common/exceptions');
-const { promiseReadFile, promiseWriteFile } = require('./promise-io');
+const {
+  BadRequestException,
+  ForbiddenException,
+} = require('../common/exceptions');
 
 class TrajectoryHandler {
   static #isAllValidParams(time, x, y, z) {
@@ -41,6 +43,7 @@ class TrajectoryHandler {
             case '%epochtime':
               // eslint-disable-next-line no-case-declarations
               const date = splitedLine.slice(1).join(':');
+              console.log('getEpochTime', date);
               if (!(await DateHandler.isValidDate(date))) {
                 throw new BadRequestException('Epoch date is not valid.');
               }
@@ -76,11 +79,18 @@ class TrajectoryHandler {
 
   static async #trajectoryParseAndChange(trajectory) {
     const splitedLines = trajectory.split(/[\r\n]+/);
-    if (!StringHandler.isValidString(splitedLines))
+    if (!StringHandler.isValidString(splitedLines[0])) {
       throw new BadRequestException('Trajectory file is empty');
+    }
 
     const { coordinateSystem, site, launchEpochTime, diffSeconds } =
       await this.#getMetaData(splitedLines);
+
+    if (splitedLines.length < 4) {
+      throw new BadRequestException(
+        'Invalid trajectory file. Only metadata exists',
+      );
+    }
 
     let startMomentOfFlight;
     let endMomentOfFlight;
@@ -151,17 +161,15 @@ class TrajectoryHandler {
     return Buffer.from(changedTrajectory);
   }
 
-  static async getLaunchEpochTime(trajectory) {
-    const {
-      timeAndPositionArray,
-      coordinateSystem,
-      site,
-      launchEpochTime,
-      trajectoryLength,
-    } = await this.#trajectoryParseAndChange(trajectory);
-    const startMomentOfPredictionWindow =
-      await DateHandler.getStartMomentOfPredictionWindow();
-    return [launchEpochTime, startMomentOfPredictionWindow, trajectoryLength];
+  static async uploadToS3AndGetUrl(email, file) {
+    const s3Handler = new S3Handler();
+    const { s3FileName, s3FileBuffer } = await this.getS3NameAndBuffer(
+      email,
+      file,
+    );
+    await s3Handler.uploadTrajectory(email, s3FileName, s3FileBuffer);
+    const s3Path = await s3Handler.getS3ObjectUrl(email, s3FileName);
+    return { s3FileName, s3Path };
   }
 }
 
