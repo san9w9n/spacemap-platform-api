@@ -2,6 +2,8 @@
 /* eslint-disable no-restricted-syntax */
 
 const moment = require('moment');
+const path = require('path');
+const S3Handler = require('./s3-handler');
 const DateHandler = require('./date-handler');
 const StringHandler = require('./string-handler');
 const { BadRequestException } = require('../common/exceptions');
@@ -72,8 +74,8 @@ class TrajectoryHandler {
     return `${stringCoordinate}${stringSite}${stringLaunchEpochTime}${stringTimeAndPosition}`;
   }
 
-  static async #trajectoryParseAndChange(trajcetory) {
-    const splitedLines = trajcetory.split(/[\r\n]+/);
+  static async #trajectoryParseAndChange(trajectory) {
+    const splitedLines = trajectory.split(/[\r\n]+/);
     if (!StringHandler.isValidString(splitedLines))
       throw new BadRequestException('Trajectory file is empty');
 
@@ -119,10 +121,63 @@ class TrajectoryHandler {
     });
   }
 
+  static async getDataAboutS3Upload(email, file) {
+    const uniqueSuffix = `${moment().format('YYYY-MM-DD-hh:mm:ss')}`;
+    const extension = path.extname(file.originalname);
+    return {
+      s3FileName: `${email}/${email}-${file.fieldname}-${uniqueSuffix}${extension}`,
+      fileContent: file.buffer,
+    };
+  }
+
+  static async parseTrajectoryAndGetInfo(trajectoryFile) {
+    const inputMemory = trajectoryFile.buffer.toString();
+    const {
+      timeAndPositionArray,
+      coordinateSystem,
+      site,
+      launchEpochTime,
+      trajectoryLength,
+    } = await this.#trajectoryParseAndChange(inputMemory);
+    return {
+      timeAndPositionArray: timeAndPositionArray,
+      coordinateSystem: coordinateSystem,
+      site: site,
+      launchEpochTime: launchEpochTime,
+      trajectoryLength: trajectoryLength,
+    };
+  }
+
+  static async updateTrajectoryBuffer(
+    timeAndPositionArray,
+    coordinateSystem,
+    site,
+    launchEpochTime,
+  ) {
+    const changedTrajectory = this.#getChangedTrajectory(
+      timeAndPositionArray,
+      coordinateSystem,
+      site,
+      launchEpochTime,
+    );
+    return Buffer.from(changedTrajectory);
+  }
+
+  static async getLaunchEpochTime(trajectory) {
+    const {
+      timeAndPositionArray,
+      coordinateSystem,
+      site,
+      launchEpochTime,
+      trajectoryLength,
+    } = await this.#trajectoryParseAndChange(trajectory);
+    const startMomentOfPredictionWindow =
+      await DateHandler.getStartMomentOfPredictionWindow();
+    return [launchEpochTime, startMomentOfPredictionWindow, trajectoryLength];
+  }
+
   static async checkTrajectoryAndGetLaunchEpochTime(filePath) {
-    console.log('check trrajectory start');
     const trajectory = await this.#openTrajectory(filePath);
-    console.log(trajectory);
     const {
       timeAndPositionArray,
       coordinateSystem,

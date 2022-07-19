@@ -3,17 +3,25 @@
 
 const { Router } = require('express');
 const wrapper = require('../../lib/request-handler');
-const TrajectoryHandler = require('../../lib/trajectory-handler');
-const DateHandler = require('../../lib/date-handler');
 const LaunchConjunctionsService = require('./launchConjunctions.service');
-// const upload = require('../../lib/file-upload');
-const upload = require('../../lib/s3-handler');
+const TrajectoryHandler = require('../../lib/trajectory-handler');
+const S3Handler = require('../../lib/s3-handler');
+const DateHandler = require('../../lib/date-handler');
+const { memoryUpload } = require('../../lib/file-upload');
+const {
+  isValidTrajectory,
+  uploadToS3,
+} = require('../../middlewares/trajectory.s3.middleware');
 
 const {
   BadRequestException,
   ForbiddenException,
 } = require('../../common/exceptions');
 const { verifyUser } = require('../../middlewares/auth.middleware');
+const {
+  putTrajectoryFileOnRemoteServer,
+} = require('../../lib/launchConjunction-handler');
+const { parseTrajectory } = require('../../lib/trajectory-handler');
 
 class LaunchConjunctionsController {
   /** @param { LaunchConjunctionsService } launchConjunctionsService */
@@ -32,8 +40,8 @@ class LaunchConjunctionsController {
       .delete('/:dbId', wrapper(this.deleteLaunchConjunctions.bind(this)))
       .post(
         '/',
-        upload.single('trajectory'),
-        wrapper(this.predictLaunchConjunctions.bind(this)), // 아직 동작 안함
+        memoryUpload.single('trajectory'),
+        wrapper(this.predictLaunchConjunctions.bind(this)),
       );
   }
 
@@ -69,30 +77,47 @@ class LaunchConjunctionsController {
   }
 
   async predictLaunchConjunctions(req, _res) {
-    if (!DateHandler.isCalculatableDate()) {
-      throw new ForbiddenException('Not available time.');
-    }
-    const { file } = req;
-    console.log('file');
-    console.log(file);
-    if (!file) {
-      throw new BadRequestException('No File.');
-    }
-    const { location } = file;
-    console.log('location', location);
-    const { threshold } = req.body;
-    if (!location || !threshold) {
-      throw new BadRequestException('Empty Trajectory field.');
-    }
-    // const { email } = req.user;
+    // const { email } = request.user;
     const email = 'sjb9902@hanyang.ac.kr';
+    const { file } = req;
+    const { threshold } = req.body;
 
-    // 여기서부터 다시 해야함
-    const [launchEpochTime, predictionEpochTime, trajectoryLength] =
-      await TrajectoryHandler.checkTrajectoryAndGetLaunchEpochTime(location);
+    // 1. validation -> trajectory handler로 변경
+    await isValidTrajectory(file, threshold);
+
+    // 2. parse and change
+    const {
+      timeAndPositionArray,
+      coordinateSystem,
+      site,
+      launchEpochTime,
+      trajectoryLength,
+    } = await TrajectoryHandler.parseTrajectoryAndGetInfo(file);
+
+    // 3. update buffer
+    file.buffer = await TrajectoryHandler.updateTrajectoryBuffer(
+      timeAndPositionArray,
+      coordinateSystem,
+      site,
+      launchEpochTime,
+    );
+
+    // 4. s3 upload
+    const s3FileName = await uploadToS3(email, file);
+
+    // 5. get s3 download link
+    const s3Handler = new S3Handler();
+    const path = await s3Handler.getS3ObjectUrl(s3FileName);
+
+    // 6. get prediction time
+    const predictionEpochTime =
+      await DateHandler.getStartMomentOfPredictionWindow();
+    console.log(predictionEpochTime);
+
+    // 7. enque on db
     const taskId = await this.launchConjunctionsService.enqueTask(
       email,
-      file,
+      path,
       launchEpochTime,
       predictionEpochTime,
       trajectoryLength,

@@ -82,18 +82,14 @@ class LaunchConjunctionsService {
 
   async enqueTask(
     email,
-    file,
+    path,
     launchEpochTime,
     predictionEpochTime,
     trajectoryLength,
     threshold,
   ) {
-    console.log('enque task start');
-    console.log(file);
-    exit(0);
-    const { filename, path } = file;
-    if (!filename || !path) {
-      throw new BadRequestException('No file info.');
+    if (!path) {
+      throw new BadRequestException('No path info.');
     }
     const result = await LaunchConjunctionsModel.create({
       email,

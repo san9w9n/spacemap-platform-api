@@ -4,39 +4,38 @@ const multerS3 = require('multer-s3');
 const AWS = require('aws-sdk');
 const moment = require('moment');
 
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
-});
+class S3Handler {
+  constructor() {
+    this.s3 = new AWS.S3({
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      region: process.env.AWS_REGION,
+    });
+  }
 
-const upload = multer(
-  {
-    storage: multerS3({
-      s3,
-      bucket: 'spacemap',
-      key(req, file, cb) {
-        // 메타데이터 핸들링
-        //   const { email } = req.user;
-        const email = 'sjb9902@hanyang.ac.kr';
-        const uniqueSuffix = `${moment().format('YYYY-MM-DD-hh:mm:ss')}`;
-        const extension = path.extname(file.originalname);
-        cb(
-          null,
-          `lca/input/${email}/${file.fieldname}-${uniqueSuffix}${extension}`,
-        );
-      },
-      acl: 'public-read-write',
-    }),
-    //   limits: { fileSize: 50 * 1024 * 1024 },
-  },
-  'NONE',
-);
+  async uploadTrajectory(s3FileName, fileContent) {
+    let params = {
+      Bucket: 'spacemap',
+      ACL: 'public-read-write',
+      Key: `lca/input/${s3FileName}`,
+      Body: fileContent,
+    };
+    return new Promise((resolve, reject) => {
+      this.s3.putObject(params, (err, data) => {
+        if (err) reject(err);
+        resolve(data);
+      });
+    });
+  }
 
-// const deleteObjectByKey = async (key) => {
-//   s3.deleteObject({ Bucket: 'spacemap', Key: key }, (err, data) => {
-//     return data;
-//   });
-// };
+  async getS3ObjectUrl(s3FileName) {
+    let params = {
+      Bucket: 'spacemap',
+      Key: `lca/input/${s3FileName}`,
+    };
+    const s3Url = this.s3.getSignedUrl('getObject', params);
+    return s3Url;
+  }
+}
 
-module.exports = upload;
+module.exports = S3Handler;
