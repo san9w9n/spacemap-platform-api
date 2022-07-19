@@ -28,7 +28,7 @@ class LaunchConjunctionsHandler {
     const sftpHandler = new SftpHandler();
     const getFileResult = await sftpHandler.getFile(
       remoteOutputFilePath,
-      localOutputPath,
+      localOutputPath, // localOutputPath
     );
     if (!getFileResult) {
       throw new Error('get lpdb file from Remote server failed.');
@@ -39,10 +39,10 @@ class LaunchConjunctionsHandler {
     const remoteFolder = `${EngineCommand.homeDirectory}${email}/`;
     console.log(remoteFolder);
     return {
-      remoteFolder,
       remoteInputFilePath: `${remoteFolder}${filename}`,
       remoteOutputFilePath: `${remoteFolder}out_${filename}`,
-      localOutputPath: `public/uploads/out_${filename}`,
+      s3InputFileKey: `lca/input/${email}/${filename}`,
+      s3OutputFileKey: `lca/output/${email}/${filename}`,
     };
   }
 
