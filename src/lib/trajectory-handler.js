@@ -109,24 +109,12 @@ class TrajectoryHandler {
     };
   }
 
-  static async #writeTrajectory(filePath, trajectory) {
-    return promiseWriteFile(filePath, trajectory, {
-      encoding: 'utf-8',
-    });
-  }
-
-  static async #openTrajectory(filePath) {
-    return promiseReadFile(filePath, {
-      encoding: 'utf-8',
-    });
-  }
-
-  static async getDataAboutS3Upload(email, file) {
+  static async getS3NameAndBuffer(email, file) {
     const uniqueSuffix = `${moment().format('YYYY-MM-DD-hh:mm:ss')}`;
     const extension = path.extname(file.originalname);
     return {
-      s3FileName: `${email}/${email}-${file.fieldname}-${uniqueSuffix}${extension}`,
-      fileContent: file.buffer,
+      s3FileName: `${email}-${file.fieldname}-${uniqueSuffix}${extension}`,
+      s3FileBuffer: file.buffer,
     };
   }
 
@@ -140,11 +128,11 @@ class TrajectoryHandler {
       trajectoryLength,
     } = await this.#trajectoryParseAndChange(inputMemory);
     return {
-      timeAndPositionArray: timeAndPositionArray,
-      coordinateSystem: coordinateSystem,
-      site: site,
-      launchEpochTime: launchEpochTime,
-      trajectoryLength: trajectoryLength,
+      timeAndPositionArray,
+      coordinateSystem,
+      site,
+      launchEpochTime,
+      trajectoryLength,
     };
   }
 
@@ -171,27 +159,6 @@ class TrajectoryHandler {
       launchEpochTime,
       trajectoryLength,
     } = await this.#trajectoryParseAndChange(trajectory);
-    const startMomentOfPredictionWindow =
-      await DateHandler.getStartMomentOfPredictionWindow();
-    return [launchEpochTime, startMomentOfPredictionWindow, trajectoryLength];
-  }
-
-  static async checkTrajectoryAndGetLaunchEpochTime(filePath) {
-    const trajectory = await this.#openTrajectory(filePath);
-    const {
-      timeAndPositionArray,
-      coordinateSystem,
-      site,
-      launchEpochTime,
-      trajectoryLength,
-    } = await this.#trajectoryParseAndChange(trajectory);
-    const changedTrajectory = this.#getChangedTrajectory(
-      timeAndPositionArray,
-      coordinateSystem,
-      site,
-      launchEpochTime,
-    );
-    await this.#writeTrajectory(filePath, changedTrajectory);
     const startMomentOfPredictionWindow =
       await DateHandler.getStartMomentOfPredictionWindow();
     return [launchEpochTime, startMomentOfPredictionWindow, trajectoryLength];

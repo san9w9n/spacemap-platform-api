@@ -13,11 +13,11 @@ class S3Handler {
     });
   }
 
-  async uploadTrajectory(s3FileName, fileContent) {
+  async uploadTrajectory(email, s3FileName, fileContent) {
     let params = {
       Bucket: 'spacemap',
       ACL: 'public-read-write',
-      Key: `lca/input/${s3FileName}`,
+      Key: `lca/input/${email}/${s3FileName}`,
       Body: fileContent,
     };
     return new Promise((resolve, reject) => {
@@ -28,10 +28,10 @@ class S3Handler {
     });
   }
 
-  async getS3ObjectUrl(s3FileName) {
+  async getS3ObjectUrl(email, s3FileName) {
     let params = {
       Bucket: 'spacemap',
-      Key: `lca/input/${s3FileName}`,
+      Key: `lca/input/${email}/${s3FileName}`,
     };
     const s3Url = this.s3.getSignedUrl('getObject', params);
     return s3Url;

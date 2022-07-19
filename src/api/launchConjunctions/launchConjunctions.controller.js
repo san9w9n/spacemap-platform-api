@@ -103,20 +103,20 @@ class LaunchConjunctionsController {
     );
 
     // 4. s3 upload
-    const s3FileName = await uploadToS3(email, file);
+    const filename = await uploadToS3(email, file);
 
     // 5. get s3 download link
     const s3Handler = new S3Handler();
-    const path = await s3Handler.getS3ObjectUrl(s3FileName);
+    const path = await s3Handler.getS3ObjectUrl(email, filename);
 
     // 6. get prediction time
     const predictionEpochTime =
       await DateHandler.getStartMomentOfPredictionWindow();
-    console.log(predictionEpochTime);
 
     // 7. enque on db
     const taskId = await this.launchConjunctionsService.enqueTask(
       email,
+      filename,
       path,
       launchEpochTime,
       predictionEpochTime,

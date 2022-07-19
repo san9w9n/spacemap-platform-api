@@ -25,9 +25,9 @@ const isValidTrajectory = async (file, threshold) => {
 
 const uploadToS3 = async (email, file) => {
   const s3Handler = new S3Handler();
-  const { s3FileName, fileContent } =
-    await TrajectoryHandler.getDataAboutS3Upload(email, file);
-  await s3Handler.uploadTrajectory(s3FileName, fileContent);
+  const { s3FileName, s3FileBuffer } =
+    await TrajectoryHandler.getS3NameAndBuffer(email, file);
+  await s3Handler.uploadTrajectory(email, s3FileName, s3FileBuffer);
   return s3FileName;
 };
 

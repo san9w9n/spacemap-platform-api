@@ -58,17 +58,19 @@ class LaunchConjunctionsService {
 
   async enqueTaskOnDb(
     taskId,
+    s3InputFileKey,
     remoteInputFilePath,
     remoteOutputFilePath,
+    s3OutputFileKey,
     threshold,
-    localOutputPath,
   ) {
     const task = {
       taskId,
+      s3InputFileKey,
       remoteInputFilePath,
       remoteOutputFilePath,
+      s3OutputFileKey,
       threshold,
-      localOutputPath,
     };
     console.log(await LaunchTaskModel.create(task));
   }
@@ -82,6 +84,7 @@ class LaunchConjunctionsService {
 
   async enqueTask(
     email,
+    filename,
     path,
     launchEpochTime,
     predictionEpochTime,
@@ -110,26 +113,19 @@ class LaunchConjunctionsService {
     const taskId = result._id.toString();
 
     const {
-      remoteFolder,
       remoteInputFilePath,
       remoteOutputFilePath,
-      localOutputPath,
+      s3InputFileKey,
+      s3OutputFileKey,
     } = LaunchConjunctionsHandler.makeFilePath(email, filename);
-
-    await this.mutex.runExclusive(async () => {
-      await LaunchConjunctionsHandler.putTrajectoryFileOnRemoteServer(
-        remoteFolder,
-        path,
-        remoteInputFilePath,
-      );
-    });
 
     await this.enqueTaskOnDb(
       taskId,
+      s3InputFileKey,
       remoteInputFilePath,
       remoteOutputFilePath,
+      s3OutputFileKey,
       threshold,
-      localOutputPath,
     );
 
     return taskId;
