@@ -86,32 +86,24 @@ class InterestedSatellitesController {
     }
     sort = `${dec}${sort}`;
 
-    if (satellite) {
-      const { totalcount, conjunctions } = await (StringHandler.isNumeric(
-        satellite,
-      )
-        ? this.ppdbService.findConjunctionsByIdsService(limit, page, sort, [
-            satellite,
-          ])
-        : this.ppdbService.findConjunctionsByNameService(
-            limit,
-            page,
-            sort,
-            satellite,
-          ));
-      return {
-        data: {
-          totalcount,
-          conjunctions,
-        },
-      };
-    }
-
     const { email } = req.user;
     const interestedSatellites =
       await this.interestedSatellitesService.readInterestedSatellites(email);
-    const { interestedArray } = interestedSatellites;
-    const satellitesIds = interestedArray.map((satellite) => satellite.id);
+    let { interestedArray } = interestedSatellites;
+
+    if (satellite) {
+      if (StringHandler.isNumeric(satellite)) {
+        interestedArray = interestedArray.filter(
+          (s) => s.id == Number(satellite),
+        );
+      } else {
+        interestedArray = interestedArray.filter((s) =>
+          new RegExp(satellite, 'i').test(s.name),
+        );
+      }
+    }
+    const satellitesIds = interestedArray.map((s) => s.id);
+
     const { totalcount, conjunctions } =
       await this.ppdbService.findConjunctionsByIdsService(
         limit,
