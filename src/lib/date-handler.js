@@ -126,7 +126,7 @@ class DateHandler {
       moment(launchEpochTime).isSameOrBefore(moment(endMoment))
     )
       return true;
-    return true;
+    return false;
   }
 
   static async diffSeconds(launchEpochTime) {
@@ -144,7 +144,7 @@ class DateHandler {
 
   static isCalculatableDate() {
     const currentDate = this.getCurrentUTCDate();
-    const hours = currentDate.getHours();
+    const hours = currentDate.getUTCHours();
     return hours < 15 || hours >= 21;
   }
 
