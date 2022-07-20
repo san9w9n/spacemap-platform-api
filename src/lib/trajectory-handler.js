@@ -6,10 +6,7 @@ const path = require('path');
 const S3Handler = require('./s3-handler');
 const DateHandler = require('./date-handler');
 const StringHandler = require('./string-handler');
-const {
-  BadRequestException,
-  ForbiddenException,
-} = require('../common/exceptions');
+const { BadRequestException } = require('../common/exceptions');
 
 class TrajectoryHandler {
   static #isAllValidParams(time, x, y, z) {
@@ -43,7 +40,6 @@ class TrajectoryHandler {
             case '%epochtime':
               // eslint-disable-next-line no-case-declarations
               const date = splitedLine.slice(1).join(':');
-              console.log('getEpochTime', date);
               if (!(await DateHandler.isValidDate(date))) {
                 throw new BadRequestException('Epoch date is not valid.');
               }
