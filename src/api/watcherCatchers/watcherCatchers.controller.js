@@ -20,25 +20,25 @@ class WatcherCatchersController {
     this.path = '/watcher-catchers';
     this.router = Router();
     this.initializeRoutes();
-    /* Debugging */
-    (async () => {
-      await this.predictWatcherCatchers(
-        {
-          user: {
-            email: '2018008168@hanyang.ac.kr',
-          },
-          body: {
-            latitude: '127',
-            longitude: '37',
-            altitude: '2000',
-            fieldOfView: '50',
-            epochTime: new Date('2022-07-20T06:03:26.583Z'),
-            endTime: new Date('2022-07-20T06:03:26.583Z'),
-          },
-        },
-        {},
-      );
-    })();
+    // /* Debugging */
+    // (async () => {
+    //   await this.predictWatcherCatchers(
+    //     {
+    //       user: {
+    //         email: '2018008168@hanyang.ac.kr',
+    //       },
+    //       body: {
+    //         latitude: '127',
+    //         longitude: '37',
+    //         altitude: '2000',
+    //         fieldOfView: '50',
+    //         epochTime: new Date('2022-07-20T06:03:26.583Z'),
+    //         endTime: new Date('2022-07-20T06:03:26.583Z'),
+    //       },
+    //     },
+    //     {},
+    //   );
+    // })();
   }
 
   initializeRoutes() {
@@ -80,9 +80,6 @@ class WatcherCatchersController {
       throw new ForbiddenException('Not available time.');
     }
     const { email } = req.user;
-    // const email = '2018008168@hanyang.ac.kxr';
-
-    // console.log(email);
 
     const startMomentOfPredictionWindow =
       await DateHandler.getStartMomentOfPredictionWindow();
@@ -90,14 +87,6 @@ class WatcherCatchersController {
     const threshold = 50; // km
     const { longitude, latitude, altitude, fieldOfView, epochTime, endTime } =
       req.body;
-    // const latitude = '127';
-    // const longitude = '37';
-    // const altitude = 2000;
-    // const fieldOfView = 50;
-    // const epochTime = new Date();
-    // const endTime = new Date('2022-07-20T06:03:26.583Z');
-
-    console.log(email, longitude, endTime);
 
     const taskId = await this.watcherCatchersService.enqueTask(
       email,
