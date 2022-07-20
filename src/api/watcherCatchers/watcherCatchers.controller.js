@@ -20,25 +20,6 @@ class WatcherCatchersController {
     this.path = '/watcher-catchers';
     this.router = Router();
     this.initializeRoutes();
-    // /* Debugging */
-    // (async () => {
-    //   await this.predictWatcherCatchers(
-    //     {
-    //       user: {
-    //         email: '2018008168@hanyang.ac.kr',
-    //       },
-    //       body: {
-    //         latitude: '127',
-    //         longitude: '37',
-    //         altitude: '2000',
-    //         fieldOfView: '50',
-    //         epochTime: new Date('2022-07-20T06:03:26.583Z'),
-    //         endTime: new Date('2022-07-20T06:03:26.583Z'),
-    //       },
-    //     },
-    //     {},
-    //   );
-    // })();
   }
 
   initializeRoutes() {
