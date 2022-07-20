@@ -42,7 +42,7 @@ class WatcherCatchersController {
   }
 
   initializeRoutes() {
-    // this.router.use(verifyUser);
+    this.router.use(verifyUser);
     this.router
       .get('/', wrapper(this.readWatcherCatchers.bind(this)))
       .get('/:dbId', wrapper(this.findWatcherCatchers.bind(this)))

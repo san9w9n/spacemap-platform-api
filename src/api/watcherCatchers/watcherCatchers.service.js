@@ -93,7 +93,6 @@ class WatcherCatchersService {
     threshold,
   ) {
     const position = Cesium.Cartesian3.fromDegrees(longitude, latitude);
-    epochTime = new Date(epochTime);
     const result = await WatcherCatchersModel.create({
       email,
       latitude,
@@ -166,14 +165,5 @@ class WatcherCatchersService {
       { status: 'ERROR', errorMessage, wcdbFilePath },
     );
   }
-
-  // async degreesToCartesian3(longitude, latitude) {
-  //   console.log(longitude, latitude);
-  //   longitude = Number(longitude);
-  //   latitude = Number(latitude);
-  //   console.log(longitude, latitude);
-  //   const position = Cesium.Cartesian3.fromDegrees(longitude, latitude);
-  //   return position;
-  // }
 }
 module.exports = WatcherCatchersService;
