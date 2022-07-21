@@ -4,7 +4,7 @@ const moment = require('moment');
 const InterestedSatellitesService = require('./interestedSatellites.service');
 const PpdbService = require('../ppdbs/ppdb.service');
 const SendEmailHandler = require('../../lib/node-mailer');
-const MailingServiceHandler = require('../../lib/mailingService-handler');
+const InterestedSatellitesMailing = require('./interestedSatellites.mailing');
 
 class InterestedSatellitesTask {
   /**
@@ -58,11 +58,11 @@ class InterestedSatellitesTask {
           `[SPACEMAP] Daily Conjunctions Report : ${moment
             .utc()
             .format('MMM DD')}`,
-          await MailingServiceHandler.conjunctionsToHtml(
+          await InterestedSatellitesMailing.conjunctionsToHtml(
             conjunctionsForHtml,
             metadata,
           ),
-          await MailingServiceHandler.conjunctionsToAttachment(
+          await InterestedSatellitesMailing.conjunctionsToAttachment(
             conjunctionsForCsv,
             metadata,
             email,

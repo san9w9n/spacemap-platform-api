@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-param-reassign */
-const PpdbHandler = require('../../lib/ppdb-handler');
+const PpdbLib = require('../ppdbs/ppdb.lib');
 const TleService = require('../tles/tle.service');
 const LpdbModel = require('./lpdb.model');
 
@@ -12,9 +12,9 @@ class LpdbService {
 
   async saveLpdbOnDatabase(lpdbPath, placeId) {
     const idNamePairs = await this.tleService.getIdNamePairs();
-    const lpdbFile = await PpdbHandler.readPpdbFileFromLocal(lpdbPath);
+    const lpdbFile = await PpdbLib.readPpdbFileFromLocal(lpdbPath);
     const createdAt = new Date();
-    const lpdbs = await PpdbHandler.getPpdbObjectsArray(createdAt, lpdbFile);
+    const lpdbs = await PpdbLib.getPpdbObjectsArray(createdAt, lpdbFile);
     lpdbs.forEach((lpdb) => {
       const { pid, sid } = lpdb;
       lpdb.createdAt = createdAt;

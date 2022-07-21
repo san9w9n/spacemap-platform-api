@@ -1,11 +1,11 @@
 const moment = require('moment');
 // const DateHandler = require('./date-handler');
-const StringHandler = require('./string-handler');
-const { promiseReadFile } = require('./promise-io');
-const SshHandler = require('./ssh-handler');
-const EngineCommand = require('./engine-command');
+const StringHandler = require('../../lib/string-handler');
+const { promiseReadFile } = require('../../lib/promise-io');
+const SshHandler = require('../../lib/ssh-handler');
+const EngineCommand = require('../../lib/engine-command');
 
-class PpdbHandler {
+class PpdbLib {
   static async #getPpdbObject(createdAt, rawPpdb) {
     const splitPpdb = rawPpdb.split('\t');
     const [
@@ -127,4 +127,4 @@ class PpdbHandler {
   }
 }
 
-module.exports = PpdbHandler;
+module.exports = PpdbLib;

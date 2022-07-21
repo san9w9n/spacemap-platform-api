@@ -1,10 +1,10 @@
 const moment = require('moment');
-const DateHandler = require('./date-handler');
-const EngineCommand = require('./engine-command');
-const SftpHandler = require('./sftp-handler');
-const SshHandler = require('./ssh-handler');
+const DateHandler = require('../../lib/date-handler');
+const EngineCommand = require('../../lib/engine-command');
+const SftpHandler = require('../../lib/sftp-handler');
+const SshHandler = require('../../lib/ssh-handler');
 
-class WatcherCatchersHandler {
+class WatcherCatchersLib {
   static async putParametersRemoteServer(
     remoteFolder,
     remoteInputFilePath,
@@ -110,7 +110,7 @@ class WatcherCatchersHandler {
   }
 }
 
-module.exports = WatcherCatchersHandler;
+module.exports = WatcherCatchersLib;
 
 /* ISSUES
  * forEach, map ??
@@ -119,7 +119,5 @@ module.exports = WatcherCatchersHandler;
  *
  * unlink는 위험한 코드 아닐까..?
  * slash in filename -> underscore보다 hyphen이 나을 것 같기도 하고,,
- * api 수정 (인자 세개 더 : altitude, endTime, cameraAngle)
- * model에 추가
  * 빈스톡에서 ssh와 sftp가 없어서 s3로 바꿀수도?
  */

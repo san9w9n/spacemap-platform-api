@@ -5,7 +5,7 @@
 const moment = require('moment');
 const PpdbService = require('./ppdb.service');
 const DateHandler = require('../../lib/date-handler');
-const PpdbHandler = require('../../lib/ppdb-handler');
+const PpdbLib = require('./ppdb.lib');
 const SftpHandler = require('../../lib/sftp-handler');
 const SendEmailHandler = require('../../lib/node-mailer');
 
@@ -46,7 +46,7 @@ class PpdbTask {
       if (!getFileResult) {
         throw new Error('getFile failed');
       }
-      const ppdbFile = await PpdbHandler.readPpdbFileFromLocal(ppdbPath);
+      const ppdbFile = await PpdbLib.readPpdbFileFromLocal(ppdbPath);
       await this.ppdbService.clearPpdbDatabase();
       await this.ppdbService.savePpdbOnDatabase(dateObj, ppdbFile);
       console.log(`Save PPDB at: ${dateObj}`);

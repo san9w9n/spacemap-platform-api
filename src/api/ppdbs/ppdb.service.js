@@ -4,7 +4,7 @@
 
 // eslint-disable-next-line no-unused-vars
 const TleService = require('../tles/tle.service');
-const PpdbHandler = require('../../lib/ppdb-handler');
+const PpdbLib = require('./ppdb.lib');
 const PpdbModel = require('./ppdb.model');
 
 class PpdbService {
@@ -15,10 +15,7 @@ class PpdbService {
 
   async savePpdbOnDatabase(createdDateObj, ppdbTexts) {
     const idNamePairs = await this.tleService.getIdNamePairs();
-    const ppdbs = await PpdbHandler.getPpdbObjectsArray(
-      createdDateObj,
-      ppdbTexts,
-    );
+    const ppdbs = await PpdbLib.getPpdbObjectsArray(createdDateObj, ppdbTexts);
     ppdbs.forEach((ppdb) => {
       const { pid, sid } = ppdb;
       ppdb.pName = idNamePairs[pid] || 'UNKNOWN';
