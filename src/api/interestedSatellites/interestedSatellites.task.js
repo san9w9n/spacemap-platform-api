@@ -71,7 +71,7 @@ class InterestedSatellitesTask {
       }),
     );
 
-    MailingServiceHandler.removeAllZips();
+    // MailingServiceHandler.removeAllZips();
   }
 }
 

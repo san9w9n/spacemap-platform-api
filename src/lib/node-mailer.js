@@ -20,7 +20,13 @@ class SendEmailHandler {
       html: message,
       attachments,
     };
-    return transporter.sendMail(mailOptions);
+    return transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(info);
+      }
+    });
   }
 }
 
