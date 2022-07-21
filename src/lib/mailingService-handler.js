@@ -99,7 +99,9 @@ class MailingServiceHandler {
     const zip = new AdmZip();
     conjunctions.map((conjunction, index) => {
       zip.addFile(
-        `${metadata[index].name}_${metadata[index].id}_${date}.csv`,
+        `${metadata[index].name.replace('/', '_')}_${
+          metadata[index].id
+        }_${date}.csv`,
         Buffer.from(this.#conjunctionsToCsv(conjunction)),
       );
     });
