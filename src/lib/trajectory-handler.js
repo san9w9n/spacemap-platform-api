@@ -84,7 +84,7 @@ class TrajectoryHandler {
 
     if (splitedLines.length < 4) {
       throw new BadRequestException(
-        'Invalid trajectory file. Only metadata exists',
+        'Invalid trajectory file. Only meta data exists',
       );
     }
 

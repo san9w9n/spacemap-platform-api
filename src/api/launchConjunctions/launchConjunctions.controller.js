@@ -67,8 +67,7 @@ class LaunchConjunctionsController {
   }
 
   async predictLaunchConjunctions(req, _res) {
-    // const { email } = request.user;
-    const email = 'sjb9902@hanyang.ac.kr';
+    const { email } = request.user;
     const { file } = req;
     const { threshold } = req.body;
 
