@@ -28,7 +28,18 @@ const WatcherCatchersScheme = new Schema({
     type: Number,
     required: true,
   },
+  altitude: {
+    type: Number,
+    required: true,
+  },
+  fieldOfView: {
+    type: Number,
+    required: true,
+  },
   epochTime: {
+    type: Date,
+  },
+  endTime: {
     type: Date,
   },
   predictionEpochTime: {

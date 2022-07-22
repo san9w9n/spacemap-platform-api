@@ -40,10 +40,6 @@ class WatcherCatchersHandler {
       paramtersText,
       remoteInputFilePath,
     );
-    // const putFileResult = await sftpHandler.putFile(
-    //   localFilePath,
-    //   remoteFilePath
-    // );
     if (!putFileResult) {
       throw new Error(`Put parameter file failed. Path : ${remoteFilePath}`);
     }
@@ -74,30 +70,9 @@ class WatcherCatchersHandler {
     const minutes = epochTime.minutes();
     const seconds = epochTime.seconds();
     const watchWindowLength = endTime.diff(epochTime, 'seconds'); // sec
-    // const altitude = altitude; // km
     const inteferenceRadius = 100; // km
-    const cameraAngle = fieldOfView; // deg
+    const cameraAngle = fieldOfView;
     const timeIncrement = 10; // sec
-    console.log(
-      `${remoteFilePath} 
-        ${juliaPath}
-        ${year} 
-        ${month} 
-        ${date}
-        ${hours} 
-        ${minutes}
-        ${seconds} 
-        ${watchWindowLength}
-        0
-        ${altitude} 
-        ${inteferenceRadius} 
-        ${cameraAngle} 
-        ${timeIncrement} 
-        ${x}
-        ${y}
-        ${z}
-        ${remoteOutputFilePath}`,
-    );
     return `${remoteFilePath} ${juliaPath} ${year} ${month} ${date} ${hours} ${minutes} ${seconds} ${watchWindowLength} 0 ${altitude} ${inteferenceRadius} ${cameraAngle} ${timeIncrement} ${x} ${y} ${z} ${remoteOutputFilePath}`;
   }
 

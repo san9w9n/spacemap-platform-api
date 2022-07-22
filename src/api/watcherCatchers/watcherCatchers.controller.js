@@ -23,7 +23,7 @@ class WatcherCatchersController {
   }
 
   initializeRoutes() {
-    // this.router.use(verifyUser);
+    this.router.use(verifyUser);
     this.router
       .get('/', wrapper(this.readWatcherCatchers.bind(this)))
       .get('/:dbId', wrapper(this.findWatcherCatchers.bind(this)))
@@ -61,7 +61,6 @@ class WatcherCatchersController {
       throw new ForbiddenException('Not available time.');
     }
     const { email } = req.user;
-    // const email = '2018008168@hanyang.ac.kxr';
 
     const startMomentOfPredictionWindow =
       await DateHandler.getStartMomentOfPredictionWindow();
@@ -69,12 +68,6 @@ class WatcherCatchersController {
     const threshold = 50; // km
     const { longitude, latitude, altitude, fieldOfView, epochTime, endTime } =
       req.body;
-    // const latitude = '127';
-    // const longitude = '37';
-    // const altitude = 2000;
-    // const fieldOfView = 50;
-    // const epochTime = new Date();
-    // const endTime = new Date('2022-07-20T06:03:26.583Z');
 
     const taskId = await this.watcherCatchersService.enqueTask(
       email,
