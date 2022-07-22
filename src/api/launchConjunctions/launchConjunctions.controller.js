@@ -23,7 +23,7 @@ class LaunchConjunctionsController {
   }
 
   initializeRoutes() {
-    // this.router.use(verifyUser);
+    this.router.use(verifyUser);
     this.router
       .get('/', wrapper(this.readLaunchConjunctions.bind(this)))
       .get('/:dbId', wrapper(this.findLaunchConjunctions.bind(this)))
@@ -67,7 +67,7 @@ class LaunchConjunctionsController {
   }
 
   async predictLaunchConjunctions(req, _res) {
-    const { email } = request.user;
+    const { email } = req.user;
     const { file } = req;
     const { threshold } = req.body;
 

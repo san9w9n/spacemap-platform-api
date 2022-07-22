@@ -92,8 +92,6 @@ class TleService {
     }
     const tles = tleModels.map((tleModel) => {
       return {
-        id: tleModel,
-        id,
         name: tleModel.name,
         firstLine: tleModel.firstline,
         secondLine: tleModel.secondline,
@@ -138,7 +136,6 @@ class TleService {
     const tleModels = await TleModel.find({ date }).exec();
     const tles = tleModels.map((currTleModel) => {
       return {
-        id: currTleModel.id,
         name: currTleModel.name,
         firstLine: currTleModel.firstline,
         secondLine: currTleModel.secondline,

@@ -121,7 +121,9 @@ class DateHandler {
   static async isValidDate(launchEpochTime) {
     const startMoment = await this.getStartMomentOfPredictionWindow();
     const endMoment = await this.getEndMomentOfPredictionWindow();
-
+    console.log(startMoment);
+    console.log(launchEpochTime);
+    console.log(endMoment);
     if (
       moment(launchEpochTime).isSameOrAfter(moment(startMoment)) &&
       moment(launchEpochTime).isSameOrBefore(moment(endMoment))
