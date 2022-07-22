@@ -88,17 +88,14 @@ const main = async () => {
   const eventSeqTask = new EventseqTask();
 
   if (instanceName === 'spacemap-platform-api-services-tasks') {
-    const schedulers = new CronScheduler([
-      launchConjunctionTask,
-      watcherCatchersTask,
-    ]);
+    const schedulers = new CronScheduler([watcherCatchersTask]);
     schedulers.startAllSchedule();
   } else if (instanceName === 'spacemap-platform-api-daily-tasks') {
     const schedulers = new CronScheduler([
-      tleTask,
-      eventSeqTask,
-      ppdbTask,
-      rsoParamsTask,
+      // tleTask,
+      // eventSeqTask,
+      // ppdbTask,
+      // rsoParamsTask,
       interestedSatellitesTask,
     ]);
     schedulers.startAllSchedule();

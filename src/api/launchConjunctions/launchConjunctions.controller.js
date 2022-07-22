@@ -23,7 +23,7 @@ class LaunchConjunctionsController {
   }
 
   initializeRoutes() {
-    this.router.use(verifyUser);
+    // this.router.use(verifyUser);
     this.router
       .get('/', wrapper(this.readLaunchConjunctions.bind(this)))
       .get('/:dbId', wrapper(this.findLaunchConjunctions.bind(this)))

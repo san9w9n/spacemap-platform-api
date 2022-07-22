@@ -69,6 +69,7 @@ const LaunchTaskScheme = new Schema({
     required: true,
   },
 });
+
 LaunchTaskScheme.index({ createdAt: -1 });
 
 module.exports = {

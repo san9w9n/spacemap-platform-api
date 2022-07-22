@@ -28,7 +28,7 @@ class LaunchConjunctionsHandler {
     const sftpHandler = new SftpHandler();
     const getFileResult = await sftpHandler.getFile(
       remoteOutputFilePath,
-      localOutputPath,
+      localOutputPath, // localOutputPath
     );
     if (!getFileResult) {
       throw new Error('get lpdb file from Remote server failed.');
