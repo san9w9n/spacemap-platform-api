@@ -111,7 +111,13 @@ const main = async () => {
       new WatcherCatchersController(watcherCatchersService),
       new OauthController(),
       new RsoController(rsoService),
-      new TaskController(tleTask, rsoParamsTask, ppdbTask, eventSeqTask),
+      new TaskController(
+        tleTask,
+        rsoParamsTask,
+        ppdbTask,
+        eventSeqTask,
+        interestedSatellitesTask,
+      ),
     ]);
     app.listen();
   }
