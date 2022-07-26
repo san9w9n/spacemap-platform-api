@@ -3,7 +3,6 @@
 
 const { Router } = require('express');
 const wrapper = require('../../lib/request-handler');
-const TrajectoryHandler = require('../../lib/trajectory-handler');
 const DateHandler = require('../../lib/date-handler');
 const WatcherCatchersService = require('./watcherCatchers.service');
 const upload = require('../../lib/file-upload');

@@ -4,8 +4,9 @@
 const { Router } = require('express');
 const wrapper = require('../../lib/request-handler');
 const LaunchConjunctionsService = require('./launchConjunctions.service');
-const TrajectoryHandler = require('../../lib/trajectory-handler');
 const DateHandler = require('../../lib/date-handler');
+const Trajectory = require('./launchConjunctions.trajectory');
+const S3Handler = require('./launchConjunctions.s3handler');
 const { memoryUpload } = require('../../lib/file-upload');
 const {
   BadRequestException,
@@ -81,36 +82,39 @@ class LaunchConjunctionsController {
       throw new BadRequestException('Empty Threshold field.');
     }
 
+    const trajectory = new Trajectory(email, file);
+    await trajectory.setMetaData();
+    await trajectory.setSecondAndPositions();
+    await trajectory.setTrajectoryLength();
+    await trajectory.updateFileBuffer();
+
+    const s3Handler = new S3Handler();
+    await s3Handler.setS3FileName(trajectory);
+    await s3Handler.uploadFile(trajectory);
+    await s3Handler.setS3FilePath(trajectory);
     const {
-      timeAndPositionArray,
-      coordinateSystem,
-      site,
-      launchEpochTime,
-      trajectoryLength,
-    } = await TrajectoryHandler.parseTrajectoryAndGetInfo(file);
-
-    file.buffer = await TrajectoryHandler.updateTrajectoryBuffer(
-      timeAndPositionArray,
-      coordinateSystem,
-      site,
-      launchEpochTime,
-    );
-
-    const { s3FileName, s3Path } = await TrajectoryHandler.uploadToS3AndGetUrl(
-      email,
-      file,
-    );
+      remoteInputFilePath,
+      remoteOutputFilePath,
+      s3InputFileKey,
+      s3OutputFileKey,
+    } = await s3Handler.makeFilePath(trajectory);
 
     const predictionEpochTime =
       await DateHandler.getStartMomentOfPredictionWindow();
 
     const taskId = await this.launchConjunctionsService.enqueTask(
-      email,
-      s3FileName,
-      s3Path,
-      launchEpochTime,
+      trajectory,
+      s3Handler.s3FilePath,
       predictionEpochTime,
-      trajectoryLength,
+      threshold,
+    );
+
+    await this.launchConjunctionsService.enqueTaskOnDb(
+      taskId,
+      s3InputFileKey,
+      remoteInputFilePath,
+      remoteOutputFilePath,
+      s3OutputFileKey,
       threshold,
     );
 
