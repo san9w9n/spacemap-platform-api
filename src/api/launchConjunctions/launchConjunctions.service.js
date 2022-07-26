@@ -14,7 +14,6 @@ const {
   BadRequestException,
   HttpException,
 } = require('../../common/exceptions');
-const LaunchConjunctionsLib = require('./launchConjunction.lib');
 
 class LaunchConjunctionsService {
   /** @param { LpdbService } lpdbService */
@@ -58,17 +57,19 @@ class LaunchConjunctionsService {
 
   async enqueTaskOnDb(
     taskId,
+    s3InputFileKey,
     remoteInputFilePath,
     remoteOutputFilePath,
+    s3OutputFileKey,
     threshold,
-    localOutputPath,
   ) {
     const task = {
       taskId,
+      s3InputFileKey,
       remoteInputFilePath,
       remoteOutputFilePath,
+      s3OutputFileKey,
       threshold,
-      localOutputPath,
     };
     console.log(await LaunchTaskModel.create(task));
   }
@@ -80,25 +81,18 @@ class LaunchConjunctionsService {
     return task;
   }
 
-  async enqueTask(
-    email,
-    file,
-    launchEpochTime,
-    predictionEpochTime,
-    trajectoryLength,
-    threshold,
-  ) {
-    const { filename, path } = file;
-    if (!filename || !path) {
-      throw new BadRequestException('No file info.');
+  async enqueTask(trajectory, s3Path, predictionEpochTime, threshold) {
+    if (!s3Path) {
+      throw new BadRequestException('No path info.');
     }
+
     const result = await LaunchConjunctionsModel.create({
-      email,
-      trajectoryPath: path,
+      email: trajectory.email,
+      trajectoryPath: s3Path,
       status: 'PENDING',
-      launchEpochTime,
+      launchEpochTime: trajectory.launchEpochTime,
       predictionEpochTime,
-      trajectoryLength,
+      trajectoryLength: trajectory.trajectoryLength,
       threshold,
     });
     if (!result) {
@@ -109,30 +103,6 @@ class LaunchConjunctionsService {
     }
     // eslint-disable-next-line no-underscore-dangle
     const taskId = result._id.toString();
-
-    const {
-      remoteFolder,
-      remoteInputFilePath,
-      remoteOutputFilePath,
-      localOutputPath,
-    } = LaunchConjunctionsLib.makeFilePath(email, filename);
-
-    await this.mutex.runExclusive(async () => {
-      await LaunchConjunctionsLib.putTrajectoryFileOnRemoteServer(
-        remoteFolder,
-        path,
-        remoteInputFilePath,
-      );
-    });
-
-    await this.enqueTaskOnDb(
-      taskId,
-      remoteInputFilePath,
-      remoteOutputFilePath,
-      threshold,
-      localOutputPath,
-    );
-
     return taskId;
   }
 

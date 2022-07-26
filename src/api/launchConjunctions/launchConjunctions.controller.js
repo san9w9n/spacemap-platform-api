@@ -3,9 +3,11 @@
 
 const { Router } = require('express');
 const wrapper = require('../../lib/request-handler');
-const DateHandler = require('../../lib/date-handler');
 const LaunchConjunctionsService = require('./launchConjunctions.service');
-const upload = require('../../lib/file-upload');
+const DateHandler = require('../../lib/date-handler');
+const Trajectory = require('./launchConjunctions.trajectory');
+const S3Handler = require('./launchConjunctions.s3handler');
+const { memoryUpload } = require('../../lib/file-upload');
 const {
   BadRequestException,
   ForbiddenException,
@@ -29,7 +31,7 @@ class LaunchConjunctionsController {
       .delete('/:dbId', wrapper(this.deleteLaunchConjunctions.bind(this)))
       .post(
         '/',
-        upload.single('trajectory'),
+        memoryUpload.single('trajectory'),
         wrapper(this.predictLaunchConjunctions.bind(this)),
       );
   }
@@ -66,27 +68,53 @@ class LaunchConjunctionsController {
   }
 
   async predictLaunchConjunctions(req, _res) {
+    const { email } = req.user;
+    const { file } = req;
+    const { threshold } = req.body;
+
     if (!DateHandler.isCalculatableDate()) {
       throw new ForbiddenException('Not available time.');
     }
-    const { file } = req;
     if (!file) {
-      throw new BadRequestException('No File.');
+      throw new BadRequestException('No Trajectory File.');
     }
-    const { path } = file;
-    const { threshold } = req.body;
-    if (!path || !threshold) {
-      throw new BadRequestException('Empty Trajectory field.');
+    if (!threshold) {
+      throw new BadRequestException('Empty Threshold field.');
     }
-    const { email } = req.user;
-    const [launchEpochTime, predictionEpochTime, trajectoryLength] =
-      await TrajectoryHandler.checkTrajectoryAndGetLaunchEpochTime(path);
+
+    const trajectory = new Trajectory(email, file);
+    await trajectory.setMetaData();
+    await trajectory.setSecondAndPositions();
+    await trajectory.setTrajectoryLength();
+    await trajectory.updateFileBuffer();
+
+    const s3Handler = new S3Handler();
+    await s3Handler.setS3FileName(trajectory);
+    await s3Handler.uploadFile(trajectory);
+    await s3Handler.setS3FilePath(trajectory);
+    const {
+      remoteInputFilePath,
+      remoteOutputFilePath,
+      s3InputFileKey,
+      s3OutputFileKey,
+    } = await s3Handler.makeFilePath(trajectory);
+
+    const predictionEpochTime =
+      await DateHandler.getStartMomentOfPredictionWindow();
+
     const taskId = await this.launchConjunctionsService.enqueTask(
-      email,
-      file,
-      launchEpochTime,
+      trajectory,
+      s3Handler.s3FilePath,
       predictionEpochTime,
-      trajectoryLength,
+      threshold,
+    );
+
+    await this.launchConjunctionsService.enqueTaskOnDb(
+      taskId,
+      s3InputFileKey,
+      remoteInputFilePath,
+      remoteOutputFilePath,
+      s3OutputFileKey,
       threshold,
     );
 

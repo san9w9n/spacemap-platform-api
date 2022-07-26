@@ -48,6 +48,10 @@ const LaunchTaskScheme = new Schema({
     type: String,
     required: true,
   },
+  s3InputFileKey: {
+    type: String,
+    required: true,
+  },
   remoteInputFilePath: {
     type: String,
     required: true,
@@ -56,7 +60,7 @@ const LaunchTaskScheme = new Schema({
     type: String,
     required: true,
   },
-  localOutputPath: {
+  s3OutputFileKey: {
     type: String,
     required: true,
   },
@@ -65,6 +69,7 @@ const LaunchTaskScheme = new Schema({
     required: true,
   },
 });
+
 LaunchTaskScheme.index({ createdAt: -1 });
 
 module.exports = {

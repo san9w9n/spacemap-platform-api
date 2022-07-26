@@ -5,7 +5,7 @@ const { Mutex } = require('async-mutex');
 const LaunchConjunctionsService = require('./launchConjunctions.service');
 // eslint-disable-next-line no-unused-vars
 const LpdbService = require('../lpdb/lpdb.service');
-const LaunchConjunctionsLib = require('./launchConjunction.lib');
+const LaunchConjunctionsLib = require('./launchConjunctions.lib');
 const SshHandler = require('../../lib/ssh-handler');
 
 class LaunchConjunctionTask {

@@ -55,10 +55,8 @@ class InterestedSatellitesTask {
 
         await SendEmailHandler.sendMail(
           email,
-          `[SPACEMAP] Daily Conjunctions Report : ${moment
-            .utc()
-            .format('MMM DD')}`,
-          await InterestedSatellitesMailing.conjunctionsToHtml(
+          `[SPACEMAP] Space Event Report (${moment.utc().format('MMMDD')})`,
+          await MailingServiceHandler.conjunctionsToHtml(
             conjunctionsForHtml,
             metadata,
           ),
