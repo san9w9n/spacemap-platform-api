@@ -82,14 +82,14 @@ class LaunchConjunctionsService {
     return task;
   }
 
-  async enqueTask(trajectory, s3Handler, predictionEpochTime, threshold) {
-    if (!s3Handler.s3FilePath) {
+  async enqueTask(trajectory, s3Path, predictionEpochTime, threshold) {
+    if (!s3Path) {
       throw new BadRequestException('No path info.');
     }
 
     const result = await LaunchConjunctionsModel.create({
       email: trajectory.email,
-      trajectoryPath: s3Handler.s3FilePath,
+      trajectoryPath: s3Path,
       status: 'PENDING',
       launchEpochTime: trajectory.launchEpochTime,
       predictionEpochTime,
@@ -104,26 +104,6 @@ class LaunchConjunctionsService {
     }
     // eslint-disable-next-line no-underscore-dangle
     const taskId = result._id.toString();
-
-    const {
-      remoteInputFilePath,
-      remoteOutputFilePath,
-      s3InputFileKey,
-      s3OutputFileKey,
-    } = LaunchConjunctionsHandler.makeFilePath(
-      trajectory.email,
-      s3Handler.s3FileName,
-    );
-
-    await this.enqueTaskOnDb(
-      taskId,
-      s3InputFileKey,
-      remoteInputFilePath,
-      remoteOutputFilePath,
-      s3OutputFileKey,
-      threshold,
-    );
-
     return taskId;
   }
 

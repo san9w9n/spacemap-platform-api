@@ -1,6 +1,7 @@
 const AWS = require('aws-sdk');
 const moment = require('moment');
 const path = require('path');
+const EngineCommand = require('../../lib/engine-command');
 
 class S3Handler {
   constructor() {
@@ -45,6 +46,17 @@ class S3Handler {
     };
     const s3Url = this.s3.getSignedUrl('getObject', params);
     return s3Url;
+  }
+
+  async makeFilePath(trajectory) {
+    const remoteFolder = `${EngineCommand.homeDirectory}${trajectory.email}/`;
+    const outputName = `${this.s3FileName.split('.txt')[0]}-LPDB.txt`;
+    return {
+      remoteInputFilePath: `${remoteFolder}${this.s3FileName}`,
+      remoteOutputFilePath: `${remoteFolder}out_${this.s3FileName}`,
+      s3InputFileKey: `lca/input/${trajectory.email}/${this.s3FileName}`,
+      s3OutputFileKey: `lca/output/${trajectory.email}/${outputName}`,
+    };
   }
 }
 

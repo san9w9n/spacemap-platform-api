@@ -92,14 +92,29 @@ class LaunchConjunctionsController {
     await s3Handler.setS3FileName(trajectory);
     await s3Handler.uploadFile(trajectory);
     await s3Handler.setS3FilePath(trajectory);
+    const {
+      remoteInputFilePath,
+      remoteOutputFilePath,
+      s3InputFileKey,
+      s3OutputFileKey,
+    } = await s3Handler.makeFilePath(trajectory);
 
     const predictionEpochTime =
       await DateHandler.getStartMomentOfPredictionWindow();
 
     const taskId = await this.launchConjunctionsService.enqueTask(
       trajectory,
-      s3Handler,
+      s3Handler.s3FilePath,
       predictionEpochTime,
+      threshold,
+    );
+
+    await this.launchConjunctionsService.enqueTaskOnDb(
+      taskId,
+      s3InputFileKey,
+      remoteInputFilePath,
+      remoteOutputFilePath,
+      s3OutputFileKey,
       threshold,
     );
 
