@@ -14,7 +14,6 @@ const {
   BadRequestException,
   HttpException,
 } = require('../../common/exceptions');
-const LaunchConjunctionsHandler = require('../../lib/launchConjunction-handler');
 
 class LaunchConjunctionsService {
   /** @param { LpdbService } lpdbService */
