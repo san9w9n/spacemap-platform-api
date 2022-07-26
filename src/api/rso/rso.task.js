@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
 const RsoService = require('./rso.service');
-const RsoHandler = require('../../lib/rso-handler');
+const RsoLib = require('./rso.lib');
 const DateHandler = require('../../lib/date-handler');
 const SendRequestHandler = require('../../lib/sendRequest-handler');
 const SendEmailHandler = require('../../lib/node-mailer');
@@ -48,8 +48,8 @@ class RsoParamsTask {
         `${this.#SPACETRACK_URL}/${this.#QUERY_URL}`,
         loginCookie,
       );
-      const rsoJson = RsoHandler.parseRsoXml(rsoParamsPlainText);
-      const rsoParamsArray = RsoHandler.getRsoParamArrays(rsoJson);
+      const rsoJson = RsoLib.parseRsoXml(rsoParamsPlainText);
+      const rsoParamsArray = RsoLib.getRsoParamArrays(rsoJson);
       await this.rsoService.updateRsoParams(rsoParamsArray);
       console.log(`Rso params updated at ${dateObj}`);
     } catch (err) {

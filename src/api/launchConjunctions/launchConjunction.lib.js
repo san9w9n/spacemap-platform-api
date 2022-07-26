@@ -1,8 +1,8 @@
-const EngineCommand = require('./engine-command');
-const SftpHandler = require('./sftp-handler');
-const SshHandler = require('./ssh-handler');
+const EngineCommand = require('../../lib/engine-command');
+const SftpHandler = require('../../lib/sftp-handler');
+const SshHandler = require('../../lib/ssh-handler');
 
-class LaunchConjunctionsHandler {
+class LaunchConjunctionsLib {
   static async putTrajectoryFileOnRemoteServer(
     remoteFolder,
     localFilePath,
@@ -61,4 +61,4 @@ class LaunchConjunctionsHandler {
   }
 }
 
-module.exports = LaunchConjunctionsHandler;
+module.exports = LaunchConjunctionsLib;

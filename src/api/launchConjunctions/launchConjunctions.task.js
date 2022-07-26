@@ -5,7 +5,7 @@ const { Mutex } = require('async-mutex');
 const LaunchConjunctionsService = require('./launchConjunctions.service');
 // eslint-disable-next-line no-unused-vars
 const LpdbService = require('../lpdb/lpdb.service');
-const LaunchConjunctionsHandler = require('../../lib/launchConjunction-handler');
+const LaunchConjunctionsLib = require('./launchConjunction.lib');
 const SshHandler = require('../../lib/ssh-handler');
 
 class LaunchConjunctionTask {
@@ -35,12 +35,12 @@ class LaunchConjunctionTask {
     } = task;
     console.log(`Task ${taskId} Start!`);
     try {
-      await LaunchConjunctionsHandler.sshExec(
+      await LaunchConjunctionsLib.sshExec(
         remoteInputFilePath,
         remoteOutputFilePath,
         threshold,
       );
-      await LaunchConjunctionsHandler.getFileFromRemoteServer(
+      await LaunchConjunctionsLib.getFileFromRemoteServer(
         remoteOutputFilePath,
         localOutputPath,
       );

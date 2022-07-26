@@ -14,7 +14,7 @@ const {
   BadRequestException,
   HttpException,
 } = require('../../common/exceptions');
-const LaunchConjunctionsHandler = require('../../lib/launchConjunction-handler');
+const LaunchConjunctionsLib = require('./launchConjunction.lib');
 
 class LaunchConjunctionsService {
   /** @param { LpdbService } lpdbService */
@@ -115,10 +115,10 @@ class LaunchConjunctionsService {
       remoteInputFilePath,
       remoteOutputFilePath,
       localOutputPath,
-    } = LaunchConjunctionsHandler.makeFilePath(email, filename);
+    } = LaunchConjunctionsLib.makeFilePath(email, filename);
 
     await this.mutex.runExclusive(async () => {
-      await LaunchConjunctionsHandler.putTrajectoryFileOnRemoteServer(
+      await LaunchConjunctionsLib.putTrajectoryFileOnRemoteServer(
         remoteFolder,
         path,
         remoteInputFilePath,

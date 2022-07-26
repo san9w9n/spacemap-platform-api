@@ -2,7 +2,7 @@
 const { XMLParser } = require('fast-xml-parser');
 const he = require('he');
 
-class RsoHandler {
+class RsoLib {
   static getRsoParamArrays(rsoJson) {
     const { omm } = rsoJson?.ndm;
     const rsoParams = omm
@@ -70,4 +70,4 @@ class RsoHandler {
   }
 }
 
-module.exports = RsoHandler;
+module.exports = RsoLib;
