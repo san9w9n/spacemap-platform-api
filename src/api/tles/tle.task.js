@@ -5,7 +5,7 @@
 const TleService = require('./tle.service');
 const DateHandler = require('../../lib/date-handler');
 const SendRequestHandler = require('../../lib/sendRequest-handler');
-const TleHandler = require('../../lib/tle-handler');
+const TleLib = require('./tle.lib');
 const SendEmailHandler = require('../../lib/node-mailer');
 
 class TleTask {
@@ -56,7 +56,7 @@ class TleTask {
         dateObj,
         tlePlainTexts,
       );
-      await TleHandler.saveTlesOnFile(dateObj, newTlePlainTexts);
+      await TleLib.saveTlesOnFile(dateObj, newTlePlainTexts);
       console.log(`Save satellite TLE at : ${dateObj}`);
     } catch (err) {
       await SendEmailHandler.sendMail(

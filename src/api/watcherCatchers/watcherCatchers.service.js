@@ -16,7 +16,7 @@ const {
   BadRequestException,
   HttpException,
 } = require('../../common/exceptions');
-const WatcherCatchersHandler = require('../../lib/watcherCatcher-handler');
+const WatcherCatchersLib = require('./watcherCatchers.lib');
 
 class WatcherCatchersService {
   /** @param { WcdbService } wcdbService */
@@ -124,10 +124,10 @@ class WatcherCatchersService {
       remoteInputFilePath,
       remoteOutputFilePath,
       localOutputPath,
-    } = WatcherCatchersHandler.makeFilePath(email, filename);
+    } = WatcherCatchersLib.makeFilePath(email, filename);
 
     await this.mutex.runExclusive(async () => {
-      await WatcherCatchersHandler.putParametersRemoteServer(
+      await WatcherCatchersLib.putParametersRemoteServer(
         remoteFolder,
         remoteInputFilePath,
         remoteOutputFilePath,

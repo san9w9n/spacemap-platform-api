@@ -5,7 +5,7 @@ const { Mutex } = require('async-mutex');
 const WatcherCatchersService = require('./watcherCatchers.service');
 // eslint-disable-next-line no-unused-vars
 const WcdbService = require('../wcdb/wcdb.service');
-const WatcherCatchersHandler = require('../../lib/watcherCatcher-handler');
+const WatcherCatchersLib = require('./watcherCatchers.lib');
 const SshHandler = require('../../lib/ssh-handler');
 
 class WatcherCatchersTask {
@@ -35,12 +35,12 @@ class WatcherCatchersTask {
     } = task;
     console.log(`Task ${taskId} Start!`);
     try {
-      await WatcherCatchersHandler.sshExec(
+      await WatcherCatchersLib.sshExec(
         remoteInputFilePath,
         remoteOutputFilePath,
         threshold,
       );
-      await WatcherCatchersHandler.getFileFromRemoteServer(
+      await WatcherCatchersLib.getFileFromRemoteServer(
         remoteOutputFilePath,
         localOutputPath,
       );

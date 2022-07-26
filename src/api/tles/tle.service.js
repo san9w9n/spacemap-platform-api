@@ -3,13 +3,13 @@
 /* eslint-disable no-unused-vars */
 
 const TleModel = require('./tle.model');
-const TleHandler = require('../../lib/tle-handler');
+const TleLib = require('./tle.lib');
 const DateHandler = require('../../lib/date-handler');
 const { BadRequestException } = require('../../common/exceptions');
 
 class TleService {
   async saveTlesOnDatabase(dateObj, tlePlainTexts) {
-    const tles = TleHandler.parseTlePlainTexts(dateObj, tlePlainTexts);
+    const tles = TleLib.parseTlePlainTexts(dateObj, tlePlainTexts);
     await TleModel.create(tles, { ordered: false });
 
     const newTlePlainTexts = await Promise.all(
@@ -28,7 +28,7 @@ class TleService {
 
   async findTlesFromFile(dateObj, id) {
     try {
-      const tleFromFile = await TleHandler.readTlePlainTextsFromFile(dateObj);
+      const tleFromFile = await TleLib.readTlePlainTextsFromFile(dateObj);
       await this.saveTlesOnDatabase(dateObj, tleFromFile);
       const tleModels = await (id
         ? TleModel.find({ id, date: dateObj }).exec()
@@ -42,7 +42,7 @@ class TleService {
   async findTlesByOnlyDateFromFile(dateObj, id) {
     try {
       const { tleFromFile, newDateObj } =
-        await TleHandler.readMostRecentTlePlainTextsFromFile(dateObj);
+        await TleLib.readMostRecentTlePlainTextsFromFile(dateObj);
       await this.saveTlesOnDatabase(newDateObj, tleFromFile);
       const tleModels = await (id
         ? TleModel.find({ id, date: newDateObj }).exec()

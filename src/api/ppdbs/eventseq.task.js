@@ -4,7 +4,7 @@
 
 const moment = require('moment');
 const DateHandler = require('../../lib/date-handler');
-const PpdbHandler = require('../../lib/ppdb-handler');
+const PpdbLib = require('./ppdb.lib');
 const SftpHandler = require('../../lib/sftp-handler');
 const EngineCommand = require('../../lib/engine-command');
 
@@ -57,16 +57,16 @@ class EventseqTask {
       DateHandler.setEndMomentOfPredictionWindow(
         tomorrow.clone().add(2, 'd').toISOString(),
       );
-      await PpdbHandler.sshRemoveEventSeq();
-      await PpdbHandler.sshBackupTle(ppdbFileName, tleFileName);
-      await PpdbHandler.sshPutPredictionCommand(predictionCommand);
+      await PpdbLib.sshRemoveEventSeq();
+      await PpdbLib.sshBackupTle(ppdbFileName, tleFileName);
+      await PpdbLib.sshPutPredictionCommand(predictionCommand);
       await this.sftpHandler.putFile(
         tlePath,
         `${EngineCommand.homeDirectory}${tleFileName}`,
       );
       console.log(predictionCommand);
-      await PpdbHandler.sshExecEvetnSeqGen();
-      // await PpdbHandler.sshExecCalculatePpdb();
+      await PpdbLib.sshExecEvetnSeqGen();
+      // await PpdbLib.sshExecCalculatePpdb();
     } catch (err) {
       console.log(err);
     } finally {

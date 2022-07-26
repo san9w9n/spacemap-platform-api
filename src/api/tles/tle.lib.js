@@ -1,10 +1,10 @@
 /* eslint-disable class-methods-use-this */
-const { promiseReadFile, promiseWriteFile } = require('./promise-io');
-const StringHandler = require('./string-handler');
-const DateHandler = require('./date-handler');
+const { promiseReadFile, promiseWriteFile } = require('../../lib/promise-io');
+const StringHandler = require('../../lib/string-handler');
+const DateHandler = require('../../lib/date-handler');
 const fs = require('fs');
 
-class TleHandler {
+class TleLib {
   static #getTleIdFromFirstLine(firstLine) {
     const firstLineArray = firstLine.split(/[ \t]+/);
     if (!firstLineArray || firstLineArray.length < 5) {
@@ -106,4 +106,4 @@ class TleHandler {
   }
 }
 
-module.exports = TleHandler;
+module.exports = TleLib;
