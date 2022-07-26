@@ -80,14 +80,6 @@ const WatcherCatchersTaskScheme = new Schema({
     type: String,
     required: true,
   },
-  localOutputPath: {
-    type: String,
-    required: true,
-  },
-  threshold: {
-    type: Number,
-    required: true,
-  },
 });
 WatcherCatchersTaskScheme.index({ createdAt: -1 });
 
@@ -97,7 +89,7 @@ module.exports = {
     WatcherCatchersScheme,
   ),
   WatcherCatchersTaskModel: mongoose.model(
-    'watcherCatchersTask',
+    'watchercatchertasks',
     WatcherCatchersTaskScheme,
   ),
 };

@@ -57,21 +57,13 @@ class WatcherCatchersService {
     return WcdbModel.deleteMany({ placeId }).exec();
   }
 
-  async enqueTaskOnDb(
-    taskId,
-    remoteInputFilePath,
-    remoteOutputFilePath,
-    threshold,
-    localOutputPath,
-  ) {
+  async enqueTaskOnDb(taskId, remoteInputFilePath, remoteOutputFilePath) {
     const task = {
       taskId,
       remoteInputFilePath,
       remoteOutputFilePath,
-      threshold,
-      localOutputPath,
     };
-    console.log(await WatcherCatchersTaskModel.create(task));
+    await WatcherCatchersTaskModel.create(task);
   }
 
   async popTaskFromDb() {
@@ -116,7 +108,6 @@ class WatcherCatchersService {
     }
     // eslint-disable-next-line no-underscore-dangle
     const taskId = result._id.toString();
-
     const uniqueSuffix = `${moment().format('YYYY-MM-DD-hh:mm:ss')}`;
     const filename = `${email}-WC-${uniqueSuffix}.txt`;
     const {
@@ -126,28 +117,7 @@ class WatcherCatchersService {
       localOutputPath,
     } = WatcherCatchersHandler.makeFilePath(email, filename);
 
-    await this.mutex.runExclusive(async () => {
-      await WatcherCatchersHandler.putParametersRemoteServer(
-        remoteFolder,
-        remoteInputFilePath,
-        remoteOutputFilePath,
-        epochTime,
-        endTime,
-        position.x,
-        position.y,
-        position.z,
-        altitude,
-        fieldOfView,
-      );
-    });
-
-    await this.enqueTaskOnDb(
-      taskId,
-      remoteInputFilePath,
-      remoteOutputFilePath,
-      threshold,
-      localOutputPath,
-    );
+    await this.enqueTaskOnDb(taskId, remoteInputFilePath, remoteOutputFilePath);
 
     return taskId;
   }
