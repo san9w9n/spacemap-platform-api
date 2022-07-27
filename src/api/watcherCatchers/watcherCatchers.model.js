@@ -63,7 +63,7 @@ const WatcherCatchersScheme = new Schema({
   },
 });
 
-const WatcherCatchersTaskScheme = new Schema({
+const WatcherCatcherTaskScheme = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
@@ -81,7 +81,7 @@ const WatcherCatchersTaskScheme = new Schema({
     required: true,
   },
 });
-WatcherCatchersTaskScheme.index({ createdAt: -1 });
+WatcherCatcherTaskScheme.index({ createdAt: -1 });
 
 module.exports = {
   WatcherCatchersModel: mongoose.model(
@@ -90,6 +90,6 @@ module.exports = {
   ),
   WatcherCatchersTaskModel: mongoose.model(
     'watchercatchertasks',
-    WatcherCatchersTaskScheme,
+    WatcherCatcherTaskScheme,
   ),
 };
