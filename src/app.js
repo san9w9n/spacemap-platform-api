@@ -19,10 +19,10 @@ class App {
     this.#initializeSession();
     this.#initializeMiddlewares();
     this.#initializePublicRouter();
+    this.#intializeHealthCheck();
     this.#initialzeControllers(controllers);
     this.#initializeNotFoundMiddleware();
     this.#initializeErrorHandling();
-    this.#healthCheck();
   }
 
   listen() {
@@ -88,6 +88,12 @@ class App {
     this.app.use('/public', express.static(path.join(__dirname, '../public')));
   }
 
+  #intializeHealthCheck() {
+    this.app.get('/', (req, res) => {
+      res.status(200);
+    });
+  }
+
   #initialzeControllers(controllers) {
     controllers.forEach((controller) => {
       this.app.use(controller.path, controller.router);
@@ -103,12 +109,6 @@ class App {
 
   #initializeErrorHandling() {
     this.app.use(errorMiddleware);
-  }
-
-  #healthCheck() {
-    this.app.get('/', (req, res) => {
-      res.send('Health Check');
-    });
   }
 }
 
