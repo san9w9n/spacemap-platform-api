@@ -1,0 +1,2 @@
+Procfile merge=ours
+build.sh merge=ours
