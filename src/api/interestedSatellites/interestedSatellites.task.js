@@ -19,6 +19,11 @@ class InterestedSatellitesTask {
     this.handler = this.#sendInterestedConjunctions.bind(this);
   }
 
+  async doInterestedSatellitesTask(_req, res) {
+    await this.#sendInterestedConjunctions();
+    return {};
+  }
+
   async #sendInterestedConjunctions() {
     const users = await this.interestedSatellitesService.readSubscribingUsers();
     await Promise.all(

@@ -12,7 +12,7 @@ module.exports = {
       env_production: {
         NODE_ENV: 'production',
       },
-      watch: true,
+      watch: false,
     },
     {
       name: 'spacemap-platform-api-services-tasks',
@@ -26,7 +26,7 @@ module.exports = {
       env_production: {
         NODE_ENV: 'production',
       },
-      watch: true,
+      watch: false,
     },
     {
       name: 'spacemap-platform-api-daily-tasks',
@@ -40,7 +40,7 @@ module.exports = {
       env_production: {
         NODE_ENV: 'production',
       },
-      watch: true,
+      watch: false,
     },
   ],
 

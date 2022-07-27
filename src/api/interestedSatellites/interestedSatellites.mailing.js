@@ -105,10 +105,17 @@ class MailingServiceHandler {
         Buffer.from(this.#conjunctionsToCsv(conjunction)),
       );
     });
-    zip.writeZip(`public/zips/${email}.zip`);
+    try {
+      zip.writeZip(
+        `/home/spacemap-web/spacemap-platform-api/public/zips/${email}.zip`,
+      );
+    } catch (err) {
+      console.log(err);
+    }
+
     return {
       filename: `${date}.zip`,
-      path: `public/zips/${email}.zip`,
+      path: `/home/spacemap-web/spacemap-platform-api/public/zips/${email}.zip`,
     };
   }
 
@@ -131,7 +138,7 @@ class MailingServiceHandler {
   }
 
   static removeAllZips() {
-    const path = 'public/zips';
+    const path = '/home/spacemap-web/spacemap-platform-api/public/zips';
     fs.readdirSync(path).forEach((file, index) => {
       fs.unlinkSync(`${path}/${file}`);
     });

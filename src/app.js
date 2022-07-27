@@ -84,6 +84,7 @@ class App {
       '/public/samples',
       express.static(path.join(__dirname, '../public/samples')),
     );
+    this.app.use('/public', express.static(path.join(__dirname, '../public')));
   }
 
   #initialzeControllers(controllers) {
