@@ -87,10 +87,12 @@ class LaunchConjunctionsController {
     await trajectory.setSecondAndPositions();
     await trajectory.setTrajectoryLength();
     await trajectory.updateFileBuffer();
-
+    console.log(trajectory);
     const s3Handler = new S3Handler();
     await s3Handler.setS3FileName(trajectory);
+    console.log('1');
     await s3Handler.uploadFile(trajectory);
+    console.log('2');
     await s3Handler.setS3FilePath(trajectory);
     const {
       remoteInputFilePath,
@@ -98,7 +100,7 @@ class LaunchConjunctionsController {
       s3InputFileKey,
       s3OutputFileKey,
     } = await s3Handler.makeFilePath(trajectory);
-
+    console.log('3');
     const predictionEpochTime =
       await DateHandler.getStartMomentOfPredictionWindow();
 
