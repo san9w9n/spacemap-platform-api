@@ -1,5 +1,4 @@
 const moment = require('moment');
-const fs = require('fs');
 const AdmZip = require('adm-zip');
 
 class MailingServiceHandler {
@@ -85,7 +84,7 @@ class MailingServiceHandler {
     return `${header}${body}${footer}`;
   }
 
-  static async conjunctionsToAttachment(conjunctions, metadata, email) {
+  static async conjunctionsToAttachment(conjunctions, metadata) {
     const date = moment.utc().format('YYYY-MM-DD');
     if (conjunctions.length == 0) {
       return undefined;
@@ -105,17 +104,9 @@ class MailingServiceHandler {
         Buffer.from(this.#conjunctionsToCsv(conjunction)),
       );
     });
-    try {
-      zip.writeZip(
-        `/home/spacemap-web/spacemap-platform-api/public/zips/${email}.zip`,
-      );
-    } catch (err) {
-      console.log(err);
-    }
-
     return {
       filename: `${date}.zip`,
-      path: `/home/spacemap-web/spacemap-platform-api/public/zips/${email}.zip`,
+      content: zip.toBuffer(),
     };
   }
 
@@ -135,13 +126,6 @@ class MailingServiceHandler {
     }, '');
 
     return `${header}${body}`;
-  }
-
-  static removeAllZips() {
-    const path = '/home/spacemap-web/spacemap-platform-api/public/zips';
-    fs.readdirSync(path).forEach((file, index) => {
-      fs.unlinkSync(`${path}/${file}`);
-    });
   }
 }
 
