@@ -44,7 +44,7 @@ class S3Handler {
       Bucket: 'spacemap',
       Key: `lca/input/${trajectory.email}/${this.s3FileName}`,
     };
-    const s3Url = this.s3.getSignedUrl('getObject', params);
+    const s3Url = this.s3.getSignedUrl('getObject', params).split('?X-Amz')[0];
     return s3Url;
   }
 
