@@ -22,6 +22,7 @@ class App {
     this.#initialzeControllers(controllers);
     this.#initializeNotFoundMiddleware();
     this.#initializeErrorHandling();
+    this.#healthCheck();
   }
 
   listen() {
@@ -102,6 +103,12 @@ class App {
 
   #initializeErrorHandling() {
     this.app.use(errorMiddleware);
+  }
+
+  #healthCheck() {
+    this.app.get('/', (req, res) => {
+      res.send('Health Check');
+    });
   }
 }
 
