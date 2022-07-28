@@ -44,13 +44,12 @@ const CollisionAvoidancesScheme = new Schema({
     type: Number,
     required: true,
   },
-  threshold:{
+  threshold: {
     type: Number,
     required: true,
-  }
+  },
   candidatedPaths: {
     type: [String],
-    required: true,
   },
   status: {
     type: String,
@@ -67,7 +66,7 @@ const CollisionAvoidancesScheme = new Schema({
   },
 });
 
-const ColaTaskScheeme = new Schema({
+const ColaTaskScheme = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
