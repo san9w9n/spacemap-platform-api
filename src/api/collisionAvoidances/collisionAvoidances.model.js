@@ -44,10 +44,10 @@ const CollisionAvoidancesScheme = new Schema({
     type: Number,
     required: true,
   },
-  threshold:{
+  threshold: {
     type: Number,
     required: true,
-  }
+  },
   candidatedPaths: {
     type: [String],
     required: true,
@@ -67,7 +67,7 @@ const CollisionAvoidancesScheme = new Schema({
   },
 });
 
-const ColaTaskScheeme = new Schema({
+const ColaTaskScheme = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
@@ -94,12 +94,12 @@ const ColaTaskScheeme = new Schema({
   },
 });
 
-ColaTaskScheeme.index({ createdAt: -1 });
+ColaTaskScheme.index({ createdAt: -1 });
 
 module.exports = {
   CollisionAvoidancesModel: mongoose.model(
     'collisionAvoidances',
     CollisionAvoidancesScheme,
   ),
-  ColaTaskModel: mongoose.model('colaTasks', ColaTaskScheeme),
+  ColaTaskModel: mongoose.model('colaTasks', ColaTaskScheme),
 };
