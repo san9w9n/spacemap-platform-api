@@ -4,7 +4,7 @@ const EngineCommand = require('../../lib/engine-command');
 const SftpHandler = require('../../lib/sftp-handler');
 const SshHandler = require('../../lib/ssh-handler');
 
-class WatcherCatchersLib {
+class WatcherCatcherLib {
   static async putParametersRemoteServer(
     remoteFolder,
     remoteInputFilePath,
@@ -99,8 +99,7 @@ class WatcherCatchersLib {
 
   static async sshExec(remoteInputFilePath, remoteOutputFilePath, threshold) {
     const sshHandler = new SshHandler();
-    const command =
-      EngineCommand.getWatcherCatchersCommand(remoteInputFilePath);
+    const command = EngineCommand.getWatcherCatcherCommand(remoteInputFilePath);
     console.log(command);
     const { result, message } =
       await sshHandler.execCalculateWithoutCheckingError(command);
@@ -110,7 +109,7 @@ class WatcherCatchersLib {
   }
 }
 
-module.exports = WatcherCatchersLib;
+module.exports = WatcherCatcherLib;
 
 /* ISSUES
  * forEach, map ??

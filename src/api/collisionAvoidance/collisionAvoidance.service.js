@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
-// const WatcherCatchersModel = require('./watcherCatchers.model');
+
 const { default: mongoose } = require('mongoose');
 const { Mutex } = require('async-mutex');
 const Cesium = require('cesium');

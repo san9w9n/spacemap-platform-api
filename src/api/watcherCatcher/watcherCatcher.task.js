@@ -2,23 +2,23 @@
 /* eslint-disable no-console */
 const { Mutex } = require('async-mutex');
 // eslint-disable-next-line no-unused-vars
-const WatcherCatchersService = require('./watcherCatchers.service');
+const WatcherCatcherService = require('./watcherCatcher.service');
 // eslint-disable-next-line no-unused-vars
 const WcdbService = require('../wcdb/wcdb.service');
-const WatcherCatchersLib = require('./watcherCatchers.lib');
+const WatcherCatcherLib = require('./watcherCatcher.lib');
 const SshHandler = require('../../lib/ssh-handler');
 
-class WatcherCatchersTask {
+class WatcherCatcherTask {
   #FROM_PPDB_PATH = '/data/COOP/workingFolder/PPDB2.txt';
 
   /**
-   * @param { WatcherCatchersService } watcherCatchersService
+   * @param { WatcherCatcherService } watcherCatcherService
    * @param { WcdbService } wcdbService
    */
-  constructor(watcherCatchersService, wcdbService) {
+  constructor(watcherCatcherService, wcdbService) {
     this.name = 'WC TASK';
     this.period = '*/30 * * * * *';
-    this.watcherCatchersService = watcherCatchersService;
+    this.watcherCatcherService = watcherCatcherService;
     this.wcdbService = wcdbService;
     this.handler = this.#watcherCatcherScheduleHandler.bind(this);
     this.sshHandler = new SshHandler();
@@ -35,24 +35,24 @@ class WatcherCatchersTask {
     } = task;
     console.log(`Task ${taskId} Start!`);
     try {
-      await WatcherCatchersLib.sshExec(
+      await WatcherCatcherLib.sshExec(
         remoteInputFilePath,
         remoteOutputFilePath,
         threshold,
       );
-      await WatcherCatchersLib.getFileFromRemoteServer(
+      await WatcherCatcherLib.getFileFromRemoteServer(
         remoteOutputFilePath,
         localOutputPath,
       );
       await this.wcdbService.saveWcdbOnDatabase(localOutputPath, taskId);
-      await this.watcherCatchersService.updateTaskStatusSuceess(
+      await this.watcherCatcherService.updateTaskStatusSuceess(
         taskId,
         localOutputPath,
       );
       console.log(`Task ${taskId} has Successfully Done.`);
     } catch (err) {
       console.log(`Task ${taskId} has not done : ${err}`);
-      await this.watcherCatchersService.updateTaskStatusFailed(
+      await this.watcherCatcherService.updateTaskStatusFailed(
         taskId,
         localOutputPath,
         err,
@@ -67,7 +67,7 @@ class WatcherCatchersTask {
         console.log(`cpuUsage: ${cpuUsagePercent}%`);
         return;
       }
-      const task = await this.watcherCatchersService.popTaskFromDb();
+      const task = await this.watcherCatcherService.popTaskFromDb();
       if (!task) {
         return;
       }
@@ -76,4 +76,4 @@ class WatcherCatchersTask {
   }
 }
 
-module.exports = WatcherCatchersTask;
+module.exports = WatcherCatcherTask;

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const WatcherCatchersScheme = new Schema({
+const WatcherCatcherScheme = new Schema({
   createdAt: { type: Date, default: Date.now },
   email: {
     type: String,
@@ -84,11 +84,8 @@ const WatcherCatcherTaskScheme = new Schema({
 WatcherCatcherTaskScheme.index({ createdAt: -1 });
 
 module.exports = {
-  WatcherCatchersModel: mongoose.model(
-    'watcherCatchers',
-    WatcherCatchersScheme,
-  ),
-  WatcherCatchersTaskModel: mongoose.model(
+  WatcherCatcherModel: mongoose.model('watcherCatchers', WatcherCatcherScheme),
+  WatcherCatcherTaskModel: mongoose.model(
     'watchercatchertasks',
     WatcherCatcherTaskScheme,
   ),

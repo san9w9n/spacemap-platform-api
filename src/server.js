@@ -7,7 +7,7 @@ const LpdbService = require('./api/lpdb/lpdb.service');
 const WcdbService = require('./api/wcdb/wcdb.service');
 const ColadbService = require('./api/collisionAvoidance/coladb.service');
 const LaunchConjunctionsService = require('./api/launchConjunctions/launchConjunctions.service');
-const WatcherCatchersService = require('./api/watcherCatchers/watcherCatchers.service');
+const WatcherCatcherService = require('./api/watcherCatcher/watcherCatcher.service');
 const InterestedSatellitesService = require('./api/interestedSatellites/interestedSatellites.service');
 const RsoService = require('./api/rso/rso.service');
 const CollisionAvoidanceService = require('./api/collisionAvoidance/collisionAvoidance.service');
@@ -15,7 +15,7 @@ const CollisionAvoidanceService = require('./api/collisionAvoidance/collisionAvo
 const TleController = require('./api/tles/tle.controller');
 const PpdbController = require('./api/ppdbs/ppdb.controller');
 const LaunchConjunctionsController = require('./api/launchConjunctions/launchConjunctions.controller');
-const WatcherCatchersController = require('./api/watcherCatchers/watcherCatchers.controller');
+const WatcherCatcherController = require('./api/watcherCatcher/watcherCatcher.controller');
 const OauthController = require('./api/oauth/oauth.controller');
 const InterestedSatellitesController = require('./api/interestedSatellites/interestedSatellites.controller');
 const RsoController = require('./api/rso/rso.controller');
@@ -29,7 +29,7 @@ const PpdbTask = require('./api/ppdbs/ppdb.task');
 const RsoParamsTask = require('./api/rso/rso.task');
 const LaunchConjunctionTask = require('./api/launchConjunctions/launchConjunctions.task');
 const InterestedSatellitesTask = require('./api/interestedSatellites/interestedSatellites.task');
-const WatcherCatchersTask = require('./api/watcherCatchers/watcherCatchers.task');
+const WatcherCatcherTask = require('./api/watcherCatcher/watcherCatcher.task');
 
 const instanceName = process.env.name || 'UNKNOWN';
 
@@ -46,7 +46,7 @@ const getServices = () => {
   );
   const interestedSatellitesService = new InterestedSatellitesService();
   const launchConjunctionsService = new LaunchConjunctionsService(lpdbService);
-  const watcherCatchersService = new WatcherCatchersService(wcdbService);
+  const watcherCatcherService = new WatcherCatcherService(wcdbService);
   const rsoService = new RsoService();
 
   return {
@@ -56,7 +56,7 @@ const getServices = () => {
     tleService,
     interestedSatellitesService,
     launchConjunctionsService,
-    watcherCatchersService,
+    watcherCatcherService,
     rsoService,
     collisionAvoidanceService,
     coladbService,
@@ -71,7 +71,7 @@ const main = async () => {
     ppdbService,
     interestedSatellitesService,
     launchConjunctionsService,
-    watcherCatchersService,
+    watcherCatcherService,
     lpdbService,
     wcdbService,
     rsoService,
@@ -91,8 +91,8 @@ const main = async () => {
     ppdbService,
   );
 
-  const watcherCatchersTask = new WatcherCatchersTask(
-    watcherCatchersService,
+  const watcherCatcherTask = new WatcherCatcherTask(
+    watcherCatcherService,
     wcdbService,
   );
 
@@ -119,7 +119,7 @@ const main = async () => {
         ppdbService,
       ),
       new LaunchConjunctionsController(launchConjunctionsService),
-      new WatcherCatchersController(watcherCatchersService),
+      new WatcherCatcherController(watcherCatcherService),
       new OauthController(),
       new RsoController(rsoService),
       new TaskController(
