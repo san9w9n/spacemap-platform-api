@@ -2,51 +2,54 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const WatcherCatchersScheme = new Schema({
+const CollisionAvoidanceScheme = new Schema({
   createdAt: { type: Date, default: Date.now },
   email: {
     type: String,
     required: true,
   },
-  latitude: {
-    type: Number,
-    required: true,
-  },
-  longitude: {
-    type: Number,
-    required: true,
-  },
-  localX: {
-    type: Number,
-    required: true,
-  },
-  localY: {
-    type: Number,
-    required: true,
-  },
-  localZ: {
-    type: Number,
-    required: true,
-  },
-  altitude: {
-    type: Number,
-    required: true,
-  },
-  fieldOfView: {
-    type: Number,
-    required: true,
-  },
-  epochTime: {
-    type: Date,
-  },
-  endTime: {
-    type: Date,
-  },
   predictionEpochTime: {
     type: Date,
+    required: true,
+  },
+  colaEpochTime: {
+    type: Date,
+    required: true,
+  },
+  pidOfConjunction: {
+    type: Number,
+    required: true,
+  },
+  sidOfConjunction: {
+    type: Number,
+    required: true,
+  },
+  startMomentOfCola: {
+    type: Number,
+    required: true,
+  },
+  endMomentOfCola: {
+    type: Number,
+    required: true,
+  },
+  amoutOfLevel: {
+    type: Number,
+    required: true,
+  },
+  numberOfPaths: {
+    type: Number,
+    required: true,
+  },
+  avoidanceLength: {
+    type: Number,
+    required: true,
   },
   threshold: {
     type: Number,
+    required: true,
+  },
+  candidatedPaths: {
+    type: [String],
   },
   status: {
     type: String,
@@ -58,12 +61,12 @@ const WatcherCatchersScheme = new Schema({
     type: String,
     default: undefined,
   },
-  wcdbFilePath: {
+  coladbFilePath: {
     type: String,
   },
 });
 
-const WatcherCatcherTaskScheme = new Schema({
+const ColaTaskScheme = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
@@ -72,24 +75,30 @@ const WatcherCatcherTaskScheme = new Schema({
     type: String,
     required: true,
   },
+  s3InputFileKey: {
+    type: [String],
+    required: true,
+  },
   remoteInputFilePath: {
-    type: String,
+    type: [String],
     required: true,
   },
   remoteOutputFilePath: {
     type: String,
     required: true,
   },
+  s3OutputFileKey: {
+    type: String,
+    required: true,
+  },
 });
-WatcherCatcherTaskScheme.index({ createdAt: -1 });
+
+ColaTaskScheme.index({ createdAt: -1 });
 
 module.exports = {
-  WatcherCatchersModel: mongoose.model(
-    'watcherCatchers',
-    WatcherCatchersScheme,
+  CollisionAvoidanceModel: mongoose.model(
+    'collisionAvoidances',
+    CollisionAvoidanceScheme,
   ),
-  WatcherCatchersTaskModel: mongoose.model(
-    'watchercatchertasks',
-    WatcherCatcherTaskScheme,
-  ),
+  ColaTaskModel: mongoose.model('colaTasks', ColaTaskScheme),
 };
