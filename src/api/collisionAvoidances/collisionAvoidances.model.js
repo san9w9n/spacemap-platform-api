@@ -93,12 +93,12 @@ const ColaTaskScheme = new Schema({
   },
 });
 
-ColaTaskScheeme.index({ createdAt: -1 });
+ColaTaskScheme.index({ createdAt: -1 });
 
 module.exports = {
   CollisionAvoidancesModel: mongoose.model(
     'collisionAvoidances',
     CollisionAvoidancesScheme,
   ),
-  ColaTaskModel: mongoose.model('colaTasks', ColaTaskScheeme),
+  ColaTaskModel: mongoose.model('colaTasks', ColaTaskScheme),
 };
