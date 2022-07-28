@@ -25,11 +25,11 @@ const CollisionAvoidanceScheme = new Schema({
     required: true,
   },
   startMomentOfCola: {
-    type: Date,
+    type: Number,
     required: true,
   },
   endMomentOfCola: {
-    type: Date,
+    type: Number,
     required: true,
   },
   amoutOfLevel: {
