@@ -2,6 +2,8 @@
 const { promiseReadFile, promiseWriteFile } = require('../../lib/promise-io');
 const StringHandler = require('../../lib/string-handler');
 const DateHandler = require('../../lib/date-handler');
+const S3Handler = require('./tle.s3handler');
+const moment = require('moment');
 const fs = require('fs');
 
 class TleLib {
@@ -51,48 +53,41 @@ class TleLib {
     return tles;
   }
 
-  static async readTlePlainTextsFromFile(dateObj) {
-    const tleFileName = DateHandler.getFileNameByDateObject(dateObj);
-    const tleFilePath = `./public/tle/${tleFileName}.tle`;
-    const readOptions = {
-      encoding: 'utf-8',
-    };
-    const tlePlainTexts = await promiseReadFile(tleFilePath, readOptions);
-    return tlePlainTexts;
-  }
+  static async readTlePlainTextsFromS3(dateObj) {
+    const s3Handler = new S3Handler();
+    const data = await s3Handler.getObjectListsFromS3();
+    const filesFromS3 = await TleLib.makeTlesListFromS3(data.Contents);
+    const dateOfFiles = filesFromS3.reduce((accumulator, fileFromS3) => {
+      if (fileFromS3.match(/.tle$/)) {
+        const dateOfFile = fileFromS3.split(/.tle/)[0];
 
-  static async readMostRecentTlePlainTextsFromFile(dateObj) {
-    const filesFromLocal = fs.readdirSync('./public/tle/');
-    const dateOfFiles = filesFromLocal.reduce((accumulator, fileFromLocal) => {
-      if (fileFromLocal.match(/.tle$/)) {
-        const dateOfFile = fileFromLocal.split(/.tle/)[0];
         const dateObjFromFile = new Date(
-          dateOfFile.substring(0, 4),
-          dateOfFile.substring(5, 7) - 1,
-          dateOfFile.substring(8, 10),
-          dateOfFile.substring(11, 13),
+          Date.UTC(
+            dateOfFile.substring(0, 4),
+            dateOfFile.substring(5, 7) - 1,
+            dateOfFile.substring(8, 10),
+            dateOfFile.substring(11, 13),
+          ),
         );
-        dateObjFromFile.setHours(dateObjFromFile.getUTCHours());
+
         accumulator.push(dateObjFromFile);
       }
       return accumulator;
     }, []);
-
     const dateOfFilesForSearch = dateOfFiles
       .filter((dateOfFile) => dateOfFile <= dateObj)
       .sort((a, b) => b - a);
 
-    if (dateOfFilesForSearch[0] >= dateObj.setDate(dateObj.getUTCDate() - 7)) {
+    if (
+      dateOfFilesForSearch[0] >=
+      new Date(dateObj.setUTCDate(dateObj.getUTCDate() - 7))
+    ) {
       const tleFileName = DateHandler.getFileNameByDateObject(
         dateOfFilesForSearch[0],
       );
-      const tleFilePath = `./public/tle/${tleFileName}.tle`;
-      const readOptions = {
-        encoding: 'utf-8',
-      };
-      const tlePlainTexts = await promiseReadFile(tleFilePath, readOptions);
+      const tleFromS3 = await s3Handler.getObjectFromS3(tleFileName);
       return {
-        tleFromFile: tlePlainTexts,
+        tleFromFile: tleFromS3.Body.toString(),
         newDateObj: dateOfFilesForSearch[0],
       };
     } else {
@@ -100,9 +95,15 @@ class TleLib {
     }
   }
 
-  static async saveTlesOnFile(dateObj, tles) {
-    const fileName = DateHandler.getFileNameByDateObject(dateObj);
-    return promiseWriteFile(`./public/tle/${fileName}.tle`, tles);
+  static async makeTlesListFromS3(content) {
+    const tles = content.reduce((accumulator, tle) => {
+      if (tle.Size > 0) {
+        const tleName = tle.Key.replace('tles/', '');
+        accumulator.push(tleName);
+      }
+      return accumulator;
+    }, []);
+    return tles;
   }
 }
 

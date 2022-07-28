@@ -23,7 +23,7 @@ class Trajectory {
     this.splitedLines = bufferString.split(/[\r\n]+/);
   }
 
-  async #getChangedTrajectory() {
+  async takeChangedTrajectory() {
     const stringSecondAndPositions = this.secondAndPositions.join('');
     const stringCoordinateSystem = `%coordinate system: ${this.metaData.coordinateSystem}\n`;
     const stringSite = `%site: ${this.metaData.site}\n`;
@@ -33,7 +33,7 @@ class Trajectory {
     return `${stringCoordinateSystem}${stringSite}${stringLaunchEpochTime}${stringSecondAndPositions}`;
   }
 
-  async setMetaData() {
+  async initializeMetaData() {
     this.#setSplitedLines(this.file.buffer.toString());
     if (this.splitedLines.length < 4) {
       throw new BadRequestException('Too short trajectory file.');
@@ -45,7 +45,7 @@ class Trajectory {
     }
   }
 
-  async setSecondAndPositions() {
+  async initializeSecondAndPositions() {
     const secondAndPositions = this.splitedLines
       .filter((line) => StringHandler.isNotComment(line))
       .map((line) => {
@@ -64,13 +64,12 @@ class Trajectory {
     this.secondAndPositions = secondAndPositions;
   }
 
-  async setTrajectoryLength() {
+  async initializeTrajectoryLength() {
     this.trajectoryLength = this.endMomentOfFlight - this.startMomentOfFlight;
   }
 
-  async updateFileBuffer() {
-    const changedBuffer = await this.#getChangedTrajectory();
-    this.file.buffer = Buffer.from(changedBuffer);
+  async updateTrajectory(changedTrajectory) {
+    this.file.buffer = Buffer.from(changedTrajectory);
   }
 }
 

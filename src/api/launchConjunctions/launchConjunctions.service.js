@@ -90,7 +90,7 @@ class LaunchConjunctionsService {
       email: trajectory.email,
       trajectoryPath: s3Path,
       status: 'PENDING',
-      launchEpochTime: trajectory.launchEpochTime,
+      launchEpochTime: trajectory.metaData.launchEpochTime,
       predictionEpochTime,
       trajectoryLength: trajectory.trajectoryLength,
       threshold,
@@ -120,4 +120,5 @@ class LaunchConjunctionsService {
     );
   }
 }
+
 module.exports = LaunchConjunctionsService;
