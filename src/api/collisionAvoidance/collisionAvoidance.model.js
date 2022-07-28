@@ -79,8 +79,12 @@ const ColaTaskScheme = new Schema({
     type: [String],
     required: true,
   },
-  remoteInputFilePath: {
+  remoteInputFliePath: {
     type: [String],
+    required: true,
+  },
+  remoteInputFileListPath: {
+    type: String,
     required: true,
   },
   remoteOutputFilePath: {
@@ -97,8 +101,8 @@ ColaTaskScheme.index({ createdAt: -1 });
 
 module.exports = {
   CollisionAvoidanceModel: mongoose.model(
-    'collisionAvoidances',
+    'collisionAvoidance',
     CollisionAvoidanceScheme,
   ),
-  ColaTaskModel: mongoose.model('colaTasks', ColaTaskScheme),
+  ColaTaskModel: mongoose.model('colaTask', ColaTaskScheme),
 };
