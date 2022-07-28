@@ -58,23 +58,19 @@ class InterestedSatellitesTask {
           };
         });
 
-        await SendEmailHandler.sendMail(
-          email,
-          `[SPACEMAP] Space Event Report (${moment.utc().format('MMMDD')})`,
-          await MailingServiceHandler.conjunctionsToHtml(
-            conjunctionsForHtml,
-            metadata,
-          ),
+        const title = `Space Event Report (${moment.utc().format('MMM DD')})`;
+        const html = await InterestedSatellitesMailing.conjunctionsToHtml(
+          conjunctionsForHtml,
+          metadata,
+        );
+        const attachments =
           await InterestedSatellitesMailing.conjunctionsToAttachment(
             conjunctionsForCsv,
             metadata,
-            email,
-          ),
-        );
+          );
+        await SendEmailHandler.sendMail(email, title, html, attachments);
       }),
     );
-
-    // MailingServiceHandler.removeAllZips();
   }
 }
 
