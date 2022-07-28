@@ -6,6 +6,7 @@ const TleModel = require('./tle.model');
 const TleLib = require('./tle.lib');
 const DateHandler = require('../../lib/date-handler');
 const { BadRequestException } = require('../../common/exceptions');
+const S3Handler = require('./tle.s3handler');
 
 class TleService {
   async saveTlesOnDatabase(dateObj, tlePlainTexts) {
@@ -26,23 +27,11 @@ class TleService {
     return newTlePlainTexts.join('');
   }
 
-  async findTlesFromFile(dateObj, id) {
+  async findTlesFromS3(dateObj, id) {
     try {
-      const tleFromFile = await TleLib.readTlePlainTextsFromFile(dateObj);
-      await this.saveTlesOnDatabase(dateObj, tleFromFile);
-      const tleModels = await (id
-        ? TleModel.find({ id, date: dateObj }).exec()
-        : TleModel.find({ date: dateObj }).exec());
-      return tleModels;
-    } catch (err) {
-      return [];
-    }
-  }
-
-  async findTlesByOnlyDateFromFile(dateObj, id) {
-    try {
-      const { tleFromFile, newDateObj } =
-        await TleLib.readMostRecentTlePlainTextsFromFile(dateObj);
+      const { tleFromFile, newDateObj } = await TleLib.readTlePlainTextsFromS3(
+        dateObj,
+      );
       await this.saveTlesOnDatabase(newDateObj, tleFromFile);
       const tleModels = await (id
         ? TleModel.find({ id, date: newDateObj }).exec()
@@ -53,9 +42,9 @@ class TleService {
     }
   }
 
-  async findTlesByOnlyDate(dateObj, id) {
+  async findTlesFromDB(dateObj, id) {
     const dateObjForCompare = new Date(dateObj);
-    dateObjForCompare.setDate(dateObjForCompare.getUTCDate() - 7);
+    dateObjForCompare.setUTCDate(dateObjForCompare.getUTCDate() - 7);
     const tleModel = await TleModel.findOne({
       date: {
         $gt: dateObjForCompare,
@@ -64,45 +53,49 @@ class TleService {
     })
       .sort({ date: -1 })
       .exec();
+
     if (!tleModel) {
       return undefined;
     }
     const reSearchDate = tleModel.date;
+
     const tleModels = await (id
       ? TleModel.find({ id, date: reSearchDate }).exec()
       : TleModel.find({ date: reSearchDate }).exec());
+
     return tleModels;
   }
 
-  async findTlesByIdOrDate(dateObj, id) {
+  async findTlesFromDBorS3(dateObj, id) {
     let tleModels = await (id
       ? TleModel.find({ id, date: dateObj }).exec()
       : TleModel.find({ date: dateObj }).exec());
+
     if (!tleModels || tleModels.length === 0) {
-      tleModels = await this.findTlesFromFile(dateObj, id);
+      tleModels = await this.findTlesFromDB(dateObj, id);
     }
     if (!tleModels || tleModels.length === 0) {
-      tleModels = await this.findTlesByOnlyDate(dateObj, id);
-    }
-    if (!tleModels || tleModels.length === 0) {
-      tleModels = await this.findTlesByOnlyDateFromFile(dateObj, id);
+      tleModels = await this.findTlesFromS3(dateObj, id);
     }
     if (!tleModels || tleModels.length === 0) {
       throw new BadRequestException('Wrong params. Please write correct date.');
     }
-    const tles = tleModels.map((tleModel) => {
-      return {
+
+    const tles = tleModels.reduce((accumulator, tleModel) => {
+      const tle = {
         name: tleModel.name,
         firstLine: tleModel.firstline,
         secondLine: tleModel.secondline,
       };
-    });
+      accumulator.push(tle);
+      return accumulator;
+    }, []);
     return tles;
   }
 
   async deleteTles(dateObj) {
     const compareDate = new Date(dateObj);
-    compareDate.setDate(compareDate.getUTCDate() - 7);
+    compareDate.setUTCDate(compareDate.getUTCDate() - 7);
     const queryOption = {
       date: { $lt: compareDate },
     };

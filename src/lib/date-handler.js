@@ -139,7 +139,7 @@ class DateHandler {
   }
 
   static getMomentOfString(stringDate) {
-    return moment(stringDate);
+    return moment(stringDate).utc();
   }
 
   static isCalculatableDate() {
