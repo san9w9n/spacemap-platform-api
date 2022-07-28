@@ -14,19 +14,16 @@ class SendEmailHandler {
   static async sendMail(email, title, message, attachments = undefined) {
     const transporter = nodemailer.createTransport(this.#mailConfig);
     const mailOptions = {
-      from: process.env.EMAIL || 'please update .env',
+      from: {
+        name: 'SPACEMAP',
+        address: process.env.EMAIL || 'please update .env',
+      },
       to: email,
       subject: title,
       html: message,
       attachments,
     };
-    return transporter.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log(info);
-      }
-    });
+    return transporter.sendMail(mailOptions);
   }
 }
 
