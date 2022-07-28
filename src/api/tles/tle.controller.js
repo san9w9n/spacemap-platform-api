@@ -33,7 +33,7 @@ class TleController {
       throw new BadRequestException("Wrong params. ('id' is not number.)");
     }
     const requestDate = DateHandler.getCertainUTCDate(year, month, date, hours);
-    const requestTles = await this.tleService.findTlesByIdOrDate(
+    const requestTles = await this.tleService.findTlesFromDBorS3(
       requestDate,
       id,
     );
@@ -45,6 +45,7 @@ class TleController {
   }
 
   async findMostRecentTles(req, _res) {
+    console.log(123);
     const requestTles = await this.tleService.findMostRecentTles();
     return {
       data: {

@@ -120,4 +120,5 @@ class LaunchConjunctionsService {
     );
   }
 }
+
 module.exports = LaunchConjunctionsService;

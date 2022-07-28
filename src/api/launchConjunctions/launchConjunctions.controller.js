@@ -83,15 +83,17 @@ class LaunchConjunctionsController {
     }
 
     const trajectory = new Trajectory(email, file);
-    await trajectory.setMetaData();
-    await trajectory.setSecondAndPositions();
-    await trajectory.setTrajectoryLength();
-    await trajectory.updateFileBuffer();
+    await trajectory.initializeMetaData();
+    await trajectory.initializeSecondAndPositions();
+    await trajectory.initializeTrajectoryLength();
+    const changedTrajectory = await trajectory.takeChangedTrajectory();
+    await trajectory.updateTrajectory(changedTrajectory);
 
     const s3Handler = new S3Handler();
     await s3Handler.setS3FileName(trajectory);
     await s3Handler.uploadFile(trajectory);
     await s3Handler.setS3FilePath(trajectory);
+
     const {
       remoteInputFilePath,
       remoteOutputFilePath,
