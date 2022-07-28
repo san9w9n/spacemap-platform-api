@@ -4,32 +4,32 @@
 const { Router } = require('express');
 const wrapper = require('../../lib/request-handler');
 const DateHandler = require('../../lib/date-handler');
-const CollisionAvoidancesService = require('./collisionAvoidances.service');
+const CollisionAvoidanceService = require('./collisionAvoidance.service');
 const {
   BadRequestException,
   ForbiddenException,
 } = require('../../common/exceptions');
 const { verifyUser } = require('../../middlewares/auth.middleware');
 
-class CollisionAvoidancesController {
-  /** @param { CollisionAvoidancesService } collisionAvoidancesService */
-  constructor(collisionAvoidancesService) {
-    this.collisionAvoidancesService = collisionAvoidancesService;
-    this.path = '/collision-avoidances';
+class CollisionAvoidanceController {
+  /** @param { CollisionAvoidanceService } collisionAvoidanceService */
+  constructor(collisionAvoidanceService) {
+    this.collisionAvoidanceService = collisionAvoidanceService;
+    this.path = '/collision-avoidance';
     this.router = Router();
     this.initializeRoutes();
   }
 
   initializeRoutes() {
-    // this.router.use(verifyUser);
+    this.router.use(verifyUser);
     this.router
-      .get('/', wrapper(this.readCollisionAvoidances.bind(this)))
-      .get('/:dbId', wrapper(this.findCollisionAvoidances.bind(this)))
-      .delete('/:dbId', wrapper(this.deleteCollisionAvoidances.bind(this)))
-      .post('/', wrapper(this.predictCollisionAvoidances.bind(this)));
+      .get('/', wrapper(this.readCollisionAvoidance.bind(this)))
+      .get('/:dbId', wrapper(this.findCollisionAvoidance.bind(this)))
+      .delete('/:dbId', wrapper(this.deleteCollisionAvoidance.bind(this)))
+      .post('/', wrapper(this.predictCollisionAvoidance.bind(this)));
   }
 
-  async readCollisionAvoidances(req, _res) {
+  async readCollisionAvoidance(req, _res) {
     const { email } = req.user;
     const data = await this.collisionAvoidancesService.readCollisionAvoidances(
       email,
@@ -37,7 +37,7 @@ class CollisionAvoidancesController {
     return { data };
   }
 
-  async findCollisionAvoidances(req, _res) {
+  async findCollisionAvoidance(req, _res) {
     const { email } = req.user;
     const { dbId } = req.params;
     if (!dbId) {
@@ -49,17 +49,18 @@ class CollisionAvoidancesController {
     return { data };
   }
 
-  async deleteCollisionAvoidances(req, _res) {
+  async deleteCollisionAvoidance(req, _res) {
     const { dbId } = req.params;
     if (!dbId) {
       throw new BadRequestException('Wrong param.');
     }
-    const data =
-      await this.collisionAvoidancesService.deleteCollisionAvoidances(dbId);
+    const data = await this.collisionAvoidancesService.deleteCollisionAvoidance(
+      dbId,
+    );
     return { data };
   }
 
-  async predictCollisionAvoidances(req, _res) {
+  async predictCollisionAvoidance(req, _res) {
     if (!DateHandler.isCalculatableDate()) {
       throw new ForbiddenException('Not available time.');
     }
@@ -72,7 +73,7 @@ class CollisionAvoidancesController {
     const { longitude, latitude, altitude, fieldOfView, epochTime, endTime } =
       req.body;
 
-    const taskId = await this.collisionAvoidancesService.enqueTask(
+    const taskId = await this.collisionAvoidanceService.enqueTask(
       email,
       Number(latitude),
       Number(longitude),
@@ -93,4 +94,4 @@ class CollisionAvoidancesController {
   }
 }
 
-module.exports = CollisionAvoidancesController;
+module.exports = CollisionAvoidanceController;

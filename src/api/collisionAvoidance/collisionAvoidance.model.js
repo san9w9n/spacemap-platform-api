@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const CollisionAvoidancesScheme = new Schema({
+const CollisionAvoidanceScheme = new Schema({
   createdAt: { type: Date, default: Date.now },
   email: {
     type: String,
@@ -96,9 +96,9 @@ const ColaTaskScheme = new Schema({
 ColaTaskScheme.index({ createdAt: -1 });
 
 module.exports = {
-  CollisionAvoidancesModel: mongoose.model(
+  CollisionAvoidanceModel: mongoose.model(
     'collisionAvoidances',
-    CollisionAvoidancesScheme,
+    CollisionAvoidanceScheme,
   ),
   ColaTaskModel: mongoose.model('colaTasks', ColaTaskScheme),
 };

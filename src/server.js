@@ -5,12 +5,12 @@ const TleService = require('./api/tles/tle.service');
 const PpdbService = require('./api/ppdbs/ppdb.service');
 const LpdbService = require('./api/lpdb/lpdb.service');
 const WcdbService = require('./api/wcdb/wcdb.service');
-const ColadbService = require('./api/collisionAvoidances/coladb.service');
+const ColadbService = require('./api/collisionAvoidance/coladb.service');
 const LaunchConjunctionsService = require('./api/launchConjunctions/launchConjunctions.service');
 const WatcherCatchersService = require('./api/watcherCatchers/watcherCatchers.service');
 const InterestedSatellitesService = require('./api/interestedSatellites/interestedSatellites.service');
 const RsoService = require('./api/rso/rso.service');
-const CollisionAvoidancesService = require('./api/collisionAvoidances/collisionAvoidances.service');
+const CollisionAvoidanceService = require('./api/collisionAvoidance/collisionAvoidance.service');
 
 const TleController = require('./api/tles/tle.controller');
 const PpdbController = require('./api/ppdbs/ppdb.controller');
@@ -19,7 +19,7 @@ const WatcherCatchersController = require('./api/watcherCatchers/watcherCatchers
 const OauthController = require('./api/oauth/oauth.controller');
 const InterestedSatellitesController = require('./api/interestedSatellites/interestedSatellites.controller');
 const RsoController = require('./api/rso/rso.controller');
-const CollisionAvoidancesController = require('./api/collisionAvoidances/collisionAvoidances.controller');
+const CollisionAvoidanceController = require('./api/collisionAvoidance/collisionAvoidance.controller');
 const TaskController = require('./api/tasks/task.controller');
 
 const CronScheduler = require('./lib/cron-scheduler');
@@ -41,7 +41,7 @@ const getServices = () => {
   const lpdbService = new LpdbService(tleService);
   const wcdbService = new WcdbService(tleService);
   const coladbService = new ColadbService();
-  const collisionAvoidancesService = new CollisionAvoidancesService(
+  const collisionAvoidanceService = new CollisionAvoidanceService(
     coladbService,
   );
   const interestedSatellitesService = new InterestedSatellitesService();
@@ -58,7 +58,7 @@ const getServices = () => {
     launchConjunctionsService,
     watcherCatchersService,
     rsoService,
-    collisionAvoidancesService,
+    collisionAvoidanceService,
     coladbService,
   };
 };
@@ -75,7 +75,7 @@ const main = async () => {
     lpdbService,
     wcdbService,
     rsoService,
-    collisionAvoidancesService,
+    collisionAvoidanceService,
     coladbService,
   } = getServices();
 
@@ -129,7 +129,7 @@ const main = async () => {
         eventSeqTask,
         interestedSatellitesTask,
       ),
-      new CollisionAvoidancesController(collisionAvoidancesService),
+      new CollisionAvoidanceController(collisionAvoidanceService),
     ]);
     app.listen();
   }
