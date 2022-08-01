@@ -72,7 +72,6 @@ class CollisionAvoidanceController {
       throw new ForbiddenException('Not available time.');
     }
     const { email } = req.user;
-    const threshold = 50; // km
 
     const {
       pidOfConjunction,
@@ -81,14 +80,13 @@ class CollisionAvoidanceController {
       endDate,
       amountOfLevel,
       numberOfPaths,
+      threshold,
     } = req.body;
 
-    const predictionEpochTime = new Date(
-      await DateHandler.getStartMomentOfPredictionWindow(),
-    );
+    const predictionEpochTime =
+      await DateHandler.getStartMomentOfPredictionWindow();
 
     const colaEpochTime = new Date(startDate);
-
     const startMomentOfCola = await DateHandler.diffSeconds(colaEpochTime);
     const endMomentOfCola = await DateHandler.diffSeconds(endDate);
 

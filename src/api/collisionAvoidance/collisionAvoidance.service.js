@@ -50,6 +50,7 @@ class CollisionAvoidanceService {
       numberOfPaths: taskResult.numberOfPaths,
       avoidanceLength: taskResult.avoidanceLength,
       threshold: taskResult.threshold,
+      candidatedPaths: taskResult.candidatedPaths,
       coladb: coladbResult,
     };
     return collisionAvoidanceResult;
@@ -130,8 +131,8 @@ class CollisionAvoidanceService {
 
     const {
       s3InputFileKey,
-      remoteInputFileListPath,
       remoteInputFilePath,
+      remoteInputFileListPath,
       remoteInputFilePrefix,
       remoteOutputFilePath,
       s3OutputFileKey,
