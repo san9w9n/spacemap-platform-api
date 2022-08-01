@@ -38,13 +38,18 @@ class CollisionAvoidanceService {
       throw new BadRequestException('Job has not finished.');
     }
     const coladbResult = await ColadbModel.find({ placeId });
-    console.log(coladbResult);
 
     const collisionAvoidanceResult = {
-      // latitude: taskResult.latitude,
-      // longitude: taskResult.longitude,
-      // epochTime: taskResult.epochTime,
-      // predictionEpochTime: taskResult.predictionEpochTime,
+      pidOfConjunction: taskResult.pidOfConjunction,
+      sidOfConjunction: taskResult.sidOfConjunction,
+      predictionEpochTime: taskResult.predictionEpochTime,
+      colaEpochTime: taskResult.colaEpochTime,
+      startMomentOfCola: taskResult.startMomentOfCola,
+      endMomentOfCola: taskResult.endMomentOfCola,
+      amountOfLevel: taskResult.amountOfLevel,
+      numberOfPaths: taskResult.numberOfPaths,
+      avoidanceLength: taskResult.avoidanceLength,
+      threshold: taskResult.threshold,
       coladb: coladbResult,
     };
     return collisionAvoidanceResult;

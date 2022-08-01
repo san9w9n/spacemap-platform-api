@@ -28,59 +28,16 @@ class CollisionAvoidanceController {
   }
 
   initializeRoutes() {
-    // this.router.use(verifyUser);
+    this.router.use(verifyUser);
     this.router
-      .get('/search', wrapper(this.findConjunctions.bind(this)))
       .get('/', wrapper(this.readCollisionAvoidance.bind(this)))
       .get('/:dbId', wrapper(this.findCollisionAvoidance.bind(this)))
       .delete('/:dbId', wrapper(this.deleteCollisionAvoidance.bind(this)))
       .post('/', wrapper(this.predictCollisionAvoidance.bind(this)));
   }
 
-  async findConjunctions(req, _res) {
-    let { limit = 10, page = 0, sort = 'tcaTime', dec = '' } = req.query;
-    const { satellite } = req.query;
-
-    if (page < 0) {
-      page = 0;
-    }
-    if (limit <= 0) {
-      limit = 10;
-    }
-    if (sort !== 'tcaTime' && sort !== 'dca' && sort !== 'probability') {
-      sort = 'tcaTime';
-    }
-    if (dec !== '-') {
-      dec = '';
-    }
-    sort = `${dec}${sort}`;
-
-    if (satellite) {
-      if (!StringHandler.isNumeric(satellite)) {
-        throw new BadRequestException('Invalid ID.');
-      }
-      const { conjunctions, totalcount } =
-        await this.ppdbService.findConjunctionsByIdsService(limit, page, sort, [
-          satellite,
-        ]);
-      return {
-        data: {
-          totalcount,
-          conjunctions,
-        },
-      };
-    }
-    return {
-      data: {
-        totalcount: 0,
-        conjunctions: undefined,
-      },
-    };
-  }
-
   async readCollisionAvoidance(req, _res) {
-    // const { email } = req.user;
-    const email = 'sjb990221@gmail.com';
+    const { email } = req.user;
     const data = await this.collisionAvoidanceService.readCollisionAvoidance(
       email,
     );
@@ -88,7 +45,7 @@ class CollisionAvoidanceController {
   }
 
   async findCollisionAvoidance(req, _res) {
-    // const { email } = req.user;
+    const { email } = req.user;
     const { dbId } = req.params;
     if (!dbId) {
       throw new BadRequestException('Param is empty.');
@@ -114,36 +71,26 @@ class CollisionAvoidanceController {
     if (!DateHandler.isCalculatableDate()) {
       throw new ForbiddenException('Not available time.');
     }
-    // const { email } = req.user;
-    const email = 'sjb990221@gmail.com';
-
-    const threshold = 200; // km
+    const { email } = req.user;
+    const threshold = 50; // km
 
     const {
       pidOfConjunction,
       sidOfConjunction,
-      // startDate,
-      // endDate,
+      startDate,
+      endDate,
       amountOfLevel,
       numberOfPaths,
     } = req.body;
-
-    const startDate = new Date('2022-07-27 02:01:00');
-    const endDate = new Date('2022-07-27 02:04:00');
 
     const predictionEpochTime = new Date(
       await DateHandler.getStartMomentOfPredictionWindow(),
     );
 
-    // const predictionEpochTime = new Date('2022-07-27T03:49:19.832Z');
-
     const colaEpochTime = new Date(startDate);
 
     const startMomentOfCola = await DateHandler.diffSeconds(colaEpochTime);
     const endMomentOfCola = await DateHandler.diffSeconds(endDate);
-
-    // const startMomentOfCola = 700;
-    // const endMomentOfCola = 900;
 
     const avoidanceLength = endMomentOfCola - startMomentOfCola;
     const tle = await TleModel.findOne({
@@ -154,13 +101,6 @@ class CollisionAvoidanceController {
 
     const firstLineOfPrimary = tle.firstline;
     const secondLineOfPrimary = tle.secondline;
-
-    console.log(firstLineOfPrimary);
-    console.log(secondLineOfPrimary);
-    // const firstLineOfPrimary =
-    //   '1 39227U 13042A   21095.17409619 -.00000399  00000-0 -24191-4 0  9991';
-    // const secondLineOfPrimary =
-    //   '2 39227  97.6263 281.4463 0002157  81.7764  51.1935 15.04505553418385';
 
     const taskId = await this.collisionAvoidanceService.enqueTask(
       email,
