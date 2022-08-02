@@ -37,17 +37,12 @@ class InterestedSatellitesTask {
             0,
             'dca',
             satellitesIds,
-            false,
           );
         const conjunctionsForCsv = await Promise.all(
           satellitesIds.map(async (satelliteId) =>
-            this.ppdbService.findConjunctionsByIdsService(
-              0,
-              0,
-              'tcaTime',
-              [satelliteId],
-              false,
-            ),
+            this.ppdbService.findConjunctionsByIdsService(0, 0, 'tcaTime', [
+              satelliteId,
+            ]),
           ),
         );
         const metadata = interestedArray.map((object, index) => {
