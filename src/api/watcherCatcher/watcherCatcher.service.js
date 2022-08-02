@@ -54,6 +54,7 @@ class WatcherCatcherService {
       taskId,
       remoteInputFilePath,
       remoteOutputFilePath,
+      s3OutputFileKey,
     };
     await WatcherCatcherTaskModel.create(task);
   }
@@ -95,10 +96,15 @@ class WatcherCatcherService {
     const taskId = result._id.toString();
     const uniqueSuffix = `${moment().format('YYYY-MM-DD-hh:mm:ss')}`;
     const filename = `${email}-WC-${uniqueSuffix}.txt`;
-    const { remoteInputFilePath, remoteOutputFilePath } =
+    const { remoteInputFilePath, remoteOutputFilePath, s3OutputFileKey } =
       WatcherCatcherLib.makeFilePath(email, filename);
 
-    await this.enqueTaskOnDb(taskId, remoteInputFilePath, remoteOutputFilePath);
+    await this.enqueTaskOnDb(
+      taskId,
+      remoteInputFilePath,
+      remoteOutputFilePath,
+      s3OutputFileKey,
+    );
 
     return taskId;
   }
