@@ -7,19 +7,13 @@ const {
   LaunchConjunctionsModel,
   LaunchTaskModel,
 } = require('./launchConjunctions.model');
-const LpdbModel = require('../lpdb/lpdb.model');
-const LpdbService = require('../lpdb/lpdb.service');
+const LpdbModel = require('./lpdb.model');
 const {
   BadRequestException,
   HttpException,
 } = require('../../common/exceptions');
 
 class LaunchConjunctionsService {
-  /** @param { LpdbService } lpdbService */
-  constructor(lpdbService) {
-    this.lpdbService = lpdbService;
-  }
-
   async readLaunchConjunctions(email) {
     const result = await LaunchConjunctionsModel.find({ email });
     return result;

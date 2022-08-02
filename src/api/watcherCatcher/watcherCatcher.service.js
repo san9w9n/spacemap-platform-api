@@ -9,8 +9,7 @@ const {
   WatcherCatcherModel,
   WatcherCatcherTaskModel,
 } = require('./watcherCatcher.model');
-const WcdbModel = require('../wcdb/wcdb.model');
-const WcdbService = require('../wcdb/wcdb.service');
+const WcdbModel = require('./wcdb.model');
 const {
   BadRequestException,
   HttpException,
@@ -18,11 +17,6 @@ const {
 const WatcherCatcherLib = require('./watcherCatcher.lib');
 
 class WatcherCatcherService {
-  /** @param { WcdbService } wcdbService */
-  constructor(wcdbService) {
-    this.wcdbService = wcdbService;
-  }
-
   async readWatcherCatcher(email) {
     const result = await WatcherCatcherModel.find({ email });
     return result;
