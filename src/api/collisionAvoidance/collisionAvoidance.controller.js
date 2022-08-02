@@ -87,6 +87,8 @@ class CollisionAvoidanceController {
       await DateHandler.getStartMomentOfPredictionWindow();
 
     const colaEpochTime = new Date(startDate);
+
+    // 음수일 때 에러 반환
     const startMomentOfCola = await DateHandler.diffSeconds(colaEpochTime);
     const endMomentOfCola = await DateHandler.diffSeconds(endDate);
 
@@ -97,6 +99,7 @@ class CollisionAvoidanceController {
       .sort({ date: -1 })
       .exec();
 
+    // 해당하는 tle 정보가 없다면 에러 반환
     const firstLineOfPrimary = tle.firstline;
     const secondLineOfPrimary = tle.secondline;
 
