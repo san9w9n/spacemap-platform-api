@@ -85,12 +85,18 @@ class CollisionAvoidanceController {
 
     const predictionEpochTime =
       await DateHandler.getStartMomentOfPredictionWindow();
-
     const colaEpochTime = new Date(startDate);
 
-    // 음수일 때 에러 반환
     const startMomentOfCola = await DateHandler.diffSeconds(colaEpochTime);
     const endMomentOfCola = await DateHandler.diffSeconds(endDate);
+
+    if (
+      startMomentOfCola >= endMomentOfCola ||
+      startMomentOfCola < 0 ||
+      endMomentOfCola < 0
+    ) {
+      throw new BadRequestException('Wrong Date.');
+    }
 
     const avoidanceLength = endMomentOfCola - startMomentOfCola;
     const tle = await TleModel.findOne({
@@ -99,9 +105,9 @@ class CollisionAvoidanceController {
       .sort({ date: -1 })
       .exec();
 
-    // 해당하는 tle 정보가 없다면 에러 반환
-    const firstLineOfPrimary = tle.firstline;
-    const secondLineOfPrimary = tle.secondline;
+    if (!tle) {
+      throw new BadRequestException('No Tle Information.');
+    }
 
     const taskId = await this.collisionAvoidanceService.enqueTask(
       email,
@@ -109,8 +115,8 @@ class CollisionAvoidanceController {
       colaEpochTime,
       pidOfConjunction,
       sidOfConjunction,
-      firstLineOfPrimary,
-      secondLineOfPrimary,
+      tle.firstline,
+      tle.secondline,
       startMomentOfCola,
       endMomentOfCola,
       amountOfLevel,

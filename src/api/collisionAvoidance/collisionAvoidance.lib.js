@@ -1,5 +1,4 @@
 const EngineCommand = require('../../lib/engine-command');
-const DateHandler = require('../../lib/date-handler');
 
 class CollisionAvoidanceLib {
   static async makeFilePath(email, filename, numberOfPaths) {
@@ -32,8 +31,6 @@ class CollisionAvoidanceLib {
       s3OutputFileKey: `cola/output/${email}/${filename}-COLADB.txt`,
     };
   }
-
-  // static async makeMomentOfCola(colaEpochTime) {}
 }
 
 module.exports = CollisionAvoidanceLib;
