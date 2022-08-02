@@ -5,6 +5,9 @@ const { Router } = require('express');
 const wrapper = require('../../lib/request-handler');
 const DateHandler = require('../../lib/date-handler');
 const CollisionAvoidanceService = require('./collisionAvoidance.service');
+const PpdbService = require('../ppdbs/ppdb.service');
+const TleModel = require('../tles/tle.model');
+const StringHandler = require('../../lib/string-handler');
 const {
   BadRequestException,
   ForbiddenException,
@@ -12,9 +15,13 @@ const {
 const { verifyUser } = require('../../middlewares/auth.middleware');
 
 class CollisionAvoidanceController {
-  /** @param { CollisionAvoidanceService } collisionAvoidanceService */
-  constructor(collisionAvoidanceService) {
+  /**
+   * @param { CollisionAvoidanceService } collisionAvoidanceService
+   * @param { PpdbService } ppdbService
+   */
+  constructor(collisionAvoidanceService, ppdbService) {
     this.collisionAvoidanceService = collisionAvoidanceService;
+    this.ppdbService = ppdbService;
     this.path = '/collision-avoidance';
     this.router = Router();
     this.initializeRoutes();
@@ -31,7 +38,7 @@ class CollisionAvoidanceController {
 
   async readCollisionAvoidance(req, _res) {
     const { email } = req.user;
-    const data = await this.collisionAvoidancesService.readCollisionAvoidances(
+    const data = await this.collisionAvoidanceService.readCollisionAvoidance(
       email,
     );
     return { data };
@@ -43,7 +50,7 @@ class CollisionAvoidanceController {
     if (!dbId) {
       throw new BadRequestException('Param is empty.');
     }
-    const data = await this.collisionAvoidancesService.findCollisionAvoidances(
+    const data = await this.collisionAvoidanceService.findCollisionAvoidance(
       dbId,
     );
     return { data };
@@ -54,7 +61,7 @@ class CollisionAvoidanceController {
     if (!dbId) {
       throw new BadRequestException('Wrong param.');
     }
-    const data = await this.collisionAvoidancesService.deleteCollisionAvoidance(
+    const data = await this.collisionAvoidanceService.deleteCollisionAvoidance(
       dbId,
     );
     return { data };
@@ -66,22 +73,49 @@ class CollisionAvoidanceController {
     }
     const { email } = req.user;
 
-    const startMomentOfPredictionWindow =
+    const {
+      pidOfConjunction,
+      sidOfConjunction,
+      startDate,
+      endDate,
+      amountOfLevel,
+      numberOfPaths,
+      threshold,
+    } = req.body;
+
+    const predictionEpochTime =
       await DateHandler.getStartMomentOfPredictionWindow();
 
-    const threshold = 50; // km
-    const { longitude, latitude, altitude, fieldOfView, epochTime, endTime } =
-      req.body;
+    const colaEpochTime = new Date(startDate);
+
+    // 음수일 때 에러 반환
+    const startMomentOfCola = await DateHandler.diffSeconds(colaEpochTime);
+    const endMomentOfCola = await DateHandler.diffSeconds(endDate);
+
+    const avoidanceLength = endMomentOfCola - startMomentOfCola;
+    const tle = await TleModel.findOne({
+      id: pidOfConjunction,
+    })
+      .sort({ date: -1 })
+      .exec();
+
+    // 해당하는 tle 정보가 없다면 에러 반환
+    const firstLineOfPrimary = tle.firstline;
+    const secondLineOfPrimary = tle.secondline;
 
     const taskId = await this.collisionAvoidanceService.enqueTask(
       email,
-      Number(latitude),
-      Number(longitude),
-      altitude,
-      fieldOfView,
-      epochTime,
-      endTime,
-      startMomentOfPredictionWindow,
+      predictionEpochTime,
+      colaEpochTime,
+      pidOfConjunction,
+      sidOfConjunction,
+      firstLineOfPrimary,
+      secondLineOfPrimary,
+      startMomentOfCola,
+      endMomentOfCola,
+      amountOfLevel,
+      numberOfPaths,
+      avoidanceLength,
       threshold,
     );
 

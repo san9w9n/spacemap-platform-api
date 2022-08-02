@@ -129,7 +129,7 @@ const main = async () => {
         eventSeqTask,
         interestedSatellitesTask,
       ),
-      new CollisionAvoidanceController(collisionAvoidanceService),
+      new CollisionAvoidanceController(collisionAvoidanceService, ppdbService),
     ]);
     app.listen();
   }

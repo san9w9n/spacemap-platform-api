@@ -16,7 +16,48 @@ class PpdbController {
   }
 
   initializeRoutes() {
-    this.router.get('/conjunctions', wrapper(this.findConjunctions.bind(this)));
+    this.router
+      .get('/conjunctions', wrapper(this.findConjunctions.bind(this)))
+      .get('/search', wrapper(this.findConjunctionsForCola.bind(this)));
+  }
+
+  async findConjunctionsForCola(req, _res) {
+    let { limit = 10, page = 0, sort = 'tcaTime', dec = '' } = req.query;
+    const { satellite } = req.query;
+
+    if (page < 0) {
+      page = 0;
+    }
+    if (limit <= 0) {
+      limit = 10;
+    }
+    if (sort !== 'tcaTime' && sort !== 'dca' && sort !== 'probability') {
+      sort = 'tcaTime';
+    }
+    if (dec !== '-') {
+      dec = '';
+    }
+    sort = `${dec}${sort}`;
+
+    if (!satellite) {
+      return {
+        data: {
+          totalcount: 0,
+          conjunctions: undefined,
+        },
+      };
+    }
+
+    const { conjunctions, totalcount } =
+      await this.ppdbService.findConjunctionsByIdsService(limit, page, sort, [
+        satellite,
+      ]);
+    return {
+      data: {
+        totalcount,
+        conjunctions,
+      },
+    };
   }
 
   async findConjunctions(req, _res) {
