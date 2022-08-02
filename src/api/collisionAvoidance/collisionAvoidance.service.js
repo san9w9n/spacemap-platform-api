@@ -11,18 +11,12 @@ const {
 const CollisionAvoidanceLib = require('./collisionAvoidance.lib');
 const PpdbModel = require('../ppdbs/ppdb.model');
 const ColadbModel = require('./coladb.model');
-const ColadbService = require('./coladb.service');
 const {
   BadRequestException,
   HttpException,
 } = require('../../common/exceptions');
 
 class CollisionAvoidanceService {
-  /** @param { ColadbService } coladbService */
-  constructor(coladbService) {
-    this.coladbService = coladbService;
-  }
-
   async readCollisionAvoidance(email) {
     const result = await CollisionAvoidanceModel.find({ email });
     return result;

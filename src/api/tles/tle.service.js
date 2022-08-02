@@ -4,9 +4,7 @@
 
 const TleModel = require('./tle.model');
 const TleLib = require('./tle.lib');
-const DateHandler = require('../../lib/date-handler');
 const { BadRequestException } = require('../../common/exceptions');
-const S3Handler = require('./tle.s3handler');
 
 class TleService {
   async saveTlesOnDatabase(dateObj, tlePlainTexts) {
@@ -100,24 +98,6 @@ class TleService {
       date: { $lt: compareDate },
     };
     return await TleModel.deleteMany(queryOption).exec();
-  }
-
-  async getIdNamePairs() {
-    const tleModel = await TleModel.findOne({ id: 11 }).exec();
-    if (!tleModel) {
-      throw new Error('Something is wrong. (at getIdNamePairs)');
-    }
-    const { date } = tleModel;
-    const tleModels = await TleModel.find({ date }).exec();
-    if (!tleModels || tleModels.length === 0) {
-      throw new Error('Something is wrong. (at getIdNamePairs)');
-    }
-    const idNamePairs = {};
-    tleModels.forEach((model) => {
-      const { id, name } = model;
-      idNamePairs[id] = name;
-    });
-    return idNamePairs;
   }
 
   async findMostRecentTles() {

@@ -3,15 +3,13 @@
 /* eslint-disable no-console */
 // const WatcherCatcherModel = require('./watcherCatcher.model');
 const { default: mongoose } = require('mongoose');
-const { Mutex } = require('async-mutex');
 const Cesium = require('cesium');
 const moment = require('moment');
 const {
   WatcherCatcherModel,
   WatcherCatcherTaskModel,
 } = require('./watcherCatcher.model');
-const WcdbModel = require('../wcdb/wcdb.model');
-const WcdbService = require('../wcdb/wcdb.service');
+const WcdbModel = require('./wcdb.model');
 const {
   BadRequestException,
   HttpException,
@@ -19,12 +17,6 @@ const {
 const WatcherCatcherLib = require('./watcherCatcher.lib');
 
 class WatcherCatcherService {
-  /** @param { WcdbService } wcdbService */
-  constructor(wcdbService) {
-    this.wcdbService = wcdbService;
-    this.mutex = new Mutex();
-  }
-
   async readWatcherCatcher(email) {
     const result = await WatcherCatcherModel.find({ email });
     return result;
@@ -57,20 +49,19 @@ class WatcherCatcherService {
     return WcdbModel.deleteMany({ placeId }).exec();
   }
 
-  async enqueTaskOnDb(taskId, remoteInputFilePath, remoteOutputFilePath) {
+  async enqueTaskOnDb(
+    taskId,
+    remoteInputFilePath,
+    remoteOutputFilePath,
+    s3OutputFileKey,
+  ) {
     const task = {
       taskId,
       remoteInputFilePath,
       remoteOutputFilePath,
+      s3OutputFileKey,
     };
     await WatcherCatcherTaskModel.create(task);
-  }
-
-  async popTaskFromDb() {
-    const task = await WatcherCatcherTaskModel.findOneAndDelete({})
-      .sort({ createdAt: 1 })
-      .exec();
-    return task;
   }
 
   async enqueTask(
@@ -110,30 +101,17 @@ class WatcherCatcherService {
     const taskId = result._id.toString();
     const uniqueSuffix = `${moment().format('YYYY-MM-DD-hh:mm:ss')}`;
     const filename = `${email}-WC-${uniqueSuffix}.txt`;
-    const {
-      remoteFolder,
+    const { remoteInputFilePath, remoteOutputFilePath, s3OutputFileKey } =
+      WatcherCatcherLib.makeFilePath(email, filename);
+
+    await this.enqueTaskOnDb(
+      taskId,
       remoteInputFilePath,
       remoteOutputFilePath,
-      localOutputPath,
-    } = WatcherCatcherLib.makeFilePath(email, filename);
-
-    await this.enqueTaskOnDb(taskId, remoteInputFilePath, remoteOutputFilePath);
+      s3OutputFileKey,
+    );
 
     return taskId;
-  }
-
-  async updateTaskStatusSuceess(taskId, wcdbFilePath) {
-    return WatcherCatcherModel.findOneAndUpdate(
-      { _id: mongoose.Types.ObjectId(taskId) },
-      { status: 'DONE', wcdbFilePath },
-    );
-  }
-
-  async updateTaskStatusFailed(taskId, wcdbFilePath, errorMessage) {
-    const result = await WatcherCatcherModel.findOneAndUpdate(
-      { _id: mongoose.Types.ObjectId(taskId) },
-      { status: 'ERROR', errorMessage, wcdbFilePath },
-    );
   }
 }
 module.exports = WatcherCatcherService;

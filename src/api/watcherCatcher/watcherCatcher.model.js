@@ -80,6 +80,10 @@ const WatcherCatcherTaskScheme = new Schema({
     type: String,
     required: true,
   },
+  s3OutputFileKey: {
+    type: String,
+    required: true,
+  },
 });
 WatcherCatcherTaskScheme.index({ createdAt: -1 });
 
