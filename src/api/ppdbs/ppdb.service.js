@@ -4,29 +4,12 @@
 
 // eslint-disable-next-line no-unused-vars
 const TleService = require('../tles/tle.service');
-const PpdbLib = require('./ppdb.lib');
 const PpdbModel = require('./ppdb.model');
 
 class PpdbService {
   /** @param { TleService } tleService */
   constructor(tleService) {
     this.tleService = tleService;
-  }
-
-  async savePpdbOnDatabase(createdDateObj, ppdbTexts) {
-    const idNamePairs = await this.tleService.getIdNamePairs();
-    const ppdbs = await PpdbLib.getPpdbObjectsArray(createdDateObj, ppdbTexts);
-    ppdbs.forEach((ppdb) => {
-      const { pid, sid } = ppdb;
-      ppdb.pName = idNamePairs[pid] || 'UNKNOWN';
-      ppdb.sName = idNamePairs[sid] || 'UNKNOWN';
-    });
-    await PpdbModel.insertMany(ppdbs);
-    return PpdbModel.createIndexes({ tcaTime: 1, probability: 1, dca: 1 });
-  }
-
-  async clearPpdbDatabase() {
-    return PpdbModel.deleteMany({}).exec();
   }
 
   async findConjunctionsService(limit, page, sort) {
