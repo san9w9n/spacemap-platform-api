@@ -49,7 +49,12 @@ class WatcherCatcherService {
     return WcdbModel.deleteMany({ placeId }).exec();
   }
 
-  async enqueTaskOnDb(taskId, remoteInputFilePath, remoteOutputFilePath) {
+  async enqueTaskOnDb(
+    taskId,
+    remoteInputFilePath,
+    remoteOutputFilePath,
+    s3OutputFileKey,
+  ) {
     const task = {
       taskId,
       remoteInputFilePath,
