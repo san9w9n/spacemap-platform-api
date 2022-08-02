@@ -43,7 +43,7 @@ class PpdbController {
       return {
         data: {
           totalcount: 0,
-          conjunctions: undefined,
+          conjunctions: [],
         },
       };
     }
