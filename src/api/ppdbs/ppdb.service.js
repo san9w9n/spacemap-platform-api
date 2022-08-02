@@ -8,6 +8,7 @@ const TleService = require('../tles/tle.service');
 const PpdbModel = require('./ppdb.model');
 const InterestedSatellitesService = require('../interestedSatellites/interestedSatellites.service');
 const StringHandler = require('../../lib/string-handler');
+const { BadRequestException } = require('../../common/exceptions');
 
 class PpdbService {
   /**
@@ -23,7 +24,6 @@ class PpdbService {
     return PpdbModel.deleteMany({}).exec();
   }
 
-  // 원래 전체 검색용
   async findConjunctions(limit, page, sort, satellite) {
     if (satellite) {
       const { conjunctions, totalcount } = await (StringHandler.isNumeric(
@@ -47,7 +47,6 @@ class PpdbService {
     };
   }
 
-  // favorite 검색용
   async findInterestedConjunctions(email, limit, page, sort, satellite) {
     const interestedSatellites =
       await this.interestedSatellitesService.readInterestedSatellites(email);
@@ -74,8 +73,10 @@ class PpdbService {
     };
   }
 
-  // cola 검색용
   async findConjunctionsBySatIdsOnly(limit, page, sort, satellite) {
+    if (!StringHandler.isNumeric(satellite)) {
+      throw new BadRequestException('Search word must be a number.');
+    }
     const { conjunctions, totalcount } =
       await this.findConjunctionsByIdsService(limit, page, sort, [satellite]);
     return {
