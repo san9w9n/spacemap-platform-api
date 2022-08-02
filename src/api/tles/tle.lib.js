@@ -1,10 +1,7 @@
 /* eslint-disable class-methods-use-this */
-const { promiseReadFile, promiseWriteFile } = require('../../lib/promise-io');
 const StringHandler = require('../../lib/string-handler');
 const DateHandler = require('../../lib/date-handler');
 const S3Handler = require('./tle.s3handler');
-const moment = require('moment');
-const fs = require('fs');
 
 class TleLib {
   static #getTleIdFromFirstLine(firstLine) {

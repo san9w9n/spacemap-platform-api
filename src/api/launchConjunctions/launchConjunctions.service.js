@@ -3,7 +3,6 @@
 /* eslint-disable no-console */
 // const LaunchConjunctionsModel = require('./launchConjunctions.model');
 const { default: mongoose } = require('mongoose');
-const { Mutex } = require('async-mutex');
 const {
   LaunchConjunctionsModel,
   LaunchTaskModel,
@@ -19,7 +18,6 @@ class LaunchConjunctionsService {
   /** @param { LpdbService } lpdbService */
   constructor(lpdbService) {
     this.lpdbService = lpdbService;
-    this.mutex = new Mutex();
   }
 
   async readLaunchConjunctions(email) {
@@ -74,13 +72,6 @@ class LaunchConjunctionsService {
     console.log(await LaunchTaskModel.create(task));
   }
 
-  async popTaskFromDb() {
-    const task = await LaunchTaskModel.findOneAndDelete({})
-      .sort({ createdAt: 1 })
-      .exec();
-    return task;
-  }
-
   async enqueTask(trajectory, s3Path, predictionEpochTime, threshold) {
     if (!s3Path) {
       throw new BadRequestException('No path info.');
@@ -104,20 +95,6 @@ class LaunchConjunctionsService {
     // eslint-disable-next-line no-underscore-dangle
     const taskId = result._id.toString();
     return taskId;
-  }
-
-  async updateTaskStatusSuceess(taskId, lpdbFilePath) {
-    return LaunchConjunctionsModel.findOneAndUpdate(
-      { _id: mongoose.Types.ObjectId(taskId) },
-      { status: 'DONE', lpdbFilePath },
-    );
-  }
-
-  async updateTaskStatusFailed(taskId, lpdbFilePath, errorMessage) {
-    const result = await LaunchConjunctionsModel.findOneAndUpdate(
-      { _id: mongoose.Types.ObjectId(taskId) },
-      { status: 'ERROR', errorMessage, lpdbFilePath },
-    );
   }
 }
 
