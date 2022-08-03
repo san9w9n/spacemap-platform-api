@@ -19,6 +19,41 @@ class InterestedSatellitesTask {
     this.handler = this.#sendInterestedConjunctions.bind(this);
   }
 
+  async renderSpaceEventReport(req, res) {
+    const { interestedArray } =
+      await this.interestedSatellitesService.readInterestedSatellites(
+        '2018008168@hanyang.ac.kr',
+      );
+    const satellitesIds = interestedArray.map((satellite) => satellite.id);
+    const conjunctionsForHtml =
+      await this.ppdbService.findConjunctionsByIdsService(
+        10,
+        0,
+        'dca',
+        satellitesIds,
+      );
+    const conjunctionsForCsv = await Promise.all(
+      satellitesIds.map(async (satelliteId) =>
+        this.ppdbService.findConjunctionsByIdsService(0, 0, 'tcaTime', [
+          satelliteId,
+        ]),
+      ),
+    );
+    const metadata = interestedArray.map((object, index) => {
+      return {
+        id: object.id,
+        name: object.name,
+        numConjunctions: conjunctionsForCsv[index].totalcount,
+      };
+    });
+    return res.render('spaceEventReport', {
+      conjunctions: conjunctionsForHtml.conjunctions,
+      totalcount: conjunctionsForHtml.totalcount,
+      metadata: metadata,
+      moment: moment,
+    });
+  }
+
   async doInterestedSatellitesTask(_req, res) {
     await this.#sendInterestedConjunctions();
     return {};
@@ -37,17 +72,12 @@ class InterestedSatellitesTask {
             0,
             'dca',
             satellitesIds,
-            false,
           );
         const conjunctionsForCsv = await Promise.all(
           satellitesIds.map(async (satelliteId) =>
-            this.ppdbService.findConjunctionsByIdsService(
-              0,
-              0,
-              'tcaTime',
-              [satelliteId],
-              false,
-            ),
+            this.ppdbService.findConjunctionsByIdsService(0, 0, 'tcaTime', [
+              satelliteId,
+            ]),
           ),
         );
         const metadata = interestedArray.map((object, index) => {
@@ -59,10 +89,12 @@ class InterestedSatellitesTask {
         });
 
         const title = `Space Event Report (${moment.utc().format('MMM DD')})`;
-        const html = await InterestedSatellitesMailing.conjunctionsToHtml(
-          conjunctionsForHtml,
+        const html = await SendEmailHandler.renderHtml('spaceEventReport', {
+          totalcount: conjunctionsForHtml.totalcount,
+          conjunctions: conjunctionsForHtml.conjunctions,
           metadata,
-        );
+          moment,
+        });
         const attachments =
           await InterestedSatellitesMailing.conjunctionsToAttachment(
             conjunctionsForCsv,

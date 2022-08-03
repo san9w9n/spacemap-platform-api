@@ -17,6 +17,8 @@ const OauthController = require('./api/oauth/oauth.controller');
 const InterestedSatellitesController = require('./api/interestedSatellites/interestedSatellites.controller');
 const RsoController = require('./api/rso/rso.controller');
 const CollisionAvoidanceController = require('./api/collisionAvoidance/collisionAvoidance.controller');
+const TaskController = require('./api/tasks/task.controller');
+const TemplateController = require('./api/templates/template.controller');
 
 const CronScheduler = require('./lib/cron-scheduler');
 const InterestedSatellitesTask = require('./api/interestedSatellites/interestedSatellites.task');
@@ -79,6 +81,8 @@ const main = async () => {
       new OauthController(),
       new RsoController(rsoService),
       new CollisionAvoidanceController(collisionAvoidanceService, ppdbService),
+      new TaskController(interestedSatellitesTask),
+      new TemplateController(interestedSatellitesTask),
     ]);
     app.listen();
   }
