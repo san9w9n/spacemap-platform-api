@@ -4,7 +4,7 @@
 const { Router } = require('express');
 const wrapper = require('../../lib/request-handler');
 const DateHandler = require('../../lib/date-handler');
-const WatcherCatchersService = require('./watcherCatchers.service');
+const WatcherCatcherService = require('./watcherCatcher.service');
 const upload = require('../../lib/file-upload');
 const {
   BadRequestException,
@@ -12,55 +12,55 @@ const {
 } = require('../../common/exceptions');
 const { verifyUser } = require('../../middlewares/auth.middleware');
 
-class WatcherCatchersController {
-  /** @param { WatcherCatchersService } watcherCatchersService */
-  constructor(watcherCatchersService) {
-    this.watcherCatchersService = watcherCatchersService;
+class WatcherCatcherController {
+  /** @param { WatcherCatcherService } watcherCatcherService */
+  constructor(watcherCatcherService) {
+    this.watcherCatcherService = watcherCatcherService;
     this.path = '/watcher-catchers';
     this.router = Router();
     this.initializeRoutes();
   }
 
   initializeRoutes() {
-    this.router.use(verifyUser);
+    // this.router.use(verifyUser);
     this.router
-      .get('/', wrapper(this.readWatcherCatchers.bind(this)))
-      .get('/:dbId', wrapper(this.findWatcherCatchers.bind(this)))
-      .delete('/:dbId', wrapper(this.deleteWatcherCatchers.bind(this)))
-      .post('/', wrapper(this.predictWatcherCatchers.bind(this)));
+      .get('/', wrapper(this.readWatcherCatcher.bind(this)))
+      .get('/:dbId', wrapper(this.findWatcherCatcher.bind(this)))
+      .delete('/:dbId', wrapper(this.deleteWatcherCatcher.bind(this)))
+      .post('/', wrapper(this.predictWatcherCatcher.bind(this)));
   }
 
-  async readWatcherCatchers(req, _res) {
+  async readWatcherCatcher(req, _res) {
     const { email } = req.user;
-    const data = await this.watcherCatchersService.readWatcherCatchers(email);
+    const data = await this.watcherCatcherService.readWatcherCatcher(email);
     return { data };
   }
 
-  async findWatcherCatchers(req, _res) {
+  async findWatcherCatcher(req, _res) {
     const { email } = req.user;
     const { dbId } = req.params;
     if (!dbId) {
       throw new BadRequestException('Param is empty.');
     }
-    const data = await this.watcherCatchersService.findWatcherCatchers(dbId);
+    const data = await this.watcherCatcherService.findWatcherCatcher(dbId);
     return { data };
   }
 
-  async deleteWatcherCatchers(req, _res) {
+  async deleteWatcherCatcher(req, _res) {
     const { dbId } = req.params;
     if (!dbId) {
       throw new BadRequestException('Wrong param.');
     }
-    const data = await this.watcherCatchersService.deleteWatcherCatchers(dbId);
+    const data = await this.watcherCatcherService.deleteWatcherCatcher(dbId);
     return { data };
   }
 
-  async predictWatcherCatchers(req, _res) {
+  async predictWatcherCatcher(req, _res) {
     if (!DateHandler.isCalculatableDate()) {
       throw new ForbiddenException('Not available time.');
     }
-    const { email } = req.user;
-
+    // const { email } = req.user;
+    const email = 'sjb990221@gmail.com';
     const startMomentOfPredictionWindow =
       await DateHandler.getStartMomentOfPredictionWindow();
 
@@ -68,7 +68,14 @@ class WatcherCatchersController {
     const { longitude, latitude, altitude, fieldOfView, epochTime, endTime } =
       req.body;
 
-    const taskId = await this.watcherCatchersService.enqueTask(
+    if (
+      !(await DateHandler.isBetweenPredictionWindow(epochTime, endTime)) ||
+      !DateHandler.isDateInCorrectOrder(epochTime, endTime)
+    ) {
+      throw new BadRequestException('Wrong Date.');
+    }
+
+    const taskId = await this.watcherCatcherService.enqueTask(
       email,
       Number(latitude),
       Number(longitude),
@@ -89,4 +96,4 @@ class WatcherCatchersController {
   }
 }
 
-module.exports = WatcherCatchersController;
+module.exports = WatcherCatcherController;

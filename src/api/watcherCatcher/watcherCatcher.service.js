@@ -1,37 +1,29 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
-// const WatcherCatchersModel = require('./watcherCatchers.model');
+// const WatcherCatcherModel = require('./watcherCatcher.model');
 const { default: mongoose } = require('mongoose');
-const { Mutex } = require('async-mutex');
 const Cesium = require('cesium');
 const moment = require('moment');
 const {
-  WatcherCatchersModel,
-  WatcherCatchersTaskModel,
-} = require('./watcherCatchers.model');
-const WcdbModel = require('../wcdb/wcdb.model');
-const WcdbService = require('../wcdb/wcdb.service');
+  WatcherCatcherModel,
+  WatcherCatcherTaskModel,
+} = require('./watcherCatcher.model');
+const WcdbModel = require('./wcdb.model');
 const {
   BadRequestException,
   HttpException,
 } = require('../../common/exceptions');
-const WatcherCatchersLib = require('./watcherCatchers.lib');
+const WatcherCatcherLib = require('./watcherCatcher.lib');
 
-class WatcherCatchersService {
-  /** @param { WcdbService } wcdbService */
-  constructor(wcdbService) {
-    this.wcdbService = wcdbService;
-    this.mutex = new Mutex();
-  }
-
-  async readWatcherCatchers(email) {
-    const result = await WatcherCatchersModel.find({ email });
+class WatcherCatcherService {
+  async readWatcherCatcher(email) {
+    const result = await WatcherCatcherModel.find({ email });
     return result;
   }
 
-  async findWatcherCatchers(placeId) {
-    const taskResult = await WatcherCatchersModel.findById(placeId);
+  async findWatcherCatcher(placeId) {
+    const taskResult = await WatcherCatcherModel.findById(placeId);
     if (!taskResult) {
       throw new BadRequestException('No such task.');
     }
@@ -40,37 +32,36 @@ class WatcherCatchersService {
       throw new BadRequestException('Job has not finished.');
     }
     const wcdbResult = await WcdbModel.find({ placeId });
-    const watcherCatchersResult = {
+    const watcherCatcherResult = {
       latitude: taskResult.latitude,
       longitude: taskResult.longitude,
       epochTime: taskResult.epochTime,
       predictionEpochTime: taskResult.predictionEpochTime,
       wcdb: wcdbResult,
     };
-    return watcherCatchersResult;
+    return watcherCatcherResult;
   }
 
-  async deleteWatcherCatchers(placeId) {
-    await WatcherCatchersModel.deleteMany({
+  async deleteWatcherCatcher(placeId) {
+    await WatcherCatcherModel.deleteMany({
       _id: mongoose.Types.ObjectId(placeId),
     });
     return WcdbModel.deleteMany({ placeId }).exec();
   }
 
-  async enqueTaskOnDb(taskId, remoteInputFilePath, remoteOutputFilePath) {
+  async enqueTaskOnDb(
+    taskId,
+    remoteInputFilePath,
+    remoteOutputFilePath,
+    s3OutputFileKey,
+  ) {
     const task = {
       taskId,
       remoteInputFilePath,
       remoteOutputFilePath,
+      s3OutputFileKey,
     };
-    await WatcherCatchersTaskModel.create(task);
-  }
-
-  async popTaskFromDb() {
-    const task = await WatcherCatchersTaskModel.findOneAndDelete({})
-      .sort({ createdAt: 1 })
-      .exec();
-    return task;
+    await WatcherCatcherTaskModel.create(task);
   }
 
   async enqueTask(
@@ -85,7 +76,7 @@ class WatcherCatchersService {
     threshold,
   ) {
     const position = Cesium.Cartesian3.fromDegrees(longitude, latitude);
-    const result = await WatcherCatchersModel.create({
+    const result = await WatcherCatcherModel.create({
       email,
       latitude,
       longitude,
@@ -110,30 +101,17 @@ class WatcherCatchersService {
     const taskId = result._id.toString();
     const uniqueSuffix = `${moment().format('YYYY-MM-DD-hh:mm:ss')}`;
     const filename = `${email}-WC-${uniqueSuffix}.txt`;
-    const {
-      remoteFolder,
+    const { remoteInputFilePath, remoteOutputFilePath, s3OutputFileKey } =
+      WatcherCatcherLib.makeFilePath(email, filename);
+
+    await this.enqueTaskOnDb(
+      taskId,
       remoteInputFilePath,
       remoteOutputFilePath,
-      localOutputPath,
-    } = WatcherCatchersLib.makeFilePath(email, filename);
-
-    await this.enqueTaskOnDb(taskId, remoteInputFilePath, remoteOutputFilePath);
+      s3OutputFileKey,
+    );
 
     return taskId;
   }
-
-  async updateTaskStatusSuceess(taskId, wcdbFilePath) {
-    return WatcherCatchersModel.findOneAndUpdate(
-      { _id: mongoose.Types.ObjectId(taskId) },
-      { status: 'DONE', wcdbFilePath },
-    );
-  }
-
-  async updateTaskStatusFailed(taskId, wcdbFilePath, errorMessage) {
-    const result = await WatcherCatchersModel.findOneAndUpdate(
-      { _id: mongoose.Types.ObjectId(taskId) },
-      { status: 'ERROR', errorMessage, wcdbFilePath },
-    );
-  }
 }
-module.exports = WatcherCatchersService;
+module.exports = WatcherCatcherService;

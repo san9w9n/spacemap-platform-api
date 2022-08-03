@@ -1,16 +1,14 @@
 const EngineCommand = require('../../lib/engine-command');
 
-class LaunchConjunctionsLib {
+class WatcherCatcherLib {
   static makeFilePath(email, filename) {
     const remoteFolder = `${EngineCommand.homeDirectory}${email}/`;
-    console.log(remoteFolder);
     return {
-      remoteFolder,
       remoteInputFilePath: `${remoteFolder}${filename}`,
       remoteOutputFilePath: `${remoteFolder}out_${filename}`,
-      localOutputPath: `public/uploads/out_${filename}`,
+      s3OutputFileKey: `wc/output/${email}/${filename}`,
     };
   }
 }
 
-module.exports = LaunchConjunctionsLib;
+module.exports = WatcherCatcherLib;
