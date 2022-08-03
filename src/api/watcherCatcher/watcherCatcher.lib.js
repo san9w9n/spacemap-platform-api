@@ -6,6 +6,7 @@ class WatcherCatcherLib {
     return {
       remoteInputFilePath: `${remoteFolder}${filename}`,
       remoteOutputFilePath: `${remoteFolder}out_${filename}`,
+      s3OutputFileKey: `wc/output/${email}/${filename}`,
     };
   }
 }

@@ -27,9 +27,9 @@ const { initializePassport } = require('./middlewares/auth.middleware');
 
 const getServices = () => {
   const tleService = new TleService();
-  const ppdbService = new PpdbService(tleService);
   const collisionAvoidanceService = new CollisionAvoidanceService();
   const interestedSatellitesService = new InterestedSatellitesService();
+  const ppdbService = new PpdbService(tleService, interestedSatellitesService);
   const launchConjunctionsService = new LaunchConjunctionsService();
   const watcherCatcherService = new WatcherCatcherService();
   const rsoService = new RsoService();
