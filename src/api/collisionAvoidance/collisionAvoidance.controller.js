@@ -83,21 +83,19 @@ class CollisionAvoidanceController {
       threshold,
     } = req.body;
 
+    if (
+      !(await DateHandler.isBetweenPredictionWindow(startDate, endDate)) ||
+      !DateHandler.isDateInCorrectOrder(startDate, endDate)
+    ) {
+      throw new BadRequestException('Wrong Date.');
+    }
+
     const predictionEpochTime =
       await DateHandler.getStartMomentOfPredictionWindow();
     const colaEpochTime = new Date(startDate);
 
     const startMomentOfCola = await DateHandler.diffSeconds(colaEpochTime);
     const endMomentOfCola = await DateHandler.diffSeconds(endDate);
-
-    if (
-      startMomentOfCola >= endMomentOfCola ||
-      startMomentOfCola < 0 ||
-      endMomentOfCola < 0
-    ) {
-      throw new BadRequestException('Wrong Date.');
-    }
-
     const avoidanceLength = endMomentOfCola - startMomentOfCola;
     const tle = await TleModel.findOne({
       id: pidOfConjunction,

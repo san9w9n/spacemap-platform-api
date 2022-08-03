@@ -151,6 +151,28 @@ class DateHandler {
   static getTomorrow() {
     return moment().add(1, 'd').startOf('day');
   }
+
+  static async isBetweenPredictionWindowBySeconds(
+    startMomentOfFlight,
+    endMomentOfFlight,
+  ) {
+    return 0 <= startMomentOfFlight && endMomentOfFlight <= 172800;
+  }
+
+  static async isBetweenPredictionWindow(startDate, endDate) {
+    const startMomentOfPredictionWindow =
+      await this.getStartMomentOfPredictionWindow();
+    const endMomentOfPredictionWindow =
+      await this.getEndMomentOfPredictionWindow();
+    return (
+      moment(startDate).isSameOrAfter(moment(startMomentOfPredictionWindow)) &&
+      moment(endDate).isSameOrBefore(moment(endMomentOfPredictionWindow))
+    );
+  }
+
+  static isDateInCorrectOrder(startDate, endDate) {
+    return moment(endDate).isAfter(moment(startDate));
+  }
 }
 
 module.exports = DateHandler;

@@ -52,9 +52,11 @@ class Trajectory {
         const secondAndPosition = new SecondAndPosition(line);
 
         if (this.startMomentOfFlight === undefined) {
-          this.startMomentOfFlight = Number(secondAndPosition.time);
+          this.startMomentOfFlight =
+            Number(secondAndPosition.time) + this.metaData.diffSeconds;
         }
-        this.endMomentOfFlight = Number(secondAndPosition.time);
+        this.endMomentOfFlight =
+          Number(secondAndPosition.time) + this.metaData.diffSeconds;
 
         const oneLine = secondAndPosition.setSecondAndPosition(
           this.metaData.diffSeconds,

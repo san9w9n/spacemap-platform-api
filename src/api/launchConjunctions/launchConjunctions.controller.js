@@ -13,6 +13,7 @@ const {
   ForbiddenException,
 } = require('../../common/exceptions');
 const { verifyUser } = require('../../middlewares/auth.middleware');
+const moment = require('moment');
 
 class LaunchConjunctionsController {
   /** @param { LaunchConjunctionsService } launchConjunctionsService */
@@ -86,6 +87,16 @@ class LaunchConjunctionsController {
     await trajectory.initializeMetaData();
     await trajectory.initializeSecondAndPositions();
     await trajectory.initializeTrajectoryLength();
+
+    if (
+      !(await DateHandler.isBetweenPredictionWindowBySeconds(
+        trajectory.startMomentOfFlight,
+        trajectory.endMomentOfFlight,
+      ))
+    ) {
+      throw new BadRequestException('Wrong Date.');
+    }
+
     const changedTrajectory = await trajectory.takeChangedTrajectory();
     await trajectory.updateTrajectory(changedTrajectory);
 
