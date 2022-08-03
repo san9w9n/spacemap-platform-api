@@ -101,11 +101,11 @@ class PpdbService {
     };
   }
 
-  async findConjunctionsByIdsService(limit, page, sort, ids, future = true) {
+  async findConjunctionsByIdsService(limit, page, sort, ids) {
     const queryOption = {
       $and: [
         { $or: [{ pid: { $in: ids } }, { sid: { $in: ids } }] },
-        future ? { tcaTime: { $gte: new Date() } } : {},
+        { tcaTime: { $gte: new Date() } },
       ],
     };
     const totalcount = await PpdbModel.countDocuments(queryOption).exec();

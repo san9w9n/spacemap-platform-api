@@ -19,6 +19,7 @@ class App {
     this.#initializeSession();
     this.#initializeMiddlewares();
     this.#initializePublicRouter();
+    this.#initializeViewEngine();
     this.#intializeHealthCheck();
     this.#initialzeControllers(controllers);
     this.#initializeNotFoundMiddleware();
@@ -85,7 +86,11 @@ class App {
       '/public/samples',
       express.static(path.join(__dirname, '../public/samples')),
     );
-    this.app.use('/public', express.static(path.join(__dirname, '../public')));
+  }
+
+  #initializeViewEngine() {
+    this.app.set('view engine', 'ejs');
+    this.app.set('views', path.join(__dirname, 'templates'));
   }
 
   #intializeHealthCheck() {

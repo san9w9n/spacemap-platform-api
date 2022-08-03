@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const ejs = require('ejs');
 
 class SendEmailHandler {
   static #mailConfig = {
@@ -24,6 +25,10 @@ class SendEmailHandler {
       attachments,
     };
     return transporter.sendMail(mailOptions);
+  }
+
+  static async renderHtml(template, context) {
+    return ejs.renderFile(`src/templates/${template}.ejs`, context);
   }
 }
 
