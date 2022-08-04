@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const ejs = require('ejs');
+const juice = require('juice');
 
 class SendEmailHandler {
   static #mailConfig = {
@@ -28,7 +29,12 @@ class SendEmailHandler {
   }
 
   static async renderHtml(template, context) {
-    return ejs.renderFile(`src/templates/${template}.ejs`, context);
+    const renderedHtml = await ejs.renderFile(
+      `src/templates/${template}.ejs`,
+      context,
+    );
+    const juicedHtml = juice(String(renderedHtml));
+    return juicedHtml;
   }
 }
 
