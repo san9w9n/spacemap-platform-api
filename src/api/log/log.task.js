@@ -41,7 +41,11 @@ class LogTask {
     const context = await this.#makeContext();
     const title = `Log Report (${moment.utc().format('MMM DD')})`;
     const html = await SendEmailHandler.renderHtml('logReport', context);
-    await SendEmailHandler.sendMail('2018008168@hanyang.ac.kr', title, html);
+    await SendEmailHandler.sendMail(
+      ['sjb990221@gmail.com', '2018008168@hanyang.ac.kr'],
+      title,
+      html,
+    );
   }
 
   async #makeContext() {
@@ -59,6 +63,7 @@ class LogTask {
             user.email,
           );
         const { interestedArray, subscribe } = favorite;
+        interestedArray.sort((a, b) => parseInt(a.id) - parseInt(b.id));
         const interestedSatellitesString = interestedArray.reduce(
           (acc, sat, index) => {
             const delimiter = index ? ', ' : '';

@@ -21,6 +21,7 @@
     "express-session": "^1.17.3",
     "fast-xml-parser": "^4.0.9",
     "he": "^1.2.0",
+    "juice": "^8.0.0",
     "moment": "^2.29.4",
     "mongoose": "^6.4.7",
     "mongoose-sequence": "^5.3.1",

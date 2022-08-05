@@ -6,23 +6,73 @@
   </head>
   <body>
     <style>
+      .text-wrapper {
+        width: 200px;
+        background-color: rgb(202, 214, 240);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        height: 32px;
+        border-radius: 15px;
+        margin-bottom: 10px;
+      }
+      .conjunctions-text {
+        text-align: center;
+        font-size: 14px;
+        color: rgb(64, 91, 147);
+      }
       div {
         width: 950px;
         border-radius: 6px;
         overflow: hidden;
       }
-      .table{
+      .meta-table{
         width:400px;
+        background-color: white;
+        border: 1px solid rgb(130, 151, 193);
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        border-collapse: separate;
+        border-spacing: 0px;
+      }
+      .meta-table th {
+        background-color: rgb(239, 242, 248);
+        border-spacing: 0px;
+        margin : 10px;
+      }
+      .meta-table th:nth-of-type(1) {
+        border-bottom-left-radius: 10px;
+        border-top-left-radius: 10px;
+        border-left: 3px solid rgb(255, 255, 255);
+        border-top: 3px solid rgb(255, 255, 255);
+        border-bottom: 3px solid rgb(255, 255, 255);
+      }
+      .meta-table th:nth-of-type(3) {
+        border-bottom-right-radius: 10px;
+        border-top-right-radius: 10px;
+        border-right: 3px solid rgb(255, 255, 255);
+        border-top: 3px solid rgb(255, 255, 255);
+        border-bottom: 3px solid rgb(255, 255, 255);
+      }
+      .meta-table th:nth-of-type(2) {
+        border-top: 3px solid rgb(255, 255, 255);
+        border-bottom: 3px solid rgb(255, 255, 255);
+      }
+      .meta-table td {
+        border-right: none;
       }
       table {
+        border: 1px black solid;
         width: 100%;
-        background-color: rgb(235, 235, 235);
+        background-color: rgb(239, 242, 248);
         border-collapse: collapse;
         border-style: hidden;
       }
       tr:first-child {
-        background-color: rgb(212, 212, 212);
-        font-size: 16px;
+        background-color: rgb(230, 235, 247);
+        font-size: 14px;
+        font-weight: 500;
         height: 28px;
       }
       tr:nth-child(2n) {
@@ -32,23 +82,26 @@
         height: 25px;
         text-align: center;
         font-size: 12px;
+        font-weight: 400;
       }
-      td:nth-child(2n + 1) {
+      .main-table td:nth-child(2n + 1) {
         border-right: 1px solid rgb(219, 219, 219);
       }
-      td:nth-child(6) {
+      .main-table td:nth-child(6) {
         border-right: 1px solid rgb(219, 219, 219);
       }
-      .sat-name{
+      .main-table .sat-name{
         border-right: 1px solid rgb(219, 219, 219);
       }
     </style>
-    <br><b>There are <%= totalcount %> conjunctions. </b><br/>
-    <table class="table">
+    <div class="text-wrapper" style="display: table;">
+      <p class="conjunctions-text" style="text-align: center; width: 100%; display: table-cell; vertical-align: middle;">There are <%= totalcount %> conjunctions.</p>
+    </div>
+    <table class="meta-table">
       <tr>
-        <th>id</th>
-        <th>name</th>
-        <th>#conjunctions</th>
+        <th>ID</th>
+        <th>Name</th>
+        <th>#Conjunctions</th>
       </tr>
       <% metadata.forEach((satellite) => { %>
       <tr>
@@ -58,11 +111,9 @@
       </tr>
       <% }) %>
     </table>
-    <br/>
-    <b>Please find below attachments for more information.</b>
-    </br>
+    
     <div>
-      <table>
+      <table class="main-table">
         <tr>
           <th>Index</th>
           <th colspan="2">Primary</th>
@@ -70,20 +121,32 @@
           <th>TCA</th>
           <th>DCA</th>
         </tr>
-        <% conjunctions.forEach((conjunction, index) => { %>
+        <% conjunctions.forEach((conjunction) => { %>
         <tr>
-          <td><%= index+1 %></td>
+          <td><%= conjunction.index %></td>
           <td><%= conjunction.pid %></td>
           <td><%= conjunction.pName %></td>
           <td><%= conjunction.sid %></td>
           <td><%= conjunction.sName %></td>
-          <td>
-            <%= moment.utc(conjunction.tcaTime).format('MMM DD, YYYY HH:mm:ss') %>
-          </td>
+          <td><%= conjunction.tcaTime %></td>
           <td><%= conjunction.dca %></td>
         </tr>
         <% }) %>
+        <tr>
+          <td>...</td>
+          <td colspan="2" style="border-right: 1px solid rgb(219, 219, 219);">...</td>
+          <td colspan="2">...</td>
+          <td style="border-right: 1px solid rgb(219, 219, 219);">...</td>
+          <td>
+            ...
+          </td>
+        </tr>
       </table>
     </div>
+
+    <br/>
+    <p>Please find attached reports for more information.</p>
+    </br>
+
   </body>
 </html>
