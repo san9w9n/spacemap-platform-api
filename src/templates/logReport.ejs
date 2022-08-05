@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Log Report</title>
+  </head>
+  <body>
+    <br>Yesterday #users: <%= yesterdayNumUsers %></br>
+    <br>Today #users: <%= todayNumUsers %>(<%= changeString %>) </br>
+    <table>
+      <tr>
+        <th> email </th>
+        <th> nickname </th>
+        <th> interested satellites </th>
+        <th> subscribe </th>
+      </tr>
+      <% usersInfo.forEach(user => { %>
+        <tr>
+          <td> <%= user.email %> </td>
+          <td> <%= user.nickname %> </td>
+          <td> <%= user.interestedSatellites %>  </td>
+          <td> <%= user.subscribe %> </td>
+        </tr>
+      <% }) %>
+    </table>
+  </body>
+</html>

@@ -8,6 +8,7 @@ const WatcherCatcherService = require('./api/watcherCatcher/watcherCatcher.servi
 const InterestedSatellitesService = require('./api/interestedSatellites/interestedSatellites.service');
 const RsoService = require('./api/rso/rso.service');
 const CollisionAvoidanceService = require('./api/collisionAvoidance/collisionAvoidance.service');
+const LogService = require('./api/log/log.service');
 
 const TleController = require('./api/tles/tle.controller');
 const PpdbController = require('./api/ppdbs/ppdb.controller');
@@ -22,6 +23,7 @@ const TemplateController = require('./api/templates/template.controller');
 
 const CronScheduler = require('./lib/cron-scheduler');
 const InterestedSatellitesTask = require('./api/interestedSatellites/interestedSatellites.task');
+const LogTask = require('./api/log/log.task');
 
 const instanceName = process.env.name || 'UNKNOWN';
 
@@ -35,6 +37,7 @@ const getServices = () => {
   const launchConjunctionsService = new LaunchConjunctionsService();
   const watcherCatcherService = new WatcherCatcherService();
   const rsoService = new RsoService();
+  const logService = new LogService();
 
   return {
     ppdbService,
@@ -44,6 +47,7 @@ const getServices = () => {
     watcherCatcherService,
     rsoService,
     collisionAvoidanceService,
+    logService,
   };
 };
 
@@ -58,15 +62,17 @@ const main = async () => {
     watcherCatcherService,
     rsoService,
     collisionAvoidanceService,
+    logService,
   } = getServices();
 
   const interestedSatellitesTask = new InterestedSatellitesTask(
     interestedSatellitesService,
     ppdbService,
   );
+  const logTask = new LogTask(logService, interestedSatellitesService);
 
   if (instanceName === 'spacemap-platform-api-daily-tasks') {
-    const schedulers = new CronScheduler([interestedSatellitesTask]);
+    const schedulers = new CronScheduler([interestedSatellitesTask, logTask]);
     schedulers.startAllSchedule();
   } else {
     const app = new App([
@@ -81,8 +87,8 @@ const main = async () => {
       new OauthController(),
       new RsoController(rsoService),
       new CollisionAvoidanceController(collisionAvoidanceService, ppdbService),
-      new TaskController(interestedSatellitesTask),
-      new TemplateController(interestedSatellitesTask),
+      new TaskController(interestedSatellitesTask, logTask),
+      new TemplateController(interestedSatellitesTask, logTask),
     ]);
     app.listen();
   }
