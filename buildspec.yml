@@ -39,6 +39,7 @@ phases:
   post_build:
     commands:
       - ls -al
+      - cat Procfile
 #reports:
 #report-name-or-arn:
 #files:
@@ -52,9 +53,9 @@ artifacts:
     - 'src/**/*'
     - 'package*.json'
     - 'public/**/*'
-    - '.next/**/*'
     - '.ebextensions/**/*'
     - '.npmrc'
+    - 'Procfile'
     #- 'node_modules/**/*'
   #name: $(date +%Y-%m-%d)
   #discard-paths: yes

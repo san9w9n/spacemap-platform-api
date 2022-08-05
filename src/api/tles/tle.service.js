@@ -3,65 +3,33 @@
 /* eslint-disable no-unused-vars */
 
 const TleModel = require('./tle.model');
-const TleHandler = require('../../lib/tle-handler');
-const DateHandler = require('../../lib/date-handler');
+const TleLib = require('./tle.lib');
 const { BadRequestException } = require('../../common/exceptions');
 
 class TleService {
   async saveTlesOnDatabase(dateObj, tlePlainTexts) {
-    const tles = TleHandler.parseTlePlainTexts(dateObj, tlePlainTexts);
+    const tles = TleLib.parseTlePlainTexts(dateObj, tlePlainTexts);
+    await TleModel.create(tles, { ordered: false });
+
     const newTlePlainTexts = await Promise.all(
-      tles.map(async tle => {
+      tles.map(async (tle) => {
         try {
-          const tleModel = await TleModel.create(tle);
-          const { name, firstline, secondline } = tleModel;
+          const { name, firstline, secondline } = tle;
           return `0 ${name}\r\n${firstline}\r\n${secondline}\r\n`;
         } catch (err) {
           return '';
         }
       }),
     );
+
     return newTlePlainTexts.join('');
   }
 
-  async findTlesByOnlyDate(dateObj, id) {
-    const { year, month, date } =
-      DateHandler.getElementsFromDateObject(dateObj);
-    const tleModel = await TleModel.findOne({
-      date: {
-        $gte: new Date(year, month, date),
-        $lt: new Date(year, month, date + 1),
-      },
-    })
-      .sort({ date: -1 })
-      .exec();
-    if (!tleModel) {
-      return undefined;
-    }
-    const reSearchDate = tleModel.date;
-    const tleModels = await (id
-      ? TleModel.find({ id, date: reSearchDate }).exec()
-      : TleModel.find({ date: reSearchDate }).exec());
-    return tleModels;
-  }
-
-  async findTlesFromFile(dateObj, id) {
+  async findTlesFromS3(dateObj, id) {
     try {
-      const tleFromFile = await TleHandler.readTlePlainTextsFromFile(dateObj);
-      await this.saveTlesOnDatabase(dateObj, tleFromFile);
-      const tleModels = await (id
-        ? TleModel.find({ id, date: dateObj }).exec()
-        : TleModel.find({ date: dateObj }).exec());
-      return tleModels;
-    } catch (err) {
-      return [];
-    }
-  }
-
-  async findTlesByOnlyDateFromFile(dateObj, id) {
-    try {
-      const { tleFromFile, newDateObj } =
-        await TleHandler.readMostRecentTlePlainTextsFromFile(dateObj);
+      const { tleFromFile, newDateObj } = await TleLib.readTlePlainTextsFromS3(
+        dateObj,
+      );
       await this.saveTlesOnDatabase(newDateObj, tleFromFile);
       const tleModels = await (id
         ? TleModel.find({ id, date: newDateObj }).exec()
@@ -72,63 +40,64 @@ class TleService {
     }
   }
 
-  async findTlesByIdOrDate(dateObj, id) {
+  async findTlesFromDB(dateObj, id) {
+    const dateObjForCompare = new Date(dateObj);
+    dateObjForCompare.setUTCDate(dateObjForCompare.getUTCDate() - 7);
+    const tleModel = await TleModel.findOne({
+      date: {
+        $gt: dateObjForCompare,
+        $lte: dateObj,
+      },
+    })
+      .sort({ date: -1 })
+      .exec();
+
+    if (!tleModel) {
+      return undefined;
+    }
+    const reSearchDate = tleModel.date;
+
+    const tleModels = await (id
+      ? TleModel.find({ id, date: reSearchDate }).exec()
+      : TleModel.find({ date: reSearchDate }).exec());
+
+    return tleModels;
+  }
+
+  async findTlesFromDBorS3(dateObj, id) {
     let tleModels = await (id
       ? TleModel.find({ id, date: dateObj }).exec()
       : TleModel.find({ date: dateObj }).exec());
+
     if (!tleModels || tleModels.length === 0) {
-      tleModels = await this.findTlesFromFile(dateObj, id);
+      tleModels = await this.findTlesFromDB(dateObj, id);
     }
     if (!tleModels || tleModels.length === 0) {
-      tleModels = await this.findTlesByOnlyDate(dateObj, id);
+      tleModels = await this.findTlesFromS3(dateObj, id);
     }
     if (!tleModels || tleModels.length === 0) {
-      // tleModels = await this.findTlesByOnlyDateFromFile(dateObj, id);
+      throw new BadRequestException('Wrong params. Please write correct date.');
     }
-    if (!tleModels || tleModels.length === 0) {
-      const mostRecentModel = await TleModel.findOne({})
-        .sort({ date: -1 })
-        .exec();
-      if (mostRecentModel) {
-        const { date } = mostRecentModel;
-        tleModels = await (id
-          ? TleModel.find({ id, date }).exec()
-          : TleModel.find({ date }).exec());
-      }
-    }
-    const tles = tleModels.map(tleModel => {
-      return {
+
+    const tles = tleModels.reduce((accumulator, tleModel) => {
+      const tle = {
         name: tleModel.name,
         firstLine: tleModel.firstline,
         secondLine: tleModel.secondline,
       };
-    });
+      accumulator.push(tle);
+      return accumulator;
+    }, []);
     return tles;
   }
 
-  async deleteTles(dateObj = undefined) {
-    if (dateObj) {
-      return TleModel.deleteMany({ date: dateObj }).exec();
-    }
-    return TleModel.deleteMany({}).exec();
-  }
-
-  async getIdNamePairs() {
-    const tleModel = await TleModel.findOne({ id: 11 }).exec();
-    if (!tleModel) {
-      throw new Error('Something is wrong. (at getIdNamePairs)');
-    }
-    const { date } = tleModel;
-    const tleModels = await TleModel.find({ date }).exec();
-    if (!tleModels || tleModels.length === 0) {
-      throw new Error('Something is wrong. (at getIdNamePairs)');
-    }
-    const idNamePairs = {};
-    tleModels.forEach(model => {
-      const { id, name } = model;
-      idNamePairs[id] = name;
-    });
-    return idNamePairs;
+  async deleteTles(dateObj) {
+    const compareDate = new Date(dateObj);
+    compareDate.setUTCDate(compareDate.getUTCDate() - 7);
+    const queryOption = {
+      date: { $lt: compareDate },
+    };
+    return await TleModel.deleteMany(queryOption).exec();
   }
 
   async findMostRecentTles() {
@@ -138,7 +107,7 @@ class TleService {
     }
     const { date } = tleModel;
     const tleModels = await TleModel.find({ date }).exec();
-    const tles = tleModels.map(currTleModel => {
+    const tles = tleModels.map((currTleModel) => {
       return {
         name: currTleModel.name,
         firstLine: currTleModel.firstline,

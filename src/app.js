@@ -19,6 +19,8 @@ class App {
     this.#initializeSession();
     this.#initializeMiddlewares();
     this.#initializePublicRouter();
+    this.#initializeViewEngine();
+    this.#intializeHealthCheck();
     this.#initialzeControllers(controllers);
     this.#initializeNotFoundMiddleware();
     this.#initializeErrorHandling();
@@ -86,8 +88,19 @@ class App {
     );
   }
 
+  #initializeViewEngine() {
+    this.app.set('view engine', 'ejs');
+    this.app.set('views', path.join(__dirname, 'templates'));
+  }
+
+  #intializeHealthCheck() {
+    this.app.get('/', (req, res) => {
+      res.status(200).send('ok');
+    });
+  }
+
   #initialzeControllers(controllers) {
-    controllers.forEach(controller => {
+    controllers.forEach((controller) => {
       this.app.use(controller.path, controller.router);
     });
   }

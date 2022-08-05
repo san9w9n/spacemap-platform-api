@@ -5,6 +5,7 @@ const { Router } = require('express');
 const StringHandler = require('../../lib/string-handler');
 const wrapper = require('../../lib/request-handler');
 const InterestedSatellitesService = require('./interestedSatellites.service');
+const PpdbService = require('../ppdbs/ppdb.service');
 const { verifyUser } = require('../../middlewares/auth.middleware');
 const {
   BadRequestException,
@@ -12,9 +13,13 @@ const {
 } = require('../../common/exceptions');
 
 class InterestedSatellitesController {
-  /** @param { InterestedSatellitesService } interestedSatellitesService */
-  constructor(interestedSatellitesService) {
+  /**
+   * @param { InterestedSatellitesService } interestedSatellitesService
+   * @param { PpdbService } ppdbService
+   */
+  constructor(interestedSatellitesService, ppdbService) {
     this.interestedSatellitesService = interestedSatellitesService;
+    this.ppdbService = ppdbService;
     this.path = '/interested-satellites';
     this.router = Router();
     this.initializeRoutes();
@@ -27,7 +32,8 @@ class InterestedSatellitesController {
       .get('/conjunctions', wrapper(this.readInterestedConjunctions.bind(this)))
       .get('/find/:option', wrapper(this.findInterestedSatellites.bind(this)))
       .post('/:id', wrapper(this.addToInterestedSatellites.bind(this)))
-      .delete('/:id', wrapper(this.removeFromInterestedSatellites.bind(this)));
+      .delete('/:id', wrapper(this.removeFromInterestedSatellites.bind(this)))
+      .post('/settings/subscribe', wrapper(this.updateSettings.bind(this)));
   }
 
   async readInterestedSatellites(req, _res) {
@@ -65,9 +71,6 @@ class InterestedSatellitesController {
   async readInterestedConjunctions(req, _res) {
     let { limit = 10, page = 0, sort = 'tcaTime', dec = '' } = req.query;
     const { satellite } = req.query;
-    if (satellite && !StringHandler.isNumeric(satellite)) {
-      throw BadRequestException('satellite id is not number.');
-    }
 
     if (page < 0) {
       page = 0;
@@ -84,29 +87,29 @@ class InterestedSatellitesController {
     sort = `${dec}${sort}`;
 
     const { email } = req.user;
+    const interestedSatellites =
+      await this.interestedSatellitesService.readInterestedSatellites(email);
+    let { interestedArray } = interestedSatellites;
+
     if (satellite) {
-      const { conjunctions, totalcount } =
-        await this.interestedSatellitesService.readInterestedConjunctions(
-          email,
-          limit,
-          page,
-          sort,
-          Number(satellite),
+      if (StringHandler.isNumeric(satellite)) {
+        interestedArray = interestedArray.filter(
+          (s) => s.id == Number(satellite),
         );
-      return {
-        data: {
-          totalcount,
-          conjunctions,
-        },
-      };
+      } else {
+        interestedArray = interestedArray.filter((s) =>
+          new RegExp(satellite, 'i').test(s.name),
+        );
+      }
     }
-    const { conjunctions, totalcount } =
-      await this.interestedSatellitesService.readInterestedConjunctions(
-        email,
+    const satellitesIds = interestedArray.map((s) => s.id);
+
+    const { totalcount, conjunctions } =
+      await this.ppdbService.findConjunctionsByIdsService(
         limit,
         page,
         sort,
-        undefined,
+        satellitesIds,
       );
     return {
       data: {
@@ -144,6 +147,22 @@ class InterestedSatellitesController {
         email,
         req.params.id,
       );
+    return {
+      data: queryResult,
+    };
+  }
+
+  async updateSettings(req, _res) {
+    let { subscribe } = req.query;
+    if (!subscribe || (subscribe !== 'true' && subscribe !== 'false')) {
+      subscribe = 'false';
+    }
+
+    const { email } = req.user;
+    const queryResult = await this.interestedSatellitesService.updateSubscribe(
+      email,
+      JSON.parse(subscribe),
+    );
     return {
       data: queryResult,
     };

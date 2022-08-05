@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const WatcherCatchersScheme = new Schema({
+const WatcherCatcherScheme = new Schema({
   createdAt: { type: Date, default: Date.now },
   email: {
     type: String,
@@ -28,7 +28,18 @@ const WatcherCatchersScheme = new Schema({
     type: Number,
     required: true,
   },
+  altitude: {
+    type: Number,
+    required: true,
+  },
+  fieldOfView: {
+    type: Number,
+    required: true,
+  },
   epochTime: {
+    type: Date,
+  },
+  endTime: {
     type: Date,
   },
   predictionEpochTime: {
@@ -52,7 +63,7 @@ const WatcherCatchersScheme = new Schema({
   },
 });
 
-const WatcherCatchersTaskScheme = new Schema({
+const WatcherCatcherTaskScheme = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
@@ -69,24 +80,17 @@ const WatcherCatchersTaskScheme = new Schema({
     type: String,
     required: true,
   },
-  localOutputPath: {
+  s3OutputFileKey: {
     type: String,
     required: true,
   },
-  threshold: {
-    type: Number,
-    required: true,
-  },
 });
-WatcherCatchersTaskScheme.index({ createdAt: -1 });
+WatcherCatcherTaskScheme.index({ createdAt: -1 });
 
 module.exports = {
-  WatcherCatchersModel: mongoose.model(
-    'watcherCatchers',
-    WatcherCatchersScheme,
-  ),
-  WatcherCatchersTaskModel: mongoose.model(
-    'watcherCatchersTask',
-    WatcherCatchersTaskScheme,
+  WatcherCatcherModel: mongoose.model('watcherCatchers', WatcherCatcherScheme),
+  WatcherCatcherTaskModel: mongoose.model(
+    'watchercatchertasks',
+    WatcherCatcherTaskScheme,
   ),
 };

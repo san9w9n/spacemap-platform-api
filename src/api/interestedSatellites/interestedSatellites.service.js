@@ -1,7 +1,6 @@
 /* eslint-disable class-methods-use-this */
 const InterestedSatellitesModel = require('./interestedSatellites.model');
 const TleModel = require('../tles/tle.model');
-const PpdbModel = require('../ppdbs/ppdb.model');
 const { BadRequestException } = require('../../common/exceptions');
 
 class InterestedSatellitesService {
@@ -33,10 +32,10 @@ class InterestedSatellitesService {
     }
     const { interestedArray } = interestedSatellites;
     const searchedSatellitesWithInterested = interestedArray
-      .filter(interesterItem => {
+      .filter((interesterItem) => {
         return interesterItem.id === satelliteId;
       })
-      .map(interestedItem => {
+      .map((interestedItem) => {
         const { id, name } = interestedItem;
         return {
           id,
@@ -84,7 +83,7 @@ class InterestedSatellitesService {
     };
     const searchedArray = await TleModel.find(queryOption).exec();
     const searchedSatellitesWithInterested = searchedArray.map(
-      searchedElement => {
+      (searchedElement) => {
         const { id, name } = searchedElement;
         const interestedLength = interestedArray.length;
         let flag = false;
@@ -103,40 +102,6 @@ class InterestedSatellitesService {
     );
 
     return searchedSatellitesWithInterested;
-  }
-
-  async readInterestedConjunctions(email, limit, page, sort, satelliteId) {
-    const interestedSatellites = await InterestedSatellitesModel.findOne({
-      email,
-    }).exec();
-    if (!interestedSatellites) {
-      return {
-        totalcount: 0,
-        conjunctions: {},
-      };
-    }
-    let queryOption = {
-      $or: [{ pid: satelliteId }, { sid: satelliteId }],
-    };
-    if (!satelliteId) {
-      const { interestedArray } = interestedSatellites;
-      const satellitesIds = interestedArray.map(satellite => {
-        return satellite.id;
-      });
-      queryOption = {
-        $or: [{ pid: { $in: satellitesIds } }, { sid: { $in: satellitesIds } }],
-      };
-    }
-    const totalcount = await PpdbModel.countDocuments(queryOption).exec();
-    const conjunctions = await PpdbModel.find(queryOption)
-      .skip(limit * page)
-      .limit(limit)
-      .sort(sort)
-      .exec();
-    return {
-      totalcount,
-      conjunctions,
-    };
   }
 
   async createOrUpdateInterestedSatelliteId(email, interestedSatelliteId) {
@@ -190,7 +155,7 @@ class InterestedSatellitesService {
       email,
     }).exec();
     const { interestedArray } = interestedSatellite;
-    const index = interestedArray.findIndex(object => {
+    const index = interestedArray.findIndex((object) => {
       return object.id === interestedSatelliteId;
     });
     if (index >= 0) {
@@ -207,5 +172,25 @@ class InterestedSatellitesService {
       interestedArray,
     };
   }
+
+  async readSubscribingUsers() {
+    return InterestedSatellitesModel.find({
+      subscribe: true,
+      // email: '2018008168@hanyang.ac.kr',
+      // email: 'zztnrudzz123433@gmail.com',
+    });
+  }
+
+  async updateSubscribe(email, subscribe) {
+    await InterestedSatellitesModel.findOneAndUpdate(
+      { email },
+      { subscribe },
+    ).exec();
+    return {
+      email,
+      subscribe,
+    };
+  }
 }
+
 module.exports = InterestedSatellitesService;

@@ -3,7 +3,7 @@ const wrapper = require('../../lib/request-handler');
 
 class TaskController {
   constructor(interestedSatellitesTask) {
-    this.path = '/tasks';
+    this.path = '/templates';
     this.router = Router();
     this.initializeRoutes(interestedSatellitesTask);
   }
@@ -11,10 +11,8 @@ class TaskController {
   initializeRoutes(interestedSatellitesTask) {
     this.router.get(
       '/ser',
-      wrapper(
-        interestedSatellitesTask.doInterestedSatellitesTask.bind(
-          interestedSatellitesTask,
-        ),
+      interestedSatellitesTask.renderSpaceEventReport.bind(
+        interestedSatellitesTask,
       ),
     );
   }

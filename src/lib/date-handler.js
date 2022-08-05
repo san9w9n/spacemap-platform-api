@@ -110,13 +110,6 @@ class DateHandler {
     return this.#getFileName(dateObj);
   }
 
-  static isTleDatabaseCleanDay = () => {
-    const currentDate = this.getCurrentUTCDate();
-    const day = currentDate.getUTCDay();
-    const hours = currentDate.getUTCHours();
-    return day === 0 && hours === 0;
-  };
-
   static getElementsFromDateObject(dateObj) {
     return {
       year: dateObj.getFullYear(),
@@ -133,7 +126,7 @@ class DateHandler {
       moment(launchEpochTime).isSameOrBefore(moment(endMoment))
     )
       return true;
-    return true;
+    return false;
   }
 
   static async diffSeconds(launchEpochTime) {
@@ -146,17 +139,39 @@ class DateHandler {
   }
 
   static getMomentOfString(stringDate) {
-    return moment(stringDate);
+    return moment(stringDate).utc();
   }
 
   static isCalculatableDate() {
     const currentDate = this.getCurrentUTCDate();
-    const hours = currentDate.getHours();
-    return hours < 12 || hours >= 18;
+    const hours = currentDate.getUTCHours();
+    return hours < 15 || hours >= 21;
   }
 
   static getTomorrow() {
     return moment().add(1, 'd').startOf('day');
+  }
+
+  static async isBetweenPredictionWindowBySeconds(
+    startMomentOfFlight,
+    endMomentOfFlight,
+  ) {
+    return 0 <= startMomentOfFlight && endMomentOfFlight <= 172800;
+  }
+
+  static async isBetweenPredictionWindow(startDate, endDate) {
+    const startMomentOfPredictionWindow =
+      await this.getStartMomentOfPredictionWindow();
+    const endMomentOfPredictionWindow =
+      await this.getEndMomentOfPredictionWindow();
+    return (
+      moment(startDate).isSameOrAfter(moment(startMomentOfPredictionWindow)) &&
+      moment(endDate).isSameOrBefore(moment(endMomentOfPredictionWindow))
+    );
+  }
+
+  static isDateInCorrectOrder(startDate, endDate) {
+    return moment(endDate).isAfter(moment(startDate));
   }
 }
 

@@ -6,23 +6,10 @@ module.exports = {
       instances: 2,
       exec_mode: 'cluster',
       env: {
-        NODE_ENV: 'development',
+        NODE_ENV: 'deployment',
+        SPACEMAP_NODE_ENV: 'deployment',
       },
-      env_production: {
-        NODE_ENV: 'production',
-      },
-    },
-    {
-      name: 'spacemap-platform-api-services-tasks',
-      script: './src/server.js',
-      instances: 1,
-      exec_mode: 'cluster',
-      env: {
-        NODE_ENV: 'development',
-      },
-      env_production: {
-        NODE_ENV: 'production',
-      },
+      watch: false,
     },
     {
       name: 'spacemap-platform-api-daily-tasks',
@@ -30,11 +17,22 @@ module.exports = {
       instances: 1,
       exec_mode: 'cluster',
       env: {
-        NODE_ENV: 'development',
+        NODE_ENV: 'deployment',
+        SPACEMAP_NODE_ENV: 'deployment',
       },
-      env_production: {
-        NODE_ENV: 'production',
+      watch: false,
+    },
+    {
+      name: 'spacemap-platform-api-local',
+      script: './src/server.js',
+      instances: 1,
+      exec_mode: 'fork',
+      env: {
+        PORT: 8082,
+        NODE_ENV: 'deployment',
+        SPACEMAP_NODE_ENV: 'local',
       },
+      watch: false,
     },
   ],
 
