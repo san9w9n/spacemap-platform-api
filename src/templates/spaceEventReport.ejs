@@ -61,6 +61,7 @@
       }
       .meta-table td {
         border-right: none;
+        text-align: center;
       }
       table {
         border: 1px black solid;
@@ -90,9 +91,6 @@
       .main-table td:nth-child(6) {
         border-right: 1px solid rgb(219, 219, 219);
       }
-      .main-table .sat-name{
-        border-right: 1px solid rgb(219, 219, 219);
-      }
     </style>
     <div class="text-wrapper" style="display: table;">
       <p class="conjunctions-text" style="text-align: center; width: 100%; display: table-cell; vertical-align: middle;">There are <%= totalcount %> conjunctions.</p>
@@ -105,9 +103,9 @@
       </tr>
       <% metadata.forEach((satellite) => { %>
       <tr>
-        <td style="padding-right: 10px; text-align: center; width:50px "><%= satellite.id %></td>
-        <td class="sat-name" style="padding-right: 10px; text-align: center"><%= satellite.name %></td>
-        <td style="text-align: center"><%= satellite.numConjunctions %></td>
+        <td style="padding-right: 10px; width:50px "><%= satellite.id %></td>
+        <td style="padding-right: 10px"><%= satellite.name %></td>
+        <td><%= satellite.numConjunctions %></td>
       </tr>
       <% }) %>
     </table>
@@ -121,28 +119,23 @@
           <th>TCA</th>
           <th>DCA</th>
         </tr>
-        <% conjunctions.forEach((conjunction, index) => { %>
+        <% conjunctions.forEach((conjunction) => { %>
         <tr>
-          <td><%= index+1 %></td>
+          <td><%= conjunction.index %></td>
           <td><%= conjunction.pid %></td>
           <td><%= conjunction.pName %></td>
           <td><%= conjunction.sid %></td>
           <td><%= conjunction.sName %></td>
-          <td>
-            <%= moment.utc(conjunction.tcaTime).format('MMM DD, YYYY HH:mm:ss') %>
-          </td>
+          <td><%= conjunction.tcaTime %></td>
           <td><%= conjunction.dca %></td>
         </tr>
         <% }) %>
         <tr>
           <td>...</td>
           <td colspan="2" style="border-right: 1px solid rgb(219, 219, 219);">...</td>
-          <!-- <td>...</td> -->
           <td colspan="2">...</td>
           <td style="border-right: 1px solid rgb(219, 219, 219);">...</td>
-          <td>
-            ...
-          </td>
+          <td>...</td>
         </tr>
       </table>
     </div>

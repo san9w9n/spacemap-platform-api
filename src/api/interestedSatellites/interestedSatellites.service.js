@@ -175,8 +175,9 @@ class InterestedSatellitesService {
 
   async readSubscribingUsers() {
     return InterestedSatellitesModel.find({
-      // subscribe: true,
-      email: 'zztnrudzz123433@gmail.com',
+      subscribe: true,
+      // email: '2018008168@hanyang.ac.kr',
+      // email: 'zztnrudzz123433@gmail.com',
     });
   }
 
