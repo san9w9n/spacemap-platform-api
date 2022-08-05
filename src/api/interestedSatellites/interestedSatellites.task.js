@@ -8,7 +8,7 @@ const InterestedSatellitesMailing = require('./interestedSatellites.mailing');
 
 class InterestedSatellitesTask {
   /**
-   * @param { InterestedSatellitesService } InterestedSatellitesService
+   * @param { InterestedSatellitesService } interestedSatellitesService
    * @param { PpdbService } ppdbService
    */
   constructor(interestedSatellitesService, ppdbService) {
