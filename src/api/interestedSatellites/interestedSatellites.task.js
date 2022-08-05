@@ -19,19 +19,61 @@ class InterestedSatellitesTask {
     this.handler = this.#sendInterestedConjunctions.bind(this);
   }
 
-  async renderSpaceEventReport(req, res) {
+  async renderSpaceEventReport(_req, res) {
     const { interestedArray } =
       await this.interestedSatellitesService.readInterestedSatellites(
         '2018008168@hanyang.ac.kr',
       );
+    const { context } = await this.#makeContextAttachment(interestedArray);
+    return res.render('spaceEventReport', context);
+  }
+
+  async doInterestedSatellitesTask() {
+    await this.#sendInterestedConjunctions();
+    return {};
+  }
+
+  async #sendInterestedConjunctions() {
+    const users = await this.interestedSatellitesService.readSubscribingUsers();
+    await Promise.all(
+      users.map(async (user) => {
+        const { email, interestedArray } = user;
+        if (interestedArray.length == 0) return;
+        const { context, attachments } = await this.#makeContextAttachment(
+          interestedArray,
+        );
+        const title = `Space Event Report (${moment.utc().format('MMM DD')})`;
+        const html = await SendEmailHandler.renderHtml(
+          'spaceEventReport',
+          context,
+        );
+        await SendEmailHandler.sendMail(email, title, html, attachments);
+      }),
+    );
+  }
+
+  async #makeContextAttachment(interestedArray) {
     const satellitesIds = interestedArray.map((satellite) => satellite.id);
-    const conjunctionsForHtml =
+    const { totalcount, conjunctions } =
       await this.ppdbService.findConjunctionsByIdsService(
         10,
         0,
         'dca',
         satellitesIds,
       );
+    const newConjunctions = conjunctions.map((conjunction, index) => {
+      return {
+        index: index + 1,
+        pid: conjunction.pid,
+        pName: conjunction.pName,
+        sid: conjunction.sid,
+        sName: conjunction.sName,
+        tcaTime: moment
+          .utc(conjunction.tcaTime)
+          .format('MMM DD, YYYY HH:mm:ss'),
+        dca: conjunction.dca,
+      };
+    });
     const conjunctionsForCsv = await Promise.all(
       satellitesIds.map(async (satelliteId) =>
         this.ppdbService.findConjunctionsByIdsService(0, 0, 'tcaTime', [
@@ -46,63 +88,20 @@ class InterestedSatellitesTask {
         numConjunctions: conjunctionsForCsv[index].totalcount,
       };
     });
-    return res.render('spaceEventReport', {
-      conjunctions: conjunctionsForHtml.conjunctions,
-      totalcount: conjunctionsForHtml.totalcount,
+    const context = {
+      conjunctions: newConjunctions,
+      totalcount: totalcount,
       metadata: metadata,
-      moment: moment,
-    });
-  }
-
-  async doInterestedSatellitesTask(_req, res) {
-    await this.#sendInterestedConjunctions();
-    return {};
-  }
-
-  async #sendInterestedConjunctions() {
-    const users = await this.interestedSatellitesService.readSubscribingUsers();
-    await Promise.all(
-      users.map(async (user) => {
-        const { email, interestedArray } = user;
-        if (interestedArray.length == 0) return;
-        const satellitesIds = interestedArray.map((satellite) => satellite.id);
-        const conjunctionsForHtml =
-          await this.ppdbService.findConjunctionsByIdsService(
-            10,
-            0,
-            'dca',
-            satellitesIds,
-          );
-        const conjunctionsForCsv = await Promise.all(
-          satellitesIds.map(async (satelliteId) =>
-            this.ppdbService.findConjunctionsByIdsService(0, 0, 'tcaTime', [
-              satelliteId,
-            ]),
-          ),
-        );
-        const metadata = interestedArray.map((object, index) => {
-          return {
-            id: object.id,
-            name: object.name,
-            numConjunctions: conjunctionsForCsv[index].totalcount,
-          };
-        });
-
-        const title = `Space Event Report (${moment.utc().format('MMM DD')})`;
-        const html = await SendEmailHandler.renderHtml('spaceEventReport', {
-          totalcount: conjunctionsForHtml.totalcount,
-          conjunctions: conjunctionsForHtml.conjunctions,
-          metadata,
-          moment,
-        });
-        const attachments =
-          await InterestedSatellitesMailing.conjunctionsToAttachment(
-            conjunctionsForCsv,
-            metadata,
-          );
-        await SendEmailHandler.sendMail(email, title, html, attachments);
-      }),
-    );
+    };
+    const attachments =
+      await InterestedSatellitesMailing.conjunctionsToAttachment(
+        conjunctionsForCsv,
+        metadata,
+      );
+    return {
+      context,
+      attachments,
+    };
   }
 }
 
