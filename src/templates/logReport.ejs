@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SPACEMAP LOG REPORT</title>
+  </head>
+  <body>
+    <table width="900" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto; font-family: Malgun Gothic, dotum, sans-serif; border-top: 15px solid #001326; border-bottom: 15px solid #001326">
+      <tbody>
+        <tr>
+          <td width="850" style="border: 1px solid #dfdfdf; text-align: center">
+            <div style="text-align: left; margin: 12px 20px 0">
+              <table width="820" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto; text-align: center; font-family: Malgun Gothic, dotum, sans-serif">
+                <tbody>
+                  <div style="text-align: left; margin: 30px 20px 0">
+                    <a href="https://platform.spacemap42.com/" target="_blank" title="새창열기" rel="noreferrer noopener"><img src="https://spacemap.s3.ap-northeast-2.amazonaws.com/SPACEMAP_logo_inverted_HQ.png" alt="spacemap" border="0" width="200" loading="lazy" /></a>
+                  </div>
+                  <tr>
+                    <td style="padding: 0; margin: 0; height: 54px; font-family: Malgun Gothic, dotum, sans-serif; font-size: 40px; font-weight: bold; letter-spacing: 1.5px">LOG REPORT</td>
+                  </tr>
+                  <tr>
+                    <td style="margin: 0; padding: 0; text-align: left">
+                      <table border="0" cellpadding="0" cellspacing="0" style="margin: 0; padding: 0">
+                        <tbody>
+                          <tr>
+                            <td>
+                              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse">
+                                <tbody>
+                                  <tr>
+                                    <td colspan="3" style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 16px; font-weight: bold; text-align: left; padding: 50px 0 5px 0">■ Yesterday #users: <%= yesterdayNumUsers %></td>
+                                  </tr>
+                                  <tr>
+                                    <td colspan="3" style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 16px; font-weight: bold; text-align: left; padding: 5px 0 15px 0">■ Today #users: <%= todayNumUsers %>(<%= changeString %>)</td>
+                                  </tr>
+                                  <tr>
+                                    <td style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 16px; border: 1px solid #eee; height: 45px; text-align: center; vertical-align: middle; padding: 0 15px; background-color: #f1f1f1; font-weight: bold">Email</td>
+                                    <td style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 16px; border: 1px solid #eee; height: 45px; text-align: center; vertical-align: middle; padding: 0 15px; background-color: #f1f1f1; font-weight: bold">Nickname</td>
+                                    <td style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 16px; border: 1px solid #eee; height: 45px; text-align: center; vertical-align: middle; padding: 0 15px; background-color: #f1f1f1; font-weight: bold">Interested Satellites</td>
+                                    <td style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 16px; border: 1px solid #eee; height: 45px; text-align: center; vertical-align: middle; padding: 0 15px; background-color: #f1f1f1; font-weight: bold">Subscribe</td>
+                                  </tr>
+                                  <% usersInfo.forEach(user => { %>
+                                  <tr>
+                                    <td style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 13px; border: 1px solid #eee; height: 45px; text-align: center; vertical-align: middle; padding: 0 15px"><a href="#" style="color: #000000 !important; text-decoration: none !important; pointer-events: none !important; cursor: text !important"><%= user.email %></a></td>
+                                    <td style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 13px; border: 1px solid #eee; height: 45px; text-align: center; vertical-align: middle; padding: 0 15pxr"><%= user.nickname %></td>
+                                    <td style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 13px; border: 1px solid #eee; height: 45px; text-align: center; vertical-align: middle; padding: 0 15pxr"><%= user.interestedSatellites %></td>
+                                    <td style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 13px; border: 1px solid #eee; height: 45px; text-align: center; vertical-align: middle; padding: 0 15px"><%= user.subscribe %></td>
+                                  </tr>
+                                  <% }) %>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td height="50"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>

@@ -2,21 +2,25 @@ const { Router } = require('express');
 const wrapper = require('../../lib/request-handler');
 
 class TaskController {
-  constructor(interestedSatellitesTask) {
+  constructor(interestedSatellitesTask, logTask) {
     this.path = '/tasks';
+    this.interestedSatellitesTask = interestedSatellitesTask;
+    this.logTask = logTask;
     this.router = Router();
-    this.initializeRoutes(interestedSatellitesTask);
+    this.initializeRoutes();
   }
 
-  initializeRoutes(interestedSatellitesTask) {
-    this.router.get(
-      '/ser',
-      wrapper(
-        interestedSatellitesTask.doInterestedSatellitesTask.bind(
-          interestedSatellitesTask,
+  initializeRoutes() {
+    this.router
+      .get(
+        '/ser',
+        wrapper(
+          this.interestedSatellitesTask.doInterestedSatellitesTask.bind(
+            this.interestedSatellitesTask,
+          ),
         ),
-      ),
-    );
+      )
+      .get('/log', wrapper(this.logTask.doLogTask.bind(this.logTask)));
   }
 }
 
