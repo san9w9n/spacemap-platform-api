@@ -59,8 +59,7 @@ class WatcherCatcherController {
     if (!DateHandler.isCalculatableDate()) {
       throw new ForbiddenException('Not available time.');
     }
-    // const { email } = req.user;
-    const email = 'sjb990221@gmail.com';
+    const { email } = req.user;
     const startMomentOfPredictionWindow =
       await DateHandler.getStartMomentOfPredictionWindow();
 
