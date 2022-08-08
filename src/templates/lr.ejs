@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>SPACEMAP LOG REPORT</title>
+    <link rel="stylesheet" href="src/templates/test.css" type="text/css" />
+  </head>
+  <body>
+    <span class="preheader">This is preheader text. Some clients will show this text as a preview.</span>
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
+      <tr>
+        <td>&nbsp;</td>
+        <td class="container">
+          <div class="content">
+            <!-- START CENTERED WHITE CONTAINER -->
+            <table role="presentation" class="main">
+              <!-- START MAIN CONTENT AREA -->
+              <tr>
+                <td class="logo">
+                  <a href="https://platform.spacemap42.com/" target="_blank" title="새창열기" rel="noreferrer noopener"><img src="https://spacemap.s3.ap-northeast-2.amazonaws.com/SPACEMAP_logo_inverted_HQ.png" alt="spacemap" border="0" width="150" loading="lazy" /></a>
+                </td>
+              </tr>
+              <tr>
+                <td class="title">LOG REPORT</td>
+              </tr>
+              <tr>
+                <td class="wrapper">
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td>
+                        <tr>
+                          <td class="main-text">■ Yesterday #users: <%= yesterdayNumUsers %></td>
+                        </tr>
+                        <tr>
+                          <td class="main-text">■ Today #users: <%= todayNumUsers %>(<%= changeString %>)</td>
+                        </tr>
+                        <table width="500" border="0" cellpadding="0" cellspacing="0" class="table">
+                          <tr>
+                            <td class="table-header">Email</td>
+                            <td class="table-header">Nickname</td>
+                            <td class="table-header">Favorite</td>
+                            <td class="table-header">Subscribe</td>
+                          </tr>
+                          <% usersInfo.forEach(user => { %>
+                          <tr>
+                            <td class="table-body"><a href="#" style="color: #000000 !important; text-decoration: none !important; pointer-events: none !important; cursor: text !important"><%= user.email %></a></td>
+                            <td class="table-body"><%= user.nickname %></td>
+                            <td class="table-body"><%= user.interestedSatellites %></td>
+                            <td class="table-body"><%= user.subscribe %></td>
+                          </tr>
+                          <% }) %>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- END MAIN CONTENT AREA -->
+            </table>
+            <!-- END CENTERED WHITE CONTAINER -->
+
+            <!-- START FOOTER -->
+            <div class="footer">
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td class="content-block">
+                    <span class="apple-link">SpaceMap Inc. 222, Wangsimni-ro, Seongdong-gu, Seoul, Republic of Korea</span>
+                    <!-- <br /> -->
+                    <!-- Don't like these emails? -->
+                    <!-- <a href="http://i.imgur.com/CScmqnj.gif">Unsubscribe</a>. -->
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <!-- END FOOTER -->
+          </div>
+        </td>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+  </body>
+</html>

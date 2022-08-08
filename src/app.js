@@ -91,6 +91,7 @@ class App {
   #initializeViewEngine() {
     this.app.set('view engine', 'ejs');
     this.app.set('views', path.join(__dirname, 'templates'));
+    this.app.use(express.static(path.join(__dirname, 'templates')));
   }
 
   #intializeHealthCheck() {

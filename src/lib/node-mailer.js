@@ -39,8 +39,13 @@ class SendEmailHandler {
       `src/templates/${template}.ejs`,
       context,
     );
-    const juicedHtml = juice(String(renderedHtml));
-    return juicedHtml;
+
+    return new Promise((resolve, reject) => {
+      juice.juiceResources(String(renderedHtml), {}, (err, html) => {
+        if (err) reject(err);
+        resolve(html);
+      });
+    });
   }
 }
 
