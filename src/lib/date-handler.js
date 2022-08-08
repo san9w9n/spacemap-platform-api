@@ -173,6 +173,16 @@ class DateHandler {
   static isDateInCorrectOrder(startDate, endDate) {
     return moment(endDate).isAfter(moment(startDate));
   }
+
+  static async getTimeErrorMessage() {
+    const startMomentOfPredictionWindow =
+      await this.getStartMomentOfPredictionWindow();
+    const endMomentOfPredictionWindow =
+      await this.getEndMomentOfPredictionWindow();
+    return `Please enter the time between following time zones.
+    start time : ${startMomentOfPredictionWindow}
+    end time : ${endMomentOfPredictionWindow}`;
+  }
 }
 
 module.exports = DateHandler;

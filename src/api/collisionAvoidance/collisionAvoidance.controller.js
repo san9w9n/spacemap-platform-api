@@ -87,7 +87,8 @@ class CollisionAvoidanceController {
       !(await DateHandler.isBetweenPredictionWindow(startDate, endDate)) ||
       !DateHandler.isDateInCorrectOrder(startDate, endDate)
     ) {
-      throw new BadRequestException('Wrong Date.');
+      const errorMessage = await DateHandler.getTimeErrorMessage();
+      throw new BadRequestException(errorMessage);
     }
 
     const predictionEpochTime =
