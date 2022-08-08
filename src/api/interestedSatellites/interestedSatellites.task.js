@@ -25,7 +25,8 @@ class InterestedSatellitesTask {
         '2018008168@hanyang.ac.kr',
       );
     const { context } = await this.#makeContextAttachment(interestedArray);
-    return res.render('spaceEventReport', context);
+    const html = await SendEmailHandler.renderHtml('spaceEventReport', context);
+    return res.send(html);
   }
 
   async doInterestedSatellitesTask() {

@@ -3,6 +3,9 @@
 const SendEmailHandler = require('../../lib/node-mailer');
 const InterestedSatellitesService = require('../interestedSatellites/interestedSatellites.service');
 const moment = require('moment');
+const {
+  exists,
+} = require('../interestedSatellites/interestedSatellites.model');
 
 class LogTask {
   /**
@@ -19,8 +22,8 @@ class LogTask {
 
   async renderLogReport(req, res) {
     const context = await this.#makeContext();
-    console.log(context);
-    return res.render('logReport', context);
+    const html = await SendEmailHandler.renderHtml('logReport', context);
+    return res.send(html);
   }
 
   async doLogTask(_req, res) {
@@ -41,11 +44,7 @@ class LogTask {
     const context = await this.#makeContext();
     const title = `Log Report (${moment.utc().format('MMM DD')})`;
     const html = await SendEmailHandler.renderHtml('logReport', context);
-    await SendEmailHandler.sendMail(
-      ['sjb990221@gmail.com', '2018008168@hanyang.ac.kr'],
-      title,
-      html,
-    );
+    await SendEmailHandler.sendMail(['sjb990221@gmail.com'], title, html);
   }
 
   async #makeContext() {
