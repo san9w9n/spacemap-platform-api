@@ -22,7 +22,7 @@ class WatcherCatcherController {
   }
 
   initializeRoutes() {
-    // this.router.use(verifyUser);
+    this.router.use(verifyUser);
     this.router
       .get('/', wrapper(this.readWatcherCatcher.bind(this)))
       .get('/:dbId', wrapper(this.findWatcherCatcher.bind(this)))
@@ -71,7 +71,8 @@ class WatcherCatcherController {
       !(await DateHandler.isBetweenPredictionWindow(epochTime, endTime)) ||
       !DateHandler.isDateInCorrectOrder(epochTime, endTime)
     ) {
-      throw new BadRequestException('Wrong Date.');
+      const errorMessage = await DateHandler.getTimeErrorMessage();
+      throw new BadRequestException(errorMessage);
     }
 
     const taskId = await this.watcherCatcherService.enqueTask(

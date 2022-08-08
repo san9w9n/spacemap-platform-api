@@ -94,7 +94,8 @@ class LaunchConjunctionsController {
         trajectory.endMomentOfFlight,
       ))
     ) {
-      throw new BadRequestException('Wrong Date.');
+      const errorMessage = await DateHandler.getTimeErrorMessage();
+      throw new BadRequestException(errorMessage);
     }
 
     const changedTrajectory = await trajectory.takeChangedTrajectory();
