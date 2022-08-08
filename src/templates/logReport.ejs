@@ -1,67 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>SPACEMAP LOG REPORT</title>
+    <link rel="stylesheet" href="src/templates/static/common.css" type="text/css" />
   </head>
   <body>
-    <table width="900" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto; font-family: Malgun Gothic, dotum, sans-serif; border-top: 15px solid #001326; border-bottom: 15px solid #001326">
-      <tbody>
-        <tr>
-          <td width="850" style="border: 1px solid #dfdfdf; text-align: center">
-            <div style="text-align: left; margin: 12px 20px 0">
-              <table width="820" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto; text-align: center; font-family: Malgun Gothic, dotum, sans-serif">
-                <tbody>
-                  <div style="text-align: left; margin: 30px 20px 0">
-                    <a href="https://platform.spacemap42.com/" target="_blank" title="새창열기" rel="noreferrer noopener"><img src="https://spacemap.s3.ap-northeast-2.amazonaws.com/SPACEMAP_logo_inverted_HQ.png" alt="spacemap" border="0" width="200" loading="lazy" /></a>
-                  </div>
-                  <tr>
-                    <td style="padding: 0; margin: 0; height: 54px; font-family: Malgun Gothic, dotum, sans-serif; font-size: 40px; font-weight: bold; letter-spacing: 1.5px">LOG REPORT</td>
-                  </tr>
-                  <tr>
-                    <td style="margin: 0; padding: 0; text-align: left">
-                      <table border="0" cellpadding="0" cellspacing="0" style="margin: 0; padding: 0">
-                        <tbody>
+    <span class="preheader">This is preheader text. Some clients will show this text as a preview.</span>
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
+      <tr>
+        <td>&nbsp;</td>
+        <td class="container">
+          <div class="content">
+            <!-- START CENTERED WHITE CONTAINER -->
+            <table role="presentation" class="main">
+              <!-- START MAIN CONTENT AREA -->
+              <tr>
+                <td class="logo">
+                  <a href="https://platform.spacemap42.com/" target="_blank" title="새창열기" rel="noreferrer noopener"><img src="https://spacemap.s3.ap-northeast-2.amazonaws.com/SPACEMAP_logo_inverted_HQ.png" alt="spacemap" border="0" width="150" loading="lazy" /></a>
+                </td>
+              </tr>
+              <tr>
+                <td class="title">LOG REPORT</td>
+              </tr>
+              <tr>
+                <td class="wrapper">
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td>
+                        <tr>
+                          <td class="main-text">■ Yesterday #users: <%= yesterdayNumUsers %></td>
+                        </tr>
+                        <tr>
+                          <td class="main-text">■ Today #users: <%= todayNumUsers %>(<%= changeString %>)</td>
+                        </tr>
+                        <table border="0" cellpadding="0" cellspacing="0" class="table">
                           <tr>
-                            <td>
-                              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse">
-                                <tbody>
-                                  <tr>
-                                    <td colspan="3" style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 16px; font-weight: bold; text-align: left; padding: 50px 0 5px 0">■ Yesterday #users: <%= yesterdayNumUsers %></td>
-                                  </tr>
-                                  <tr>
-                                    <td colspan="3" style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 16px; font-weight: bold; text-align: left; padding: 5px 0 15px 0">■ Today #users: <%= todayNumUsers %>(<%= changeString %>)</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 16px; border: 1px solid #eee; height: 45px; text-align: center; vertical-align: middle; padding: 0 15px; background-color: #f1f1f1; font-weight: bold">Email</td>
-                                    <td style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 16px; border: 1px solid #eee; height: 45px; text-align: center; vertical-align: middle; padding: 0 15px; background-color: #f1f1f1; font-weight: bold">Nickname</td>
-                                    <td style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 16px; border: 1px solid #eee; height: 45px; text-align: center; vertical-align: middle; padding: 0 15px; background-color: #f1f1f1; font-weight: bold">Interested Satellites</td>
-                                    <td style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 16px; border: 1px solid #eee; height: 45px; text-align: center; vertical-align: middle; padding: 0 15px; background-color: #f1f1f1; font-weight: bold">Subscribe</td>
-                                  </tr>
-                                  <% usersInfo.forEach(user => { %>
-                                  <tr>
-                                    <td style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 13px; border: 1px solid #eee; height: 45px; text-align: center; vertical-align: middle; padding: 0 15px"><a href="#" style="color: #000000 !important; text-decoration: none !important; pointer-events: none !important; cursor: text !important"><%= user.email %></a></td>
-                                    <td style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 13px; border: 1px solid #eee; height: 45px; text-align: center; vertical-align: middle; padding: 0 15pxr"><%= user.nickname %></td>
-                                    <td style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 13px; border: 1px solid #eee; height: 45px; text-align: center; vertical-align: middle; padding: 0 15pxr"><%= user.interestedSatellites %></td>
-                                    <td style="font-family: Malgun Gothic, dotum, sans-serif; font-size: 13px; border: 1px solid #eee; height: 45px; text-align: center; vertical-align: middle; padding: 0 15px"><%= user.subscribe %></td>
-                                  </tr>
-                                  <% }) %>
-                                </tbody>
-                              </table>
-                            </td>
+                            <td class="table-header">Email</td>
+                            <td class="table-header">Nickname</td>
+                            <td class="table-header">Favorite</td>
+                            <td class="table-header">Subscribe</td>
                           </tr>
-                        </tbody>
-                      </table>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td height="50"></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </td>
-        </tr>
-      </tbody>
+                          <% usersInfo.forEach(user => { %>
+                          <tr>
+                            <td class="table-body"><a href="#" class="email-text"><%= user.email %></a></td>
+                            <td class="table-body"><%= user.nickname %></td>
+                            <td class="table-body"><%= user.interestedSatellites %></td>
+                            <td class="table-body"><%= user.subscribe %></td>
+                          </tr>
+                          <% }) %>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <!-- END MAIN CONTENT AREA -->
+            </table>
+            <!-- END CENTERED WHITE CONTAINER -->
+          </div>
+          <!-- START FOOTER -->
+          <div class="footer">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td class="content-block">
+                  <span class="apple-link">SpaceMap Inc. 222, Wangsimni-ro, Seongdong-gu, Seoul, Republic of Korea</span>
+                  <!-- <br /> -->
+                  <!-- Don't like these emails? -->
+                  <!-- <a href="http://i.imgur.com/CScmqnj.gif">Unsubscribe</a>. -->
+                </td>
+              </tr>
+            </table>
+          </div>
+          <!-- END FOOTER -->
+        </td>
+        <td>&nbsp;</td>
+      </tr>
     </table>
   </body>
 </html>
