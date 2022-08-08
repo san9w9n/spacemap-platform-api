@@ -22,8 +22,8 @@ class LogTask {
 
   async renderLogReport(req, res) {
     const context = await this.#makeContext();
-    const html = await SendEmailHandler.renderHtml('lr', context);
-    return res.render(html, context); // logReport
+    const html = await SendEmailHandler.renderHtml('logReport', context);
+    return res.send(html);
   }
 
   async doLogTask(_req, res) {
@@ -43,8 +43,7 @@ class LogTask {
   async #sendLog() {
     const context = await this.#makeContext();
     const title = `Log Report (${moment.utc().format('MMM DD')})`;
-    const html = await SendEmailHandler.renderHtml('lr', context); // logReport
-    console.log(html);
+    const html = await SendEmailHandler.renderHtml('logReport', context);
     await SendEmailHandler.sendMail(['sjb990221@gmail.com'], title, html);
   }
 

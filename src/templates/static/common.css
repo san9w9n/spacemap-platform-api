@@ -83,6 +83,7 @@ table td {
 .content-block {
   padding-bottom: 10px;
   padding-top: 10px;
+  text-align: center;
 }
 
 .footer {
@@ -105,14 +106,14 @@ table td {
       ------------------------------------- */
 .logo img {
   text-align: left;
-  margin: 15px 10px 0;
+  margin: 20px 20px 0;
 }
 
 .title {
-  margin: 15px 0 400px 0;
+  padding: 10px 0 35px 0;
   height: 54px;
   font-family: Malgun Gothic, dotum, sans-serif;
-  font-size: 40px;
+  font-size: 45px;
   font-weight: bold;
   letter-spacing: 1px;
   text-align: center;
@@ -120,10 +121,17 @@ table td {
 
 .main-text {
   font-family: Malgun Gothic, dotum, sans-serif;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
   text-align: left;
   padding: 10px 0 10px 0;
+}
+
+.email-text {
+  color: #000000 !important;
+  text-decoration: none !important;
+  pointer-events: none !important;
+  cursor: text !important;
 }
 
 .table {
@@ -136,7 +144,7 @@ table td {
   font-family: Malgun Gothic, dotum, sans-serif;
   font-size: 16px;
   border: 1px solid #eee;
-  height: 45px;
+  height: 42px;
   text-align: center;
   vertical-align: middle;
   padding: 0 15px;
@@ -154,6 +162,9 @@ table td {
   padding: 0 15px;
 }
 
+.table-bottom {
+  height: 30px;
+}
 /* -------------------------------------
           TYPOGRAPHY
       ------------------------------------- */
