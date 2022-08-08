@@ -1,148 +1,107 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8" />
-    <title>Space Event Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>SPACEMAP SPACE EVENT REPORT</title>
+    <link rel="stylesheet" href="src/templates/static/common.css" type="text/css" />
   </head>
   <body>
-    <style>
-      .text-wrapper {
-        width: 200px;
-        background-color: rgb(202, 214, 240);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        height: 32px;
-        border-radius: 15px;
-        margin-bottom: 10px;
-      }
-      .conjunctions-text {
-        text-align: center;
-        font-size: 14px;
-        color: rgb(64, 91, 147);
-      }
-      div {
-        width: 950px;
-        border-radius: 6px;
-        overflow: hidden;
-      }
-      .meta-table{
-        width:400px;
-        background-color: white;
-        border: 1px solid rgb(130, 151, 193);
-        border-radius: 8px;
-        margin-bottom: 1rem;
-        border-collapse: separate;
-        border-spacing: 0px;
-      }
-      .meta-table th {
-        background-color: rgb(239, 242, 248);
-        border-spacing: 0px;
-        margin : 10px;
-      }
-      .meta-table th:nth-of-type(1) {
-        border-bottom-left-radius: 10px;
-        border-top-left-radius: 10px;
-        border-left: 3px solid rgb(255, 255, 255);
-        border-top: 3px solid rgb(255, 255, 255);
-        border-bottom: 3px solid rgb(255, 255, 255);
-      }
-      .meta-table th:nth-of-type(3) {
-        border-bottom-right-radius: 10px;
-        border-top-right-radius: 10px;
-        border-right: 3px solid rgb(255, 255, 255);
-        border-top: 3px solid rgb(255, 255, 255);
-        border-bottom: 3px solid rgb(255, 255, 255);
-      }
-      .meta-table th:nth-of-type(2) {
-        border-top: 3px solid rgb(255, 255, 255);
-        border-bottom: 3px solid rgb(255, 255, 255);
-      }
-      .meta-table td {
-        border-right: none;
-        text-align: center;
-      }
-      table {
-        border: 1px black solid;
-        width: 100%;
-        background-color: rgb(239, 242, 248);
-        border-collapse: collapse;
-        border-style: hidden;
-      }
-      tr:first-child {
-        background-color: rgb(230, 235, 247);
-        font-size: 14px;
-        font-weight: 500;
-        height: 28px;
-      }
-      tr:nth-child(2n) {
-        background-color: white;
-      }
-      td {
-        height: 25px;
-        text-align: center;
-        font-size: 12px;
-        font-weight: 400;
-      }
-      .main-table td:nth-child(2n + 1) {
-        border-right: 1px solid rgb(219, 219, 219);
-      }
-      .main-table td:nth-child(6) {
-        border-right: 1px solid rgb(219, 219, 219);
-      }
-    </style>
-    <div class="text-wrapper" style="display: table;">
-      <p class="conjunctions-text" style="text-align: center; width: 100%; display: table-cell; vertical-align: middle;">There are <%= totalcount %> conjunctions.</p>
-    </div>
-    <table class="meta-table">
+    <span class="preheader">There are <%= totalcount %> conjunctions.</span>
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
       <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>#Conjunctions</th>
+        <td>&nbsp;</td>
+        <td class="container">
+          <div class="content">
+            <!-- START CENTERED WHITE CONTAINER -->
+            <table role="presentation" class="main">
+              <!-- START MAIN CONTENT AREA -->
+              <tr>
+                <td class="logo">
+                  <a href="https://platform.spacemap42.com/" target="_blank" title="새창열기" rel="noreferrer noopener"><img src="https://spacemap.s3.ap-northeast-2.amazonaws.com/SPACEMAP_logo_inverted_HQ.png" alt="spacemap" border="0" width="150" loading="lazy" /></a>
+                </td>
+              </tr>
+              <tr>
+                <td class="title">SPACE EVENT REPORT</td>
+              </tr>
+              <tr>
+                <td class="wrapper">
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td class="main-text"><span>There are </span><span style="font-weight: bold; color: #001326"><%= totalcount %></span><span> conjunctions.</span></td>
+                    </tr>
+                    <tr style="text-align: left">
+                      <td>
+                        <table style="width: 70%" border="0" cellpadding="0" cellspacing="0" class="table">
+                          <tr>
+                            <td class="table-header">ID</td>
+                            <td class="table-header">Name</td>
+                            <td class="table-header">#Conjunctions</td>
+                          </tr>
+                          <% metadata.forEach(satellite => { %>
+                          <tr>
+                            <td class="table-body"><%= satellite.id %></td>
+                            <td class="table-body"><%= satellite.name %></td>
+                            <td class="table-body"><%= satellite.numConjunctions %></td>
+                          </tr>
+                          <% }) %>
+                        </table>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="height: 30px"></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <table border="0" cellpadding="0" cellspacing="0" class="table">
+                          <tr>
+                            <td class="table-header"></td>
+                            <td colspan="2" class="table-header">Primary</td>
+                            <td colspan="2" class="table-header">Secondary</td>
+                            <td class="table-header">TCA</td>
+                            <td class="table-header">DCA</td>
+                          </tr>
+                          <% conjunctions.forEach((conjunction) => { %>
+                          <tr>
+                            <td class="table-body"><%= conjunction.index %></td>
+                            <td class="table-body"><%= conjunction.pid %></td>
+                            <td style="font-size: 12px" class="table-body"><%= conjunction.pName %></td>
+                            <td class="table-body"><%= conjunction.sid %></td>
+                            <td style="font-size: 12px" class="table-body"><%= conjunction.sName %></td>
+                            <td class="table-body"><%= conjunction.tcaTime %></td>
+                            <td class="table-body"><%= conjunction.dca %></td>
+                          </tr>
+                          <% }) %>
+                        </table>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="font-size: 16px" class="main-text">Please find attached reports for more information.</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <!-- END MAIN CONTENT AREA -->
+            </table>
+            <!-- END CENTERED WHITE CONTAINER -->
+          </div>
+          <!-- START FOOTER -->
+          <div class="footer">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td class="content-block">
+                  <span class="apple-link">SpaceMap Inc. 222, Wangsimni-ro, Seongdong-gu, Seoul, Republic of Korea</span>
+                  <!-- <br /> -->
+                  <!-- Don't like these emails? -->
+                  <!-- <a href="http://i.imgur.com/CScmqnj.gif">Unsubscribe</a>. -->
+                </td>
+              </tr>
+            </table>
+          </div>
+          <!-- END FOOTER -->
+        </td>
+        <td>&nbsp;</td>
       </tr>
-      <% metadata.forEach((satellite) => { %>
-      <tr>
-        <td style="padding-right: 10px; width:50px "><%= satellite.id %></td>
-        <td style="padding-right: 10px"><%= satellite.name %></td>
-        <td><%= satellite.numConjunctions %></td>
-      </tr>
-      <% }) %>
     </table>
-    
-    <div>
-      <table class="main-table">
-        <tr>
-          <th>Index</th>
-          <th colspan="2">Primary</th>
-          <th colspan="2">Secondary</th>
-          <th>TCA</th>
-          <th>DCA</th>
-        </tr>
-        <% conjunctions.forEach((conjunction) => { %>
-        <tr>
-          <td><%= conjunction.index %></td>
-          <td><%= conjunction.pid %></td>
-          <td><%= conjunction.pName %></td>
-          <td><%= conjunction.sid %></td>
-          <td><%= conjunction.sName %></td>
-          <td><%= conjunction.tcaTime %></td>
-          <td><%= conjunction.dca %></td>
-        </tr>
-        <% }) %>
-        <tr>
-          <td>...</td>
-          <td colspan="2" style="border-right: 1px solid rgb(219, 219, 219);">...</td>
-          <td colspan="2">...</td>
-          <td style="border-right: 1px solid rgb(219, 219, 219);">...</td>
-          <td>...</td>
-        </tr>
-      </table>
-    </div>
-
-    <br/>
-    <p>Please find attached reports for more information.</p>
-    </br>
-
   </body>
 </html>

@@ -66,6 +66,7 @@ table td {
           HEADER, FOOTER, MAIN
       ------------------------------------- */
 .main {
+  /* background: #ffffff; */
   background: #ffffff;
   border-radius: 3px;
   width: 100%;
@@ -117,12 +118,12 @@ table td {
   font-weight: bold;
   letter-spacing: 1px;
   text-align: center;
+  color: #001326;
 }
 
 .main-text {
   font-family: Malgun Gothic, dotum, sans-serif;
   font-size: 18px;
-  font-weight: bold;
   text-align: left;
   padding: 10px 0 10px 0;
 }
