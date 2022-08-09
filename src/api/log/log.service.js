@@ -15,6 +15,10 @@ class LogService {
     });
   }
 
+  async logLastVisit(email) {
+    await UserModel.findOneAndUpdate({ email }, { lastVisit: moment.utc() });
+  }
+
   async getNumUsers() {
     const today = moment.utc().startOf('day');
     const yesterday = moment.utc().subtract(1, 'day').startOf('day');

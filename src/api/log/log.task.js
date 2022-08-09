@@ -85,6 +85,7 @@ class LogTask {
           nickname: user.nickname,
           interestedSatellites: interestedSatellitesString,
           subscribe: subscribeString,
+          lastVisit: user.lastVisit ? user.lastVisit : '',
         };
       }),
     );

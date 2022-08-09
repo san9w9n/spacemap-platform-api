@@ -23,6 +23,9 @@ const userScheme = new Schema({
     type: String,
     require: true,
   },
+  lastVisit: {
+    type: Date,
+  },
 });
 
 module.exports = mongoose.model('user', userScheme);
