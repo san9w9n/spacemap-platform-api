@@ -74,7 +74,9 @@ class LaunchConjunctionsController {
     const { threshold } = req.body;
 
     if (!DateHandler.isCalculatableDate()) {
-      throw new ForbiddenException('Not available time.');
+      throw new ForbiddenException(
+        'Not available time. (Available time: UTC 21:00 ~ UTC 15:00)',
+      );
     }
     if (!file) {
       throw new BadRequestException('No Trajectory File.');

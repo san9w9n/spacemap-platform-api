@@ -69,7 +69,9 @@ class CollisionAvoidanceController {
 
   async predictCollisionAvoidance(req, _res) {
     if (!DateHandler.isCalculatableDate()) {
-      throw new ForbiddenException('Not available time.');
+      throw new ForbiddenException(
+        'Not available time. (Available time: UTC 21:00 ~ 15:00)',
+      );
     }
     const { email } = req.user;
 
