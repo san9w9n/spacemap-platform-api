@@ -10,9 +10,14 @@ const {
   verifyUser,
   storeRedirectToInSession,
 } = require('../../middlewares/auth.middleware');
+const LogService = require('../log/log.service');
 
 class OauthController {
-  constructor() {
+  /**
+   * @param { LogService } logService
+   */
+  constructor(logService) {
+    this.logService = logService;
     this.path = '/oauth';
     this.router = Router();
     this.initializeRoutes();
@@ -62,6 +67,7 @@ class OauthController {
       throw new UnauthorizedException('Login failed.');
     }
     const { email, nickname, provider } = req.user;
+    this.logService.logLastVisit(email);
     return {
       data: {
         email,

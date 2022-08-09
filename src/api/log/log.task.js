@@ -45,11 +45,7 @@ class LogTask {
     const title = `Log Report (${moment.utc().format('MMM DD')})`;
     const html = await SendEmailHandler.renderHtml('logReport', context);
     await SendEmailHandler.sendMail(
-      [
-        'sjb990221@gmail.com',
-        'shawn.choi@spacemap42.com',
-        'douglas.kim@spacemap42.com',
-      ],
+      ['shawn.choi@spacemap42.com', 'douglas.kim@spacemap42.com'],
       title,
       html,
     );
@@ -71,20 +67,17 @@ class LogTask {
           );
         const { interestedArray, subscribe } = favorite;
         interestedArray.sort((a, b) => parseInt(a.id) - parseInt(b.id));
-        const interestedSatellitesString = interestedArray.reduce(
-          (acc, sat, index) => {
-            const delimiter = index ? ', ' : '';
-            const newElement = `${delimiter}${sat.id}`;
-            return acc + newElement;
-          },
-          '',
-        );
+        const interestedSatellitesString = interestedArray.length;
         const subscribeString = subscribe ? 'O' : '';
+        const lastVisitString = user.lastVisit
+          ? moment.utc(user.lastVisit).fromNow()
+          : '';
         return {
           email: user.email,
           nickname: user.nickname,
           interestedSatellites: interestedSatellitesString,
           subscribe: subscribeString,
+          lastVisit: lastVisitString,
         };
       }),
     );

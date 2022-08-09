@@ -2,9 +2,12 @@ const moment = require('moment');
 const PredictionWindow = require('./predictionwindow.model');
 
 class DateHandler {
-  // static #startMomentOfPredictionWindow;
+  // static #startMomentOfPredictionWindow,
 
   // static #endMomentOfPredictionWindow;
+
+  static startMomentOfCalculation = 15;
+  static endMomentOfCalculation = 21;
 
   static async setStartMomentOfPredictionWindow(startMoment) {
     const options = { upsert: true, new: true, setDefaultsOnInsert: true };
@@ -145,7 +148,10 @@ class DateHandler {
   static isCalculatableDate() {
     const currentDate = this.getCurrentUTCDate();
     const hours = currentDate.getUTCHours();
-    return hours < 15 || hours >= 21;
+    return (
+      hours < this.startMomentOfCalculation ||
+      hours >= this.endMomentOfCalculation
+    );
   }
 
   static getTomorrow() {

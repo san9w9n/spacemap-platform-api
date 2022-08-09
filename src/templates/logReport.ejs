@@ -41,6 +41,7 @@
                             <td class="table-header">Nickname</td>
                             <td class="table-header">Favorite</td>
                             <td class="table-header">Subscribe</td>
+                            <td class="table-header">Last visit</td>
                           </tr>
                           <% usersInfo.forEach(user => { %>
                           <tr>
@@ -48,6 +49,7 @@
                             <td class="table-body"><%= user.nickname %></td>
                             <td class="table-body"><%= user.interestedSatellites %></td>
                             <td class="table-body"><%= user.subscribe %></td>
+                            <td class="table-body"><%= user.lastVisit %></td>
                           </tr>
                           <% }) %>
                         </table>

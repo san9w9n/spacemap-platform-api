@@ -2,6 +2,7 @@
 const InterestedSatellitesModel = require('./interestedSatellites.model');
 const TleModel = require('../tles/tle.model');
 const { BadRequestException } = require('../../common/exceptions');
+const { startSession } = require('mongoose');
 
 class InterestedSatellitesService {
   async readInterestedSatellites(email) {
@@ -149,6 +150,65 @@ class InterestedSatellitesService {
     await InterestedSatellitesModel.create(newInterestedSatellites);
     return newInterestedSatellites;
   }
+
+  // async createOrUpdateInterestedSatelliteId(email, interestedSatelliteId) {
+  //   const session = await startSession();
+  //   try {
+  //     session.startTransaction();
+  //     const interestedSatellite = await InterestedSatellitesModel.findOne({
+  //       email,
+  //     }).exec();
+  //     const searchedSatellites = await TleModel.findOne({
+  //       id: interestedSatelliteId,
+  //     });
+  //     if (!searchedSatellites) {
+  //       throw new BadRequestException(`There is not ${interestedSatelliteId}`);
+  //     }
+  //     const { id, name } = searchedSatellites;
+  //     if (interestedSatellite) {
+  //       const { interestedArray } = interestedSatellite;
+  //       const interestedLength = interestedArray.length;
+  //       for (let i = 0; i < interestedLength; i += 1) {
+  //         if (interestedArray[i].id === interestedSatelliteId) {
+  //           return {
+  //             email,
+  //             interestedArray,
+  //           };
+  //         }
+  //       }
+  //       interestedArray.push({ id, name });
+  //       await InterestedSatellitesModel.findOneAndUpdate(
+  //         { email },
+  //         { interestedArray },
+  //       ).exec();
+  //       return {
+  //         email,
+  //         interestedArray,
+  //       };
+  //     }
+
+  //     const newInterestedSatellites = {
+  //       email,
+  //       interestedArray: [
+  //         {
+  //           id,
+  //           name,
+  //         },
+  //       ],
+  //     };
+  //     await InterestedSatellitesModel.create(newInterestedSatellites, {
+  //       session,
+  //     });
+  //     await session.commitTransaction();
+  //     return newInterestedSatellites;
+  //   } catch (err) {
+  //     await session.abortTransaction();
+  //     console.error(err);
+  //     next(err);
+  //   } finally {
+  //     await session.endSession();
+  //   }
+  // }
 
   async deleteInterestedSatelliteId(email, interestedSatelliteId) {
     const interestedSatellite = await InterestedSatellitesModel.findOne({

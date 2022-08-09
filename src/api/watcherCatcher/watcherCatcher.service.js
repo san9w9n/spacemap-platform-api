@@ -36,6 +36,8 @@ class WatcherCatcherService {
       latitude: taskResult.latitude,
       longitude: taskResult.longitude,
       epochTime: taskResult.epochTime,
+      altitude: taskResult.altitude,
+      fieldOfView: taskResult.fieldOfView,
       predictionEpochTime: taskResult.predictionEpochTime,
       wcdb: wcdbResult,
     };

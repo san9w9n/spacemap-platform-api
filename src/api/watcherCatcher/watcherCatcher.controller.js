@@ -57,7 +57,10 @@ class WatcherCatcherController {
 
   async predictWatcherCatcher(req, _res) {
     if (!DateHandler.isCalculatableDate()) {
-      throw new ForbiddenException('Not available time.');
+      throw new ForbiddenException(
+        `Not available time. 
+        (Unable time: UTC ${DateHandler.startMomentOfCalculation}:00 ~ ${DateHandler.endMomentOfCalculation}:00)`,
+      );
     }
     const { email } = req.user;
     const startMomentOfPredictionWindow =

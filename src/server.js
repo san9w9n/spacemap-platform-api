@@ -84,7 +84,7 @@ const main = async () => {
       ),
       new LaunchConjunctionsController(launchConjunctionsService),
       new WatcherCatcherController(watcherCatcherService),
-      new OauthController(),
+      new OauthController(logService),
       new RsoController(rsoService),
       new CollisionAvoidanceController(collisionAvoidanceService, ppdbService),
       new TaskController(interestedSatellitesTask, logTask),
