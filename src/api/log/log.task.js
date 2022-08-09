@@ -44,7 +44,15 @@ class LogTask {
     const context = await this.#makeContext();
     const title = `Log Report (${moment.utc().format('MMM DD')})`;
     const html = await SendEmailHandler.renderHtml('logReport', context);
-    await SendEmailHandler.sendMail(['sjb990221@gmail.com'], title, html);
+    await SendEmailHandler.sendMail(
+      [
+        'sjb990221@gmail.com',
+        'shawn.choi@spacemap42.com',
+        'douglas.kim@spacemap42.com',
+      ],
+      title,
+      html,
+    );
   }
 
   async #makeContext() {
