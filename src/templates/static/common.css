@@ -24,8 +24,6 @@ body {
 
 table {
   border-collapse: separate;
-  mso-table-lspace: 0pt;
-  mso-table-rspace: 0pt;
   width: 100%;
 }
 table td {
@@ -141,11 +139,32 @@ table td {
   font-family: Malgun Gothic, dotum, sans-serif;
 }
 
+.table-header-sub {
+  font-family: Malgun Gothic, dotum, sans-serif;
+  font-size: 12px;
+  height: 30px;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0 15px;
+  background-color: #f1f1f1;
+  font-weight: bold;
+}
+
+.table-body-sub {
+  font-family: Malgun Gothic, dotum, sans-serif;
+  font-size: 11px;
+  border: 1px solid #eee;
+  height: 30px;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0 15px;
+}
+
 .table-header {
   font-family: Malgun Gothic, dotum, sans-serif;
-  font-size: 16px;
+  font-size: 15px;
   border: 1px solid #eee;
-  height: 42px;
+  height: 40px;
   text-align: center;
   vertical-align: middle;
   padding: 0 15px;
@@ -157,7 +176,7 @@ table td {
   font-family: Malgun Gothic, dotum, sans-serif;
   font-size: 13px;
   border: 1px solid #eee;
-  height: 45px;
+  height: 40px;
   text-align: center;
   vertical-align: middle;
   padding: 0 15px;
@@ -296,7 +315,6 @@ a {
   max-width: 0;
   opacity: 0;
   overflow: hidden;
-  mso-hide: all;
   visibility: hidden;
   width: 0;
 }

@@ -41,7 +41,7 @@ class LogService {
   }
 
   async getAllUsers() {
-    return UserModel.find();
+    return UserModel.find().sort({ lastVisit: -1 });
   }
 }
 
