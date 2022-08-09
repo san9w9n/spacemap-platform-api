@@ -2,9 +2,12 @@ const moment = require('moment');
 const PredictionWindow = require('./predictionwindow.model');
 
 class DateHandler {
-  // static #startMomentOfPredictionWindow;
+  // static #startMomentOfPredictionWindow,
 
   // static #endMomentOfPredictionWindow;
+
+  static startMomentOfCalculation = 15;
+  static endMomentOfCalculation = 21;
 
   static async setStartMomentOfPredictionWindow(startMoment) {
     const options = { upsert: true, new: true, setDefaultsOnInsert: true };
@@ -145,9 +148,10 @@ class DateHandler {
   static isCalculatableDate() {
     const currentDate = this.getCurrentUTCDate();
     const hours = currentDate.getUTCHours();
-    // return hours < 15 || hours >= 21;
-    return hours < 6 || hours >= 9;
-    // 현재 UTC 5
+    return (
+      hours < this.startMomentOfCalculation ||
+      hours >= this.endMomentOfCalculation
+    );
   }
 
   static getTomorrow() {
@@ -181,13 +185,9 @@ class DateHandler {
       await this.getStartMomentOfPredictionWindow();
     const endMomentOfPredictionWindow =
       await this.getEndMomentOfPredictionWindow();
-    return `Please enter the time between following time zones (UTC).
-
-     ${moment
-       .utc(startMomentOfPredictionWindow)
-       .format('MMM DD, HH:mm')} ~ ${moment
-      .utc(endMomentOfPredictionWindow)
-      .format('MMM DD, HH:mm')}`;
+    return `Please enter the time between following time zones.
+    start time : ${startMomentOfPredictionWindow}
+    end time : ${endMomentOfPredictionWindow}`;
   }
 }
 

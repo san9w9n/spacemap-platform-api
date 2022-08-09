@@ -71,7 +71,7 @@ class CollisionAvoidanceController {
     if (!DateHandler.isCalculatableDate()) {
       throw new ForbiddenException(
         `Not available time. 
-        (Unable time: UTC 15:00 ~ 21:00)`,
+        (Unable time: UTC ${DateHandler.startMomentOfCalculation}:00 ~ ${DateHandler.endMomentOfCalculation}:00)`,
       );
     }
     const { email } = req.user;
