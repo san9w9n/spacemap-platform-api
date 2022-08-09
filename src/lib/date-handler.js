@@ -146,7 +146,7 @@ class DateHandler {
     const currentDate = this.getCurrentUTCDate();
     const hours = currentDate.getUTCHours();
     // return hours < 15 || hours >= 21;
-    return hours < 5 || hours >= 7;
+    return hours < 6 || hours >= 9;
     // 현재 UTC 5
   }
 
@@ -181,9 +181,13 @@ class DateHandler {
       await this.getStartMomentOfPredictionWindow();
     const endMomentOfPredictionWindow =
       await this.getEndMomentOfPredictionWindow();
-    return `Please enter the time between following time zones.
-    start time : ${startMomentOfPredictionWindow}
-    end time : ${endMomentOfPredictionWindow}`;
+    return `Please enter the time between following time zones (UTC).
+
+     ${moment
+       .utc(startMomentOfPredictionWindow)
+       .format('MMM DD, HH:mm')} ~ ${moment
+      .utc(endMomentOfPredictionWindow)
+      .format('MMM DD, HH:mm')}`;
   }
 }
 
