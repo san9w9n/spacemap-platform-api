@@ -20,7 +20,7 @@ class SendEmailHandler {
         name: 'SPACEMAP',
         address: process.env.EMAIL,
       },
-      to: email,
+      bcc: email,
       subject: title,
       html: message,
       attachments,
