@@ -145,7 +145,9 @@ class DateHandler {
   static isCalculatableDate() {
     const currentDate = this.getCurrentUTCDate();
     const hours = currentDate.getUTCHours();
-    return hours < 15 || hours >= 21;
+    // return hours < 15 || hours >= 21;
+    return hours < 4 || hours >= 6;
+    // 현재 UTC 5
   }
 
   static getTomorrow() {
