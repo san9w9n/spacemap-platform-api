@@ -75,7 +75,8 @@ class LaunchConjunctionsController {
 
     if (!DateHandler.isCalculatableDate()) {
       throw new ForbiddenException(
-        'Not available time. \n(Unable time: UTC 15:00 ~ 21:00)',
+        `Not available time.
+(Unable time: UTC 15:00 ~ 21:00)`,
       );
     }
     if (!file) {
