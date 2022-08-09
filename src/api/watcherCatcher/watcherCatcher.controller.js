@@ -58,7 +58,7 @@ class WatcherCatcherController {
   async predictWatcherCatcher(req, _res) {
     if (!DateHandler.isCalculatableDate()) {
       throw new ForbiddenException(
-        `Not available time. 
+        `Not available time.
         (Unable time: UTC 15:00 ~ 21:00)`,
       );
     }
