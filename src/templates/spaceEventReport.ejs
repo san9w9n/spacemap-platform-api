@@ -22,34 +22,46 @@
                 </td>
               </tr>
               <tr>
-                <td class="title">SPACE EVENT REPORT</td>
+                <td class="title" style="font-size: 40px">SPACE EVENT REPORT</td>
+              </tr>
+              <tr>
+                <td class="main-text" style="font-size: 16px; font-weight: bold; text-align: right; padding: 0 30px 0 0"><%= reportDate %></td>
               </tr>
               <tr>
                 <td class="wrapper">
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tr>
-                      <td class="main-text"><span>There are </span><span style="font-weight: bold; color: #001326"><%= totalcount %></span><span> conjunctions.</span></td>
+                      <td class="main-text"><span>● There are total </span><span style="font-weight: bold; color: #001326"><%= totalcount %></span><span> conjunctions.</span></td>
                     </tr>
-                    <tr style="text-align: left">
+                    <tr>
                       <td>
-                        <table style="width: 70%" border="0" cellpadding="0" cellspacing="0" class="table">
+                        <table style="width: 60%; text-align: left" border="0" cellpadding="0" cellspacing="0" class="table">
                           <tr>
-                            <td class="table-header">ID</td>
-                            <td class="table-header">Name</td>
-                            <td class="table-header">#Conjunctions</td>
+                            <td class="table-header-sub">ID</td>
+                            <td class="table-header-sub">Name</td>
+                            <td class="table-header-sub">#Conjunctions</td>
                           </tr>
-                          <% metadata.forEach(satellite => { %>
+                          <% metadata.forEach((satellite, idx) => { %> <% if (idx < 5) { %>
                           <tr>
-                            <td class="table-body"><%= satellite.id %></td>
-                            <td class="table-body"><%= satellite.name %></td>
-                            <td class="table-body"><%= satellite.numConjunctions %></td>
+                            <td class="table-body-sub"><%= satellite.id %></td>
+                            <td class="table-body-sub"><%= satellite.name %></td>
+                            <td class="table-body-sub"><%= satellite.numConjunctions %></td>
                           </tr>
-                          <% }) %>
+                          <% } %> <% }) %> <% if (metadata.length > 5) { %>
+                          <tr>
+                            <td class="table-body-sub" style="font-weight: bold">· · ·</td>
+                            <td class="table-body-sub" style="font-weight: bold">· · ·</td>
+                            <td class="table-body-sub" style="font-weight: bold">· · ·</td>
+                          </tr>
+                          <% } %>
                         </table>
                       </td>
                     </tr>
                     <tr>
                       <td style="height: 30px"></td>
+                    </tr>
+                    <tr>
+                      <td class="main-text">● List of shortest 10 conjunctions by DCA</td>
                     </tr>
                     <tr>
                       <td>
@@ -63,7 +75,7 @@
                           </tr>
                           <% conjunctions.forEach((conjunction) => { %>
                           <tr>
-                            <td class="table-body"><%= conjunction.index %></td>
+                            <td class="table-body" style="font-weight: bold"><%= conjunction.index %></td>
                             <td class="table-body"><%= conjunction.pid %></td>
                             <td style="font-size: 12px" class="table-body"><%= conjunction.pName %></td>
                             <td class="table-body"><%= conjunction.sid %></td>
@@ -71,12 +83,20 @@
                             <td class="table-body"><%= conjunction.tcaTime %></td>
                             <td class="table-body"><%= conjunction.dca %></td>
                           </tr>
-                          <% }) %>
+                          <% }) %> <% if (conjunctions.length == 10) { %>
+                          <tr>
+                            <td class="table-body" style="font-weight: bold">· · ·</td>
+                            <td colspan="2" class="table-body" style="font-weight: bold">· · ·</td>
+                            <td colspan="2" class="table-body" style="font-weight: bold">· · ·</td>
+                            <td class="table-body" style="font-weight: bold">· · ·</td>
+                            <td class="table-body" style="font-weight: bold">· · ·</td>
+                          </tr>
+                          <% } %>
                         </table>
                       </td>
                     </tr>
                     <tr>
-                      <td style="font-size: 16px" class="main-text">Please find attached reports for more information.</td>
+                      <td style="font-size: 16px; padding-top: 30px" class="main-text">● Please find attached reports for more information.</td>
                     </tr>
                   </table>
                 </td>
