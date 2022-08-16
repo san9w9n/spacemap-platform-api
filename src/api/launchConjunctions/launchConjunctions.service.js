@@ -35,6 +35,7 @@ class LaunchConjunctionsService {
       predictionEpochTime: taskResult.predictionEpochTime,
       trajectoryLength: taskResult.trajectoryLength,
       launchEpochTime: taskResult.launchEpochTime,
+      threshold: taskResult.threshold,
       lpdb: lpdbResult,
     };
     return launchConjunctionsResult;
