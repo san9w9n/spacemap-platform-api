@@ -32,7 +32,7 @@ module.exports = {
         NODE_ENV: 'deployment',
         SPACEMAP_NODE_ENV: 'local',
       },
-      watch: false,
+      watch: true,
     },
   ],
 

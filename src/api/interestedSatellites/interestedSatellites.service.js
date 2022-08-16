@@ -60,6 +60,51 @@ class InterestedSatellitesService {
     return searchedSatellitesWithInterested;
   }
 
+  async findSatellitesByIdServiceAutocomplete(email, satelliteId) {
+    let interestedSatellites = await InterestedSatellitesModel.findOne({
+      email,
+    }).exec();
+    if (!interestedSatellites) {
+      interestedSatellites = {
+        email,
+        interestedArray: [],
+      };
+      await InterestedSatellitesModel.create(interestedSatellites);
+    }
+    const { interestedArray } = interestedSatellites;
+
+    const tleModel = await TleModel.findOne({ id: 11 }).exec();
+    if (!tleModel) {
+      throw new Error('Something is wrong. (at getIdNamePairs)');
+    }
+    const { date } = tleModel;
+    const queryOption = {
+      $and: [{ date }, { $where: `/^${satelliteId}/.test(this.id)` }],
+    };
+
+    const searchedArray = await TleModel.find(queryOption).exec();
+    const searchedSatellitesWithInterested = searchedArray.map(
+      (searchedElement) => {
+        const { id, name } = searchedElement;
+        const interestedLength = interestedArray.length;
+        let flag = false;
+        for (let i = 0; i < interestedLength; i += 1) {
+          if (interestedArray[i].id === String(id)) {
+            flag = true;
+            break;
+          }
+        }
+        return {
+          id,
+          name,
+          isInterested: flag,
+        };
+      },
+    );
+
+    return searchedSatellitesWithInterested;
+  }
+
   async findSatellitesByNameService(email, satelliteName) {
     let interestedSatellites = await InterestedSatellitesModel.findOne({
       email,

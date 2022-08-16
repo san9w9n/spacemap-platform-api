@@ -31,6 +31,10 @@ class InterestedSatellitesController {
       .get('/', wrapper(this.readInterestedSatellites.bind(this)))
       .get('/conjunctions', wrapper(this.readInterestedConjunctions.bind(this)))
       .get('/find/:option', wrapper(this.findInterestedSatellites.bind(this)))
+      .get(
+        '/autocomplete/:option',
+        wrapper(this.findInterestedSatellitesAutocomplete.bind(this)),
+      )
       .post('/:id', wrapper(this.addToInterestedSatellites.bind(this)))
       .delete('/:id', wrapper(this.removeFromInterestedSatellites.bind(this)))
       .post('/settings/subscribe', wrapper(this.updateSettings.bind(this)));
@@ -57,6 +61,26 @@ class InterestedSatellitesController {
     const searchedSatellites = await (StringHandler.isNumeric(option)
       ? this.interestedSatellitesService.findSatellitesByIdService(
           email,
+          option,
+        )
+      : this.interestedSatellitesService.findSatellitesByNameService(
+          email,
+          option,
+        ));
+    return {
+      data: searchedSatellites,
+    };
+  }
+
+  async findInterestedSatellitesAutocomplete(req, _res) {
+    const { option } = req.params;
+    if (!option) {
+      throw new BadRequestException('Wrong params.');
+    }
+    const { email } = req.user;
+    const searchedSatellites = await (StringHandler.isNumeric(option)
+      ? this.interestedSatellitesService.findSatellitesByIdServiceAutocomplete(
+          'conatct@spacemap42.com',
           option,
         )
       : this.interestedSatellitesService.findSatellitesByNameService(
