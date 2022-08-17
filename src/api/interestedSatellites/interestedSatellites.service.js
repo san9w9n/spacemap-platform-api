@@ -82,7 +82,7 @@ class InterestedSatellitesService {
       $and: [{ date }, { $where: `/^${satelliteId}/.test(this.id)` }],
     };
 
-    const searchedArray = await TleModel.find(queryOption).exec();
+    const searchedArray = await TleModel.find(queryOption).limit(10).exec();
     const searchedSatellitesWithInterested = searchedArray.map(
       (searchedElement) => {
         const { id, name } = searchedElement;

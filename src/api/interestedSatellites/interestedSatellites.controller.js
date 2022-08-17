@@ -80,7 +80,7 @@ class InterestedSatellitesController {
     const { email } = req.user;
     const searchedSatellites = await (StringHandler.isNumeric(option)
       ? this.interestedSatellitesService.findSatellitesByIdServiceAutocomplete(
-          'conatct@spacemap42.com',
+          email,
           option,
         )
       : this.interestedSatellitesService.findSatellitesByNameService(
