@@ -83,7 +83,7 @@ class InterestedSatellitesController {
           email,
           option,
         )
-      : this.interestedSatellitesService.findSatellitesByNameService(
+      : this.interestedSatellitesService.findSatellitesByNameServiceAutocomplete(
           email,
           option,
         ));
