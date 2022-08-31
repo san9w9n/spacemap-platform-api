@@ -26,7 +26,7 @@ class InterestedSatellitesController {
   }
 
   initializeRoutes() {
-    this.router.use(verifyUser);
+    // this.router.use(verifyUser);
     this.router
       .get('/', wrapper(this.readInterestedSatellites.bind(this)))
       .get('/conjunctions', wrapper(this.readInterestedConjunctions.bind(this)))
@@ -77,7 +77,7 @@ class InterestedSatellitesController {
     if (!option) {
       throw new BadRequestException('Wrong params.');
     }
-    const { email } = req.user;
+    const email = 'contact@spacemap42.com';
     const searchedSatellites = await (StringHandler.isNumeric(option)
       ? this.interestedSatellitesService.findSatellitesByIdServiceAutocomplete(
           email,
