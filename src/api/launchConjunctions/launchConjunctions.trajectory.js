@@ -28,7 +28,7 @@ class Trajectory {
     const stringCoordinateSystem = `%coordinate system: ${this.metaData.coordinateSystem}\n`;
     const stringSite = `%site: ${this.metaData.site}\n`;
     const stringLaunchEpochTime = `%epochtime: ${moment(
-      this.metaData.epochTime,
+      this.metaData.launchEpochTime,
     ).toISOString()}\n`;
     return `${stringCoordinateSystem}${stringSite}${stringLaunchEpochTime}${stringSecondAndPositions}`;
   }
