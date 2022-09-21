@@ -24,6 +24,7 @@ class InterestedSatellitesTask {
       await this.interestedSatellitesService.readInterestedSatellites(
         'qudwo09@gmail.com',
         // 'sjb990221@gmail.com',
+        // '2018008168@hanyang.ac.kr',
       );
     const { context } = await this.#makeContextAttachment(interestedArray);
     const html = await SendEmailHandler.renderHtml('spaceEventReport', context);
@@ -83,7 +84,7 @@ class InterestedSatellitesTask {
         ]),
       ),
     );
-    conjunctionsForCsv.sort((a, b) => b.totalcount - a.totalcount);
+    // conjunctionsForCsv.sort((a, b) => b.totalcount - a.totalcount);
     const metadata = interestedArray.map((object, index) => {
       return {
         id: object.id,
