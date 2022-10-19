@@ -87,7 +87,7 @@ class PpdbService {
 
   async findConjunctionsService(limit, page, sort) {
     const queryOption = {
-      tcaTime: { $gte: new Date() },
+      // tcaTime: { $gte: new Date() },
     };
     const totalcount = await PpdbModel.countDocuments(queryOption).exec();
     const conjunctions = await PpdbModel.find(queryOption)
@@ -105,7 +105,7 @@ class PpdbService {
     const queryOption = {
       $and: [
         { $or: [{ pid: { $in: ids } }, { sid: { $in: ids } }] },
-        { tcaTime: { $gte: new Date() } },
+        // { tcaTime: { $gte: new Date() } },
       ],
     };
     const totalcount = await PpdbModel.countDocuments(queryOption).exec();
@@ -138,7 +138,7 @@ class PpdbService {
             { sName: { $regex: name, $options: 'i' } },
           ],
         },
-        { tcaTime: { $gte: new Date() } },
+        // { tcaTime: { $gte: new Date() } },
       ],
     };
     const totalcount = await PpdbModel.countDocuments(queryOption).exec();

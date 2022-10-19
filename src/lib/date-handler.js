@@ -6,8 +6,8 @@ class DateHandler {
 
   // static #endMomentOfPredictionWindow;
 
-  static startMomentOfCalculation = 12;
-  static endMomentOfCalculation = 18;
+  static startMomentOfCalculation = 0;
+  static endMomentOfCalculation = 6;
 
   static async setStartMomentOfPredictionWindow(startMoment) {
     const options = { upsert: true, new: true, setDefaultsOnInsert: true };

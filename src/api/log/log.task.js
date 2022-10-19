@@ -45,7 +45,14 @@ class LogTask {
     const title = `Log Report (${moment.utc().format('MMM DD')})`;
     const html = await SendEmailHandler.renderHtml('logReport', context);
     await SendEmailHandler.sendMail(
-      ['shawn.choi@spacemap42.com', 'douglas.kim@spacemap42.com'],
+      [
+        'shawn.choi@spacemap42.com',
+        'douglas.kim@spacemap42.com',
+        'dskim.hanyang@gmail.com',
+        'peter.ryu@spacemap42.com',
+        '2018008168@hanyang.ac.kr',
+        'sjb990221@gmail.com',
+      ],
       title,
       html,
     );
