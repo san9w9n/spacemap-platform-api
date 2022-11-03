@@ -34,8 +34,8 @@ class CollisionAvoidanceService {
     const coladbResult = await ColadbModel.find({ placeId });
 
     const collisionAvoidanceResult = {
-      pidOfConjunction: taskResult.pidOfConjunction,
-      sidOfConjunction: taskResult.sidOfConjunction,
+      pIdOfConjunction: taskResult.pIdOfConjunction,
+      sIdOfConjunction: taskResult.sIdOfConjunction,
       predictionEpochTime: taskResult.predictionEpochTime,
       colaEpochTime: taskResult.colaEpochTime,
       startMomentOfCola: taskResult.startMomentOfCola,
@@ -84,8 +84,8 @@ class CollisionAvoidanceService {
     email,
     predictionEpochTime,
     colaEpochTime,
-    pidOfConjunction,
-    sidOfConjunction,
+    pIdOfConjunction,
+    sIdOfConjunction,
     firstLineOfPrimary,
     secondLineOfPrimary,
     startMomentOfCola,
@@ -99,8 +99,8 @@ class CollisionAvoidanceService {
       email,
       predictionEpochTime,
       colaEpochTime,
-      pidOfConjunction,
-      sidOfConjunction,
+      pIdOfConjunction,
+      sIdOfConjunction,
       firstLineOfPrimary,
       secondLineOfPrimary,
       startMomentOfCola,

@@ -8,7 +8,7 @@ const ColadbScheme = new Schema({
     required: true,
   },
   placeId: {},
-  pid: {
+  pId: {
     type: Number,
     required: true,
   },
@@ -16,7 +16,7 @@ const ColadbScheme = new Schema({
     type: String,
     required: true,
   },
-  sid: {
+  sId: {
     type: Number,
     required: true,
   },

@@ -35,8 +35,8 @@ class MailingServiceHandler {
 
     const body = conjunctions.reduce((accBody, conjunction, index) => {
       const newRow = `
-      ${index + 1},"${conjunction.pid}","${conjunction.pName}","${
-        conjunction.sid
+      ${index + 1},"${conjunction.pId}","${conjunction.pName}","${
+        conjunction.sId
       }","${conjunction.sName}","${moment
         .utc(conjunction.tcaTime)
         .format('MMM DD, YYYY HH:mm:ss')}","${conjunction.dca}"`;
