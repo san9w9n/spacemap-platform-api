@@ -16,11 +16,11 @@ const CollisionAvoidanceScheme = new Schema({
     type: Date,
     required: true,
   },
-  pidOfConjunction: {
+  pIdOfConjunction: {
     type: Number,
     required: true,
   },
-  sidOfConjunction: {
+  sIdOfConjunction: {
     type: Number,
     required: true,
   },

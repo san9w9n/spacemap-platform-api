@@ -66,9 +66,9 @@ class InterestedSatellitesTask {
     const newConjunctions = conjunctions.map((conjunction, index) => {
       return {
         index: index + 1,
-        pid: conjunction.pid,
+        pId: conjunction.pId,
         pName: conjunction.pName,
-        sid: conjunction.sid,
+        sId: conjunction.sId,
         sName: conjunction.sName,
         tcaTime: moment
           .utc(conjunction.tcaTime)

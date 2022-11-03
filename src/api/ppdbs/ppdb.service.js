@@ -104,7 +104,7 @@ class PpdbService {
   async findConjunctionsByIdsService(limit, page, sort, ids) {
     const queryOption = {
       $and: [
-        { $or: [{ pid: { $in: ids } }, { sid: { $in: ids } }] },
+        { $or: [{ pId: { $in: ids } }, { sId: { $in: ids } }] },
         { tcaTime: { $gte: new Date() } },
       ],
     };
@@ -115,8 +115,8 @@ class PpdbService {
       .limit(limit)
       .exec();
     conjunctions.map((conjunction) => {
-      if (ids.some((id) => id == conjunction.sid)) {
-        [conjunction.pid, conjunction.sid] = [conjunction.sid, conjunction.pid];
+      if (ids.some((id) => id == conjunction.sId)) {
+        [conjunction.pId, conjunction.sId] = [conjunction.sId, conjunction.pId];
         [conjunction.pName, conjunction.sName] = [
           conjunction.sName,
           conjunction.pName,
@@ -149,7 +149,7 @@ class PpdbService {
       .exec();
     conjunctions.map((conjunction) => {
       if (new RegExp(name, 'i').test(conjunction.sName)) {
-        [conjunction.pid, conjunction.sid] = [conjunction.sid, conjunction.pid];
+        [conjunction.pId, conjunction.sId] = [conjunction.sId, conjunction.pId];
         [conjunction.pName, conjunction.sName] = [
           conjunction.sName,
           conjunction.pName,

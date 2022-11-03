@@ -7,7 +7,7 @@ const PpdbScheme = new Schema({
     type: Date,
     required: true,
   },
-  pid: {
+  pId: {
     type: Number,
     required: true,
   },
@@ -15,7 +15,7 @@ const PpdbScheme = new Schema({
     type: String,
     required: true,
   },
-  sid: {
+  sId: {
     type: Number,
     required: true,
   },

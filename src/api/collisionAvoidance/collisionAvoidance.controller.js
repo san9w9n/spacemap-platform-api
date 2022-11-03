@@ -77,8 +77,8 @@ class CollisionAvoidanceController {
     const { email } = req.user;
 
     const {
-      pidOfConjunction,
-      sidOfConjunction,
+      pIdOfConjunction,
+      sIdOfConjunction,
       startDate,
       endDate,
       amountOfLevel,
@@ -102,7 +102,7 @@ class CollisionAvoidanceController {
     const endMomentOfCola = await DateHandler.diffSeconds(endDate);
     const avoidanceLength = endMomentOfCola - startMomentOfCola;
     const tle = await TleModel.findOne({
-      id: pidOfConjunction,
+      id: pIdOfConjunction,
     })
       .sort({ date: -1 })
       .exec();
@@ -115,8 +115,8 @@ class CollisionAvoidanceController {
       email,
       predictionEpochTime,
       colaEpochTime,
-      pidOfConjunction,
-      sidOfConjunction,
+      pIdOfConjunction,
+      sIdOfConjunction,
       tle.firstline,
       tle.secondline,
       startMomentOfCola,
